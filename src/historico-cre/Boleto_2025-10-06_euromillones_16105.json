@@ -1,0 +1,29 @@
+{
+  "identificador": "1288207021244192954454499518516105",
+  "tipo": "euromillones",
+  "sorteoCodigo": "08007OCT25:2",
+  "sorteos": [
+    {
+      "sorteo": 80,
+      "fecha": "2025-10-07",
+      "dia": "martes",
+      "lunesSemana": "2025-10-06"
+    },
+    {
+      "sorteo": 81,
+      "fecha": "2025-10-10",
+      "dia": "viernes",
+      "lunesSemana": "2025-10-06"
+    }
+  ],
+  "fechaLunes": "2025-10-06",
+  "combinacion": "0208093049",
+  "estrellas": "0411",
+  "reintegro": "",
+  "clave": "",
+  "millon": "TNX94283",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-06_euromillones_16105.png"
+}

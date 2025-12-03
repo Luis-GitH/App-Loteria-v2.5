@@ -1,0 +1,43 @@
+<section>
+  <h2><%= mode === 'edit' ? 'Editar' : 'Nuevo' %> movimiento</h2>
+  <form method="post" action="<%= mode === 'edit' ? ('/movimientos/' + mov.id + '/edit') : '/movimientos/new' %>">
+    <div class="mb-3">
+      <label class="form-label">Fecha</label>
+      <input type="date" name="fecha" value="<%= mov.fecha %>" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Concepto</label>
+      <select name="concepto" class="form-select" required>
+        <% (conceptoOptions || []).forEach(c => { %>
+          <option value="<%= c %>" <%= mov.concepto === c ? 'selected' : '' %>><%= c %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Importe</label>
+      <input type="text" name="importe" value="<%= mov.importe || 0 %>" class="form-control" />
+      <small class="text-muted">Usa coma o punto como separador decimal (ej.: 99,99)</small>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Comentarios</label>
+      <input type="text" name="comentarios" value="<%= mov.comentarios || '' %>" class="form-control" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Tipo</label>
+      <select name="tipo" class="form-select" required>
+        <% (tipoOptions || []).forEach(opt => { %>
+          <option value="<%= opt.value %>" <%= (mov.tipo === opt.value ? 'selected' : '') %>><%= opt.label %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="mb-3">
+      <button class="btn" type="submit"><%= mode === 'edit' ? 'Guardar' : 'Crear' %></button>
+      <a class="btn" style="background:#888" href="/movimientos">Cancelar</a>
+      <% if (mode === 'edit') { %>
+        <form method="post" action="/movimientos/<%= mov.id %>/delete" style="display:inline" onsubmit="return confirm('¿Eliminar movimiento?');">
+          <button class="btn btn-danger" type="submit">Eliminar</button>
+        </form>
+      <% } %>
+    </div>
+  </form>
+</section>

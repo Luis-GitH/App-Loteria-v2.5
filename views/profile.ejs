@@ -1,0 +1,36 @@
+<section class="profile">
+  <h2>Mi perfil</h2> 
+
+  <form method="post" class="card profile-form">
+    <div class="form-field">
+      <label for="profile-nombre">Nombre</label>
+      <input id="profile-nombre" name="nombre" value="<%= user?.nombre || '' %>" required />
+    </div>
+
+    <div class="form-field">
+      <label for="profile-email">Email</label>
+      <input id="profile-email" type="email" name="email" value="<%= user?.email || '' %>" required />
+    </div>
+
+    <fieldset class="password-change">
+      <legend>Cambiar contrasena (opcional)</legend>
+      <div class="form-field">
+        <label for="pass-actual">Contrasena actual</label>
+        <input id="pass-actual" type="password" name="password_actual" autocomplete="current-password" />
+      </div>
+      <div class="form-field">
+        <label for="pass-new">Nueva contrasena</label>
+        <input id="pass-new" type="password" name="password_nueva" autocomplete="new-password" minlength="8" />
+      </div>
+      <div class="form-field">
+        <label for="pass-confirm">Confirmacion nueva contrasena</label>
+        <input id="pass-confirm" type="password" name="password_confirmacion" autocomplete="new-password" minlength="8" />
+      </div>
+      <small>La contrasena debe tener al menos 8 caracteres. Si dejas los campos en blanco, se mantendra la actual.</small>
+    </fieldset>
+
+    <div class="form-actions">
+      <button type="submit" class="btn">Guardar cambios</button>
+    </div>
+  </form>
+</section>

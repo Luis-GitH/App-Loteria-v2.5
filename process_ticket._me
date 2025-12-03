@@ -1,0 +1,94 @@
+Dependencias:
+
+npm install opencv.js jsqr canvas better-sqlite3 fs-extra date-fns
+
+eejemplo de uso:
+# Solo escaneo (crea /uploads)
+node process_ticket.v1.mjs --scan
+
+# Solo lectura de QR (usa /uploads → /procesadosQR)
+node process_ticket.v1.mjs --qr
+
+# Solo insertar en BD (usa /procesadosQR → /historico)
+node process_ticket.v1.mjs --db
+
+# Pipeline completo
+node process_ticket.v1.mjs --scan --procesadoQR --db
+# 🎟️ Sistema de Procesamiento de Boletos de Lotería
+
+Automatización completa del flujo de escaneo, detección, lectura de QR y almacenamiento en base de datos de boletos de lotería españoles (Primitiva, Euromillones y El Gordo).
+
+---
+
+## 🚀 Características principales
+
+| Etapa | Descripción |
+|-------|-------------------------------------------------------------------------------------|
+| 🖨️ **Escaneo (WIA)** | Captura boletos desde escáner compatible WIA (Windows)               |
+| 🧠 **Procesamiento con OpenCV.js** | Detección y recorte automático de boletos individuales |
+| 🔍 **Lectura QR (jsQR)** | Decodificación del código QR y análisis estructurado             |
+| 🧾 **Generación de JSON** | Crea archivos JSON normalizados con todos los datos del boleto  |
+| 💾 **Base de datos SQLite** | Inserción automática en tres tablas según tipo de juego       |
+| 🗂️ **Archivado histórico** | Mueve boletos y JSON procesados a `/src/historico`             |
+| 🧩 **Modo modular** | Cada etapa puede ejecutarse de forma independiente                    |
+
+---
+
+## 📂 Estructura del proyecto
+
+AppBoletosLoteria/
+│
+├── process_ticket.v1.mjs ← Script principal (orquestador)
+│
+├── src/
+├── modules/
+│ ├── scan_boletos.js ← Escaneo WIA + recorte con OpenCV
+│ ├── parse_ticket_qr.js ← Lectura e interpretación de QR
+│ └── boletosToDB.js ← Inserción SQLite y archivado
+│
+├── db/
+│ └── boletos.db ← Base de datos SQLite
+├── logs/ ← Registros de actividad
+├── scans/ ← Imágenes sin procesar
+├── uploads/ ← Boletos recortados
+├── procesadosQR/ ← Boletos con JSON generado
+├── historico/ ← Archivos archivados (imagen + JSON)
+├── debug/ ← Capturas visuales del proceso
+└── temp/ ← Archivos temporales de escaneo
+
+
+---
+
+## ⚙️ Instalación
+
+Requisitos:
+- Node.js ≥ 18
+- Windows (para escaneo WIA)
+- Escáner compatible WIA
+- Python (solo si lo pide la instalación de canvas)
+
+Instalación de dependencias:
+
+```bash
+npm install opencv.js jsqr canvas better-sqlite3 fs-extra date-fns
+
+🧭 Modos de ejecución
+🔹 1️⃣ Escaneo y recorte de boletos y los crea en /uploads
+
+            node process_ticket.v1.mjs --scan
+
+🔹 2️⃣ Procesamiento QR
+       Lee los QR de los boletos recortados y genera su JSON estructurado en /src/procesadosQR.
+
+            node process_ticket.v1.mjs --qr
+
+🔹 3️⃣ Inserción en base de datos
+       Inserta los boletos JSON en la base de datos SQLite /src/db/boletos.db
+       y mueve los archivos a /src/historico.
+
+            node process_ticket.v1.mjs --db
+
+🔹 4️⃣ Ejecución completa (pipeline total)
+       Escaneo + lectura QR + inserción en BD.
+
+            node process_ticket.v1.mjs --scan --qr --db

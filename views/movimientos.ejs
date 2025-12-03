@@ -1,0 +1,55 @@
+<section>
+  <h2>Estado de cuentas</h2>
+  <% if (!movimientos || movimientos.length === 0) { %>
+    <p>No hay movimientos para mostrar.</p>
+  <% } else { %>
+    <% if (user && user.tipo === 'admin') { %>
+      <p>
+        <a class="btn" href="/movimientos/new">Nuevo movimiento</a>
+        <a class="btn" href="/movimientos/import" style="background:#666">Importar desde Excel</a>
+      </p>
+    <% } %>
+    <table id="movs" class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Fecha</th><th>Concepto</th><th class="text-right">Importe</th><th>Comentarios</th><th>Tipo</th><th class="text-right">Saldo</th>
+          <% if (user && user.tipo === 'admin') { %><th>Acciones</th><% } %>
+        </tr>
+      </thead>
+      <tbody>
+        <% movimientos.forEach(m => { %>
+          <tr>
+            <td><%= fmtDate(m.fecha) %></td>
+            <td><%= m.concepto || m.descripcion || '' %></td>
+            <% const imp = (typeof m.importe !== 'undefined' ? Number(m.importe) : Number(m.monto)); %>
+            <td class="text-right" data-order="<%= imp %>"><%= fmtEUR(imp) %></td>
+            <td><%= m.comentarios || '' %></td>
+            <td><%= m.tipo || '' %></td>
+            <td class="text-right" data-order="<%= Number(m.saldo||0) %>"><%= typeof m.saldo !== 'undefined' ? fmtEUR(m.saldo) : '' %></td>
+            <% if (user && user.tipo === 'admin') { %>
+              <td>
+                <a class="btn" href="/movimientos/<%= m.id %>/edit">Editar</a>
+              </td>
+            <% } %>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+      (function(){
+        if (!window.jQuery) return;
+        jQuery(function($){
+          $('#movs').DataTable({
+            order: [[0,'desc']],
+            pageLength: 25,
+            language: {
+              url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            }
+          });
+        });
+      })();
+    </script>
+  <% } %>
+</section>

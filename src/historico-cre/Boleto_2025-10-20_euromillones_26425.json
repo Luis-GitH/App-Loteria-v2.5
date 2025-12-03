@@ -1,0 +1,29 @@
+{
+  "identificador": "1289607020635749023066794140426425",
+  "tipo": "euromillones",
+  "sorteoCodigo": "08421OCT25:2",
+  "sorteos": [
+    {
+      "sorteo": 84,
+      "fecha": "2025-10-21",
+      "dia": "martes",
+      "lunesSemana": "2025-10-20"
+    },
+    {
+      "sorteo": 85,
+      "fecha": "2025-10-24",
+      "dia": "viernes",
+      "lunesSemana": "2025-10-20"
+    }
+  ],
+  "fechaLunes": "2025-10-20",
+  "combinacion": "1126284546",
+  "estrellas": "0305",
+  "reintegro": "",
+  "clave": "",
+  "millon": "TWF80290",
+  "semanas": 1,
+  "terminal": "96790-0",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-20_euromillones_26425.png"
+}

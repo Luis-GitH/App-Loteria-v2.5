@@ -1,0 +1,56 @@
+<% /* Lista de envíos de boletos */ %>
+    <section class="admin-envios">
+        <h2>Histórico de envíos de boletos</h2>
+        <p class="text-muted">Últimos 200 envíos</p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha envío</th>
+                    <th>Enviado por</th>
+                    <th>Semana (lunes)</th>
+                    <th>Destinatarios</th>
+                    <th>Adjuntos</th>
+                    <th>Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!envios || envios.length===0) { %>
+                    <tr>
+                        <td colspan="8">No hay envíos registrados.</td>
+                    </tr>
+                    <% } else { %>
+                        <% envios.forEach(e=> { %>
+                            <tr>
+                                <td>
+                                    <%= e.id %>
+                                </td>
+                                <td>
+                                    <%= e.fecha_envio ? new Date(e.fecha_envio).toLocaleString('es-ES') : '' %>
+                                </td>
+                                <td>
+                                    <%= e.enviado_por_nombre || e.enviado_por || '—' %>
+                                </td>
+                                <td>
+                                    <%= e.fecha_lunes ? fmtDate(e.fecha_lunes) : '—' %>
+                                </td>
+                                <td style="max-width:300px; overflow:hidden; text-overflow:ellipsis;">
+                                    <%= e.destinatarios || '—' %>
+                                </td>
+                                <td>
+                                    <%= e.adjuntos_count || 0 %>
+                                </td>
+                                <td>
+                                    <%= e.estado %>
+                                        <% if (e.estado==='error' && e.error_message) { %> — <%= e.error_message %>
+                                                <% } %>
+                                </td>
+                                <td><a class="btn btn-sm btn-outline-primary"
+                                        href="/admin/envios-boletos/<%= e.id %>">Ver</a></td>
+                            </tr>
+                            <% }) %>
+                                <% } %>
+            </tbody>
+        </table>
+    </section>

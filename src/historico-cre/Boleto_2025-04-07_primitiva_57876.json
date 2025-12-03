@@ -1,0 +1,35 @@
+{
+  "identificador": "1270001021071720619298399756557876",
+  "tipo": "primitiva",
+  "sorteoCodigo": "04207ABR25:3",
+  "sorteos": [
+    {
+      "sorteo": 42,
+      "fecha": "2025-04-07",
+      "dia": "lunes",
+      "lunesSemana": "2025-04-07"
+    },
+    {
+      "sorteo": 43,
+      "fecha": "2025-04-10",
+      "dia": "jueves",
+      "lunesSemana": "2025-04-07"
+    },
+    {
+      "sorteo": 44,
+      "fecha": "2025-04-12",
+      "dia": "sábado",
+      "lunesSemana": "2025-04-07"
+    }
+  ],
+  "fechaLunes": "2025-04-07",
+  "combinacion": "021925263847",
+  "estrellas": "",
+  "reintegro": "4",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98595-0",
+  "joker": "NO",
+  "imagen": "/historico/Boleto_2025-04-07_primitiva_57876.jpg"
+}

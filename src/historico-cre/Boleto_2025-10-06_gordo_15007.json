@@ -1,0 +1,23 @@
+{
+  "identificador": "1288204021217369409527302438015007",
+  "tipo": "gordo",
+  "sorteoCodigo": "04112OCT25:1",
+  "sorteos": [
+    {
+      "sorteo": 41,
+      "fecha": "2025-10-12",
+      "dia": "domingo",
+      "lunesSemana": "2025-10-06"
+    }
+  ],
+  "fechaLunes": "2025-10-06",
+  "combinacion": "1012212627",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "06",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-06_gordo_15007.png"
+}

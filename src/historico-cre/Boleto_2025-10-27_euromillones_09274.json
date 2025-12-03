@@ -1,0 +1,29 @@
+{
+  "identificador": "1290307021830995884975348659509274",
+  "tipo": "euromillones",
+  "sorteoCodigo": "08628OCT25:2",
+  "sorteos": [
+    {
+      "sorteo": 86,
+      "fecha": "2025-10-28",
+      "dia": "martes",
+      "lunesSemana": "2025-10-27"
+    },
+    {
+      "sorteo": 87,
+      "fecha": "2025-10-31",
+      "dia": "viernes",
+      "lunesSemana": "2025-10-27"
+    }
+  ],
+  "fechaLunes": "2025-10-27",
+  "combinacion": "0411232840",
+  "estrellas": "0306",
+  "reintegro": "",
+  "clave": "",
+  "millon": "VBJ43083",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-27_euromillones_09274.png"
+}

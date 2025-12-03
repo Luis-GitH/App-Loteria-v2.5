@@ -1,0 +1,38 @@
+<section class="admin-attempts">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+    <div>
+      <h2>Intentos de acceso fallidos</h2>
+      <p>Supervisor de intentos rechazados (m&aacute;ximo 100 registros m&aacute;s recientes).</p>
+    </div>
+    <a class="btn btn-secondary" href="/admin">&larr; Volver al mantenimiento</a>
+  </div>
+
+  <% if (intentos && intentos.length) { %>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Nombre</th>
+            <th>Contrase&ntilde;a ingresada</th>
+            <th>IP</th>
+            <th>User-Agent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% intentos.forEach((intento) => { %>
+            <tr>
+              <td><%= typeof fmtDateTime === 'function' ? fmtDateTime(intento.created_at) : (intento.created_at || '') %></td>
+              <td><%= intento.nombre || '' %></td>
+              <td><%= intento.password_intento ? intento.password_intento.slice(0, 6) + '...' : '' %></td>
+              <td><%= intento.ip || '' %></td>
+              <td style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= intento.user_agent || '' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <p>No hay intentos recientes registrados.</p>
+  <% } %>
+</section>

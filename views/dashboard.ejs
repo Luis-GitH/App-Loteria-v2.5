@@ -1,0 +1,45 @@
+<section>
+  <h2>Hola <%= user?.nombre %>, bienvenido al club</h2>
+  
+  <h3><strong>Saldo actual en el club:</strong> <%= fmtEUR(typeof saldo !== 'undefined' ? saldo : 0) %></h3>
+  <p>Selecciona una opción:</p>
+  <ul class="menu">
+    <li><a class="btn" href="/tickets">Boletos de la semana</a></li>
+    <li><a class="btn" href="/movimientos">Estado de cuentas</a></li>
+    <% if (user?.tipo === 'admin') { %>
+      <li><a class="btn" href="/admin">Mantenimiento</a></li>
+      <li><a class="btn" href="/boletos/nuevo">Añadir boleto</a></li>
+    <% } %>
+    <li><a class="btn" href="/admin/escanear">Escanear boleto</a></li>
+  </ul>
+
+  <% if (botes) { %>
+    <% const BOTE_ITEMS = [
+      { key: 'euromillones', label: 'Euromillones' },
+      { key: 'primitiva', label: 'Primitiva' },
+      { key: 'gordo', label: 'El Gordo' },
+    ]; %>
+    <section class="dashboard-botes">
+      <h3>Botes oficiales para el próximo sorteo:</h3>
+      <div class="botes-grid">
+        <% BOTE_ITEMS.forEach((item) => { const info = botes?.[item.key]; %>
+          <article class="bote-card bote-<%= item.key %>">
+            <p class="bote-label"><%= item.label %></p>
+            <p class="bote-importe"><%= info ? fmtBote(info.premio || 0) : 'No disponible' %></p>
+            <p class="bote-meta">
+              <% if (info?.fecha) { %> Sorteo el:
+                <% if (info.sorteo && info.sorteo.length <= 3) { %>
+                  Sorteo <%= info.sorteo %> - <%= info.fecha %>
+                <% } else { %>
+                  <%= info.fecha %>
+                <% } %>
+              <% } else { %>
+                No disponible
+              <% } %>
+            </p>
+          </article>
+        <% }); %>
+      </div>
+    </section>
+  <% } %>
+</section>

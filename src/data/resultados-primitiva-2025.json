@@ -1,0 +1,2192 @@
+[
+  {
+    "semana": "49",
+    "sorteo": "144",
+    "fecha": "2024-12-01",
+    "numeros": [
+      "02",
+      "16",
+      "28",
+      "38",
+      "41",
+      "47"
+    ],
+    "complementario": "08",
+    "reintegro": "6"
+  },
+  {
+    "semana": "1",
+    "sorteo": "157",
+    "fecha": "2024-12-30",
+    "numeros": [
+      "15",
+      "25",
+      "29",
+      "35",
+      "38",
+      "48"
+    ],
+    "complementario": "22",
+    "reintegro": "9"
+  },
+  {
+    "semana": "1",
+    "sorteo": "001",
+    "fecha": "2025-01-02",
+    "numeros": [
+      "06",
+      "08",
+      "10",
+      "14",
+      "31",
+      "47"
+    ],
+    "complementario": "17",
+    "reintegro": "2"
+  },
+  {
+    "semana": "1",
+    "sorteo": "002",
+    "fecha": "2025-01-04",
+    "numeros": [
+      "06",
+      "16",
+      "20",
+      "30",
+      "32",
+      "37"
+    ],
+    "complementario": "15",
+    "reintegro": "0"
+  },
+  {
+    "semana": "2",
+    "sorteo": "003",
+    "fecha": "2025-01-06",
+    "numeros": [
+      "06",
+      "24",
+      "27",
+      "31",
+      "33",
+      "34"
+    ],
+    "complementario": "30",
+    "reintegro": "7"
+  },
+  {
+    "semana": "2",
+    "sorteo": "004",
+    "fecha": "2025-01-09",
+    "numeros": [
+      "03",
+      "05",
+      "15",
+      "20",
+      "26",
+      "28"
+    ],
+    "complementario": "23",
+    "reintegro": "6"
+  },
+  {
+    "semana": "2",
+    "sorteo": "005",
+    "fecha": "2025-01-11",
+    "numeros": [
+      "10",
+      "12",
+      "16",
+      "29",
+      "45",
+      "49"
+    ],
+    "complementario": "04",
+    "reintegro": "8"
+  },
+  {
+    "semana": "3",
+    "sorteo": "006",
+    "fecha": "2025-01-13",
+    "numeros": [
+      "02",
+      "10",
+      "17",
+      "24",
+      "39",
+      "42"
+    ],
+    "complementario": "19",
+    "reintegro": "2"
+  },
+  {
+    "semana": "3",
+    "sorteo": "007",
+    "fecha": "2025-01-16",
+    "numeros": [
+      "05",
+      "11",
+      "15",
+      "37",
+      "41",
+      "48"
+    ],
+    "complementario": "46",
+    "reintegro": "1"
+  },
+  {
+    "semana": "3",
+    "sorteo": "008",
+    "fecha": "2025-01-18",
+    "numeros": [
+      "12",
+      "13",
+      "21",
+      "28",
+      "41",
+      "42"
+    ],
+    "complementario": "29",
+    "reintegro": "0"
+  },
+  {
+    "semana": "4",
+    "sorteo": "009",
+    "fecha": "2025-01-20",
+    "numeros": [
+      "06",
+      "15",
+      "21",
+      "26",
+      "30",
+      "44"
+    ],
+    "complementario": "23",
+    "reintegro": "2"
+  },
+  {
+    "semana": "4",
+    "sorteo": "010",
+    "fecha": "2025-01-23",
+    "numeros": [
+      "02",
+      "12",
+      "15",
+      "19",
+      "26",
+      "41"
+    ],
+    "complementario": "42",
+    "reintegro": "4"
+  },
+  {
+    "semana": "4",
+    "sorteo": "011",
+    "fecha": "2025-01-25",
+    "numeros": [
+      "02",
+      "12",
+      "15",
+      "22",
+      "31",
+      "47"
+    ],
+    "complementario": "40",
+    "reintegro": "2"
+  },
+  {
+    "semana": "5",
+    "sorteo": "012",
+    "fecha": "2025-01-27",
+    "numeros": [
+      "24",
+      "27",
+      "28",
+      "30",
+      "33",
+      "47"
+    ],
+    "complementario": "11",
+    "reintegro": "0"
+  },
+  {
+    "semana": "5",
+    "sorteo": "013",
+    "fecha": "2025-01-30",
+    "numeros": [
+      "06",
+      "07",
+      "19",
+      "21",
+      "29",
+      "33"
+    ],
+    "complementario": "25",
+    "reintegro": "0"
+  },
+  {
+    "semana": "5",
+    "sorteo": "014",
+    "fecha": "2025-02-01",
+    "numeros": [
+      "09",
+      "11",
+      "28",
+      "34",
+      "39",
+      "40"
+    ],
+    "complementario": "01",
+    "reintegro": "5"
+  },
+  {
+    "semana": "6",
+    "sorteo": "015",
+    "fecha": "2025-02-03",
+    "numeros": [
+      "13",
+      "14",
+      "18",
+      "20",
+      "40",
+      "42"
+    ],
+    "complementario": "05",
+    "reintegro": "1"
+  },
+  {
+    "semana": "6",
+    "sorteo": "016",
+    "fecha": "2025-02-06",
+    "numeros": [
+      "11",
+      "14",
+      "15",
+      "16",
+      "23",
+      "25"
+    ],
+    "complementario": "47",
+    "reintegro": "9"
+  },
+  {
+    "semana": "6",
+    "sorteo": "017",
+    "fecha": "2025-02-08",
+    "numeros": [
+      "07",
+      "12",
+      "18",
+      "24",
+      "25",
+      "26"
+    ],
+    "complementario": "29",
+    "reintegro": "0"
+  },
+  {
+    "semana": "7",
+    "sorteo": "018",
+    "fecha": "2025-02-10",
+    "numeros": [
+      "06",
+      "08",
+      "21",
+      "34",
+      "37",
+      "41"
+    ],
+    "complementario": "03",
+    "reintegro": "0"
+  },
+  {
+    "semana": "7",
+    "sorteo": "019",
+    "fecha": "2025-02-13",
+    "numeros": [
+      "07",
+      "20",
+      "22",
+      "28",
+      "42",
+      "48"
+    ],
+    "complementario": "32",
+    "reintegro": "3"
+  },
+  {
+    "semana": "7",
+    "sorteo": "020",
+    "fecha": "2025-02-15",
+    "numeros": [
+      "02",
+      "12",
+      "21",
+      "29",
+      "37",
+      "44"
+    ],
+    "complementario": "23",
+    "reintegro": "0"
+  },
+  {
+    "semana": "8",
+    "sorteo": "021",
+    "fecha": "2025-02-17",
+    "numeros": [
+      "13",
+      "21",
+      "27",
+      "29",
+      "35",
+      "46"
+    ],
+    "complementario": "41",
+    "reintegro": "9"
+  },
+  {
+    "semana": "8",
+    "sorteo": "022",
+    "fecha": "2025-02-20",
+    "numeros": [
+      "10",
+      "19",
+      "23",
+      "36",
+      "39",
+      "45"
+    ],
+    "complementario": "20",
+    "reintegro": "1"
+  },
+  {
+    "semana": "8",
+    "sorteo": "023",
+    "fecha": "2025-02-22",
+    "numeros": [
+      "13",
+      "20",
+      "30",
+      "37",
+      "40",
+      "41"
+    ],
+    "complementario": "45",
+    "reintegro": "3"
+  },
+  {
+    "semana": "9",
+    "sorteo": "024",
+    "fecha": "2025-02-24",
+    "numeros": [
+      "17",
+      "21",
+      "25",
+      "31",
+      "42",
+      "43"
+    ],
+    "complementario": "45",
+    "reintegro": "2"
+  },
+  {
+    "semana": "9",
+    "sorteo": "025",
+    "fecha": "2025-02-27",
+    "numeros": [
+      "01",
+      "14",
+      "18",
+      "35",
+      "45",
+      "49"
+    ],
+    "complementario": "09",
+    "reintegro": "2"
+  },
+  {
+    "semana": "9",
+    "sorteo": "026",
+    "fecha": "2025-03-01",
+    "numeros": [
+      "06",
+      "08",
+      "18",
+      "27",
+      "30",
+      "40"
+    ],
+    "complementario": "42",
+    "reintegro": "5"
+  },
+  {
+    "semana": "10",
+    "sorteo": "027",
+    "fecha": "2025-03-03",
+    "numeros": [
+      "08",
+      "24",
+      "38",
+      "39",
+      "46",
+      "48"
+    ],
+    "complementario": "14",
+    "reintegro": "1"
+  },
+  {
+    "semana": "10",
+    "sorteo": "028",
+    "fecha": "2025-03-06",
+    "numeros": [
+      "03",
+      "15",
+      "16",
+      "27",
+      "31",
+      "35"
+    ],
+    "complementario": "11",
+    "reintegro": "6"
+  },
+  {
+    "semana": "10",
+    "sorteo": "029",
+    "fecha": "2025-03-08",
+    "numeros": [
+      "06",
+      "17",
+      "24",
+      "31",
+      "37",
+      "47"
+    ],
+    "complementario": "29",
+    "reintegro": "1"
+  },
+  {
+    "semana": "11",
+    "sorteo": "030",
+    "fecha": "2025-03-10",
+    "numeros": [
+      "04",
+      "07",
+      "15",
+      "37",
+      "48",
+      "49"
+    ],
+    "complementario": "05",
+    "reintegro": "1"
+  },
+  {
+    "semana": "11",
+    "sorteo": "031",
+    "fecha": "2025-03-13",
+    "numeros": [
+      "11",
+      "18",
+      "28",
+      "33",
+      "43",
+      "47"
+    ],
+    "complementario": "13",
+    "reintegro": "1"
+  },
+  {
+    "semana": "11",
+    "sorteo": "032",
+    "fecha": "2025-03-15",
+    "numeros": [
+      "06",
+      "22",
+      "28",
+      "40",
+      "44",
+      "49"
+    ],
+    "complementario": "12",
+    "reintegro": "3"
+  },
+  {
+    "semana": "12",
+    "sorteo": "033",
+    "fecha": "2025-03-17",
+    "numeros": [
+      "05",
+      "09",
+      "11",
+      "28",
+      "30",
+      "31"
+    ],
+    "complementario": "29",
+    "reintegro": "1"
+  },
+  {
+    "semana": "12",
+    "sorteo": "034",
+    "fecha": "2025-03-20",
+    "numeros": [
+      "03",
+      "07",
+      "20",
+      "26",
+      "38",
+      "48"
+    ],
+    "complementario": "35",
+    "reintegro": "8"
+  },
+  {
+    "semana": "12",
+    "sorteo": "035",
+    "fecha": "2025-03-22",
+    "numeros": [
+      "03",
+      "13",
+      "36",
+      "38",
+      "41",
+      "44"
+    ],
+    "complementario": "49",
+    "reintegro": "8"
+  },
+  {
+    "semana": "13",
+    "sorteo": "036",
+    "fecha": "2025-03-24",
+    "numeros": [
+      "02",
+      "03",
+      "11",
+      "24",
+      "46",
+      "49"
+    ],
+    "complementario": "23",
+    "reintegro": "5"
+  },
+  {
+    "semana": "13",
+    "sorteo": "037",
+    "fecha": "2025-03-27",
+    "numeros": [
+      "08",
+      "10",
+      "24",
+      "31",
+      "44",
+      "45"
+    ],
+    "complementario": "17",
+    "reintegro": "0"
+  },
+  {
+    "semana": "13",
+    "sorteo": "038",
+    "fecha": "2025-03-29",
+    "numeros": [
+      "02",
+      "12",
+      "18",
+      "19",
+      "24",
+      "30"
+    ],
+    "complementario": "32",
+    "reintegro": "9"
+  },
+  {
+    "semana": "14",
+    "sorteo": "039",
+    "fecha": "2025-03-31",
+    "numeros": [
+      "06",
+      "12",
+      "21",
+      "26",
+      "27",
+      "34"
+    ],
+    "complementario": "44",
+    "reintegro": "9"
+  },
+  {
+    "semana": "14",
+    "sorteo": "040",
+    "fecha": "2025-04-03",
+    "numeros": [
+      "04",
+      "08",
+      "09",
+      "14",
+      "23",
+      "45"
+    ],
+    "complementario": "12",
+    "reintegro": "4"
+  },
+  {
+    "semana": "14",
+    "sorteo": "041",
+    "fecha": "2025-04-05",
+    "numeros": [
+      "01",
+      "07",
+      "17",
+      "19",
+      "21",
+      "37"
+    ],
+    "complementario": "26",
+    "reintegro": "2"
+  },
+  {
+    "semana": "15",
+    "sorteo": "042",
+    "fecha": "2025-04-07",
+    "numeros": [
+      "03",
+      "04",
+      "07",
+      "08",
+      "22",
+      "33"
+    ],
+    "complementario": "01",
+    "reintegro": "8"
+  },
+  {
+    "semana": "15",
+    "sorteo": "043",
+    "fecha": "2025-04-10",
+    "numeros": [
+      "04",
+      "14",
+      "15",
+      "39",
+      "45",
+      "46"
+    ],
+    "complementario": "42",
+    "reintegro": "9"
+  },
+  {
+    "semana": "15",
+    "sorteo": "044",
+    "fecha": "2025-04-12",
+    "numeros": [
+      "05",
+      "15",
+      "18",
+      "24",
+      "42",
+      "45"
+    ],
+    "complementario": "11",
+    "reintegro": "7"
+  },
+  {
+    "semana": "16",
+    "sorteo": "045",
+    "fecha": "2025-04-14",
+    "numeros": [
+      "01",
+      "22",
+      "23",
+      "32",
+      "34",
+      "35"
+    ],
+    "complementario": "27",
+    "reintegro": "8"
+  },
+  {
+    "semana": "16",
+    "sorteo": "046",
+    "fecha": "2025-04-17",
+    "numeros": [
+      "02",
+      "04",
+      "06",
+      "32",
+      "33",
+      "39"
+    ],
+    "complementario": "27",
+    "reintegro": "3"
+  },
+  {
+    "semana": "16",
+    "sorteo": "047",
+    "fecha": "2025-04-19",
+    "numeros": [
+      "02",
+      "04",
+      "17",
+      "30",
+      "34",
+      "46"
+    ],
+    "complementario": "08",
+    "reintegro": "2"
+  },
+  {
+    "semana": "17",
+    "sorteo": "048",
+    "fecha": "2025-04-21",
+    "numeros": [
+      "09",
+      "17",
+      "24",
+      "25",
+      "35",
+      "38"
+    ],
+    "complementario": "12",
+    "reintegro": "3"
+  },
+  {
+    "semana": "17",
+    "sorteo": "049",
+    "fecha": "2025-04-24",
+    "numeros": [
+      "10",
+      "20",
+      "23",
+      "30",
+      "37",
+      "39"
+    ],
+    "complementario": "41",
+    "reintegro": "9"
+  },
+  {
+    "semana": "17",
+    "sorteo": "050",
+    "fecha": "2025-04-26",
+    "numeros": [
+      "11",
+      "16",
+      "17",
+      "26",
+      "44",
+      "46"
+    ],
+    "complementario": "22",
+    "reintegro": "9"
+  },
+  {
+    "semana": "18",
+    "sorteo": "051",
+    "fecha": "2025-04-28",
+    "numeros": [
+      "02",
+      "13",
+      "17",
+      "39",
+      "43",
+      "46"
+    ],
+    "complementario": "21",
+    "reintegro": "1"
+  },
+  {
+    "semana": "18",
+    "sorteo": "052",
+    "fecha": "2025-05-01",
+    "numeros": [
+      "18",
+      "19",
+      "30",
+      "39",
+      "45",
+      "49"
+    ],
+    "complementario": "23",
+    "reintegro": "9"
+  },
+  {
+    "semana": "18",
+    "sorteo": "053",
+    "fecha": "2025-05-03",
+    "numeros": [
+      "01",
+      "04",
+      "16",
+      "25",
+      "33",
+      "37"
+    ],
+    "complementario": "15",
+    "reintegro": "4"
+  },
+  {
+    "semana": "19",
+    "sorteo": "054",
+    "fecha": "2025-05-05",
+    "numeros": [
+      "22",
+      "29",
+      "30",
+      "35",
+      "39",
+      "45"
+    ],
+    "complementario": "14",
+    "reintegro": "9"
+  },
+  {
+    "semana": "19",
+    "sorteo": "055",
+    "fecha": "2025-05-08",
+    "numeros": [
+      "18",
+      "27",
+      "30",
+      "31",
+      "32",
+      "40"
+    ],
+    "complementario": "02",
+    "reintegro": "8"
+  },
+  {
+    "semana": "19",
+    "sorteo": "056",
+    "fecha": "2025-05-10",
+    "numeros": [
+      "01",
+      "08",
+      "13",
+      "23",
+      "31",
+      "39"
+    ],
+    "complementario": "15",
+    "reintegro": "8"
+  },
+  {
+    "semana": "20",
+    "sorteo": "057",
+    "fecha": "2025-05-12",
+    "numeros": [
+      "05",
+      "10",
+      "33",
+      "35",
+      "44",
+      "48"
+    ],
+    "complementario": "07",
+    "reintegro": "5"
+  },
+  {
+    "semana": "20",
+    "sorteo": "058",
+    "fecha": "2025-05-15",
+    "numeros": [
+      "04",
+      "16",
+      "28",
+      "35",
+      "39",
+      "42"
+    ],
+    "complementario": "30",
+    "reintegro": "5"
+  },
+  {
+    "semana": "20",
+    "sorteo": "059",
+    "fecha": "2025-05-17",
+    "numeros": [
+      "01",
+      "16",
+      "23",
+      "24",
+      "29",
+      "44"
+    ],
+    "complementario": "28",
+    "reintegro": "2"
+  },
+  {
+    "semana": "21",
+    "sorteo": "060",
+    "fecha": "2025-05-19",
+    "numeros": [
+      "28",
+      "29",
+      "32",
+      "43",
+      "46",
+      "47"
+    ],
+    "complementario": "30",
+    "reintegro": "9"
+  },
+  {
+    "semana": "21",
+    "sorteo": "061",
+    "fecha": "2025-05-22",
+    "numeros": [
+      "01",
+      "15",
+      "16",
+      "18",
+      "23",
+      "41"
+    ],
+    "complementario": "02",
+    "reintegro": "1"
+  },
+  {
+    "semana": "21",
+    "sorteo": "062",
+    "fecha": "2025-05-24",
+    "numeros": [
+      "05",
+      "14",
+      "19",
+      "35",
+      "41",
+      "46"
+    ],
+    "complementario": "31",
+    "reintegro": "0"
+  },
+  {
+    "semana": "22",
+    "sorteo": "063",
+    "fecha": "2025-05-26",
+    "numeros": [
+      "04",
+      "13",
+      "28",
+      "33",
+      "41",
+      "43"
+    ],
+    "complementario": "09",
+    "reintegro": "2"
+  },
+  {
+    "semana": "22",
+    "sorteo": "064",
+    "fecha": "2025-05-29",
+    "numeros": [
+      "01",
+      "03",
+      "10",
+      "23",
+      "35",
+      "38"
+    ],
+    "complementario": "17",
+    "reintegro": "7"
+  },
+  {
+    "semana": "22",
+    "sorteo": "065",
+    "fecha": "2025-05-31",
+    "numeros": [
+      "05",
+      "06",
+      "14",
+      "24",
+      "35",
+      "45"
+    ],
+    "complementario": "49",
+    "reintegro": "9"
+  },
+  {
+    "semana": "23",
+    "sorteo": "066",
+    "fecha": "2025-06-02",
+    "numeros": [
+      "07",
+      "20",
+      "23",
+      "38",
+      "40",
+      "45"
+    ],
+    "complementario": "30",
+    "reintegro": "3"
+  },
+  {
+    "semana": "23",
+    "sorteo": "067",
+    "fecha": "2025-06-05",
+    "numeros": [
+      "17",
+      "18",
+      "24",
+      "34",
+      "37",
+      "39"
+    ],
+    "complementario": "14",
+    "reintegro": "8"
+  },
+  {
+    "semana": "23",
+    "sorteo": "068",
+    "fecha": "2025-06-07",
+    "numeros": [
+      "05",
+      "14",
+      "19",
+      "33",
+      "45",
+      "46"
+    ],
+    "complementario": "07",
+    "reintegro": "3"
+  },
+  {
+    "semana": "24",
+    "sorteo": "069",
+    "fecha": "2025-06-09",
+    "numeros": [
+      "04",
+      "06",
+      "13",
+      "15",
+      "31",
+      "35"
+    ],
+    "complementario": "16",
+    "reintegro": "1"
+  },
+  {
+    "semana": "24",
+    "sorteo": "070",
+    "fecha": "2025-06-12",
+    "numeros": [
+      "10",
+      "30",
+      "36",
+      "38",
+      "43",
+      "46"
+    ],
+    "complementario": "17",
+    "reintegro": "0"
+  },
+  {
+    "semana": "24",
+    "sorteo": "071",
+    "fecha": "2025-06-14",
+    "numeros": [
+      "04",
+      "06",
+      "08",
+      "18",
+      "28",
+      "42"
+    ],
+    "complementario": "10",
+    "reintegro": "1"
+  },
+  {
+    "semana": "25",
+    "sorteo": "072",
+    "fecha": "2025-06-16",
+    "numeros": [
+      "12",
+      "16",
+      "23",
+      "25",
+      "33",
+      "39"
+    ],
+    "complementario": "35",
+    "reintegro": "0"
+  },
+  {
+    "semana": "25",
+    "sorteo": "073",
+    "fecha": "2025-06-19",
+    "numeros": [
+      "07",
+      "13",
+      "21",
+      "38",
+      "41",
+      "46"
+    ],
+    "complementario": "34",
+    "reintegro": "9"
+  },
+  {
+    "semana": "25",
+    "sorteo": "074",
+    "fecha": "2025-06-21",
+    "numeros": [
+      "12",
+      "25",
+      "43",
+      "44",
+      "45",
+      "49"
+    ],
+    "complementario": "27",
+    "reintegro": "4"
+  },
+  {
+    "semana": "26",
+    "sorteo": "075",
+    "fecha": "2025-06-23",
+    "numeros": [
+      "22",
+      "25",
+      "29",
+      "35",
+      "39",
+      "41"
+    ],
+    "complementario": "38",
+    "reintegro": "5"
+  },
+  {
+    "semana": "26",
+    "sorteo": "076",
+    "fecha": "2025-06-26",
+    "numeros": [
+      "15",
+      "20",
+      "26",
+      "38",
+      "39",
+      "41"
+    ],
+    "complementario": "32",
+    "reintegro": "4"
+  },
+  {
+    "semana": "26",
+    "sorteo": "077",
+    "fecha": "2025-06-28",
+    "numeros": [
+      "05",
+      "06",
+      "09",
+      "30",
+      "32",
+      "36"
+    ],
+    "complementario": "45",
+    "reintegro": "2"
+  },
+  {
+    "semana": "27",
+    "sorteo": "078",
+    "fecha": "2025-06-30",
+    "numeros": [
+      "03",
+      "19",
+      "21",
+      "31",
+      "42",
+      "49"
+    ],
+    "complementario": "22",
+    "reintegro": "4"
+  },
+  {
+    "semana": "27",
+    "sorteo": "079",
+    "fecha": "2025-07-03",
+    "numeros": [
+      "03",
+      "23",
+      "24",
+      "25",
+      "43",
+      "45"
+    ],
+    "complementario": "29",
+    "reintegro": "0"
+  },
+  {
+    "semana": "27",
+    "sorteo": "080",
+    "fecha": "2025-07-05",
+    "numeros": [
+      "05",
+      "14",
+      "19",
+      "20",
+      "27",
+      "37"
+    ],
+    "complementario": "43",
+    "reintegro": "3"
+  },
+  {
+    "semana": "28",
+    "sorteo": "081",
+    "fecha": "2025-07-07",
+    "numeros": [
+      "04",
+      "09",
+      "34",
+      "36",
+      "37",
+      "43"
+    ],
+    "complementario": "14",
+    "reintegro": "4"
+  },
+  {
+    "semana": "28",
+    "sorteo": "082",
+    "fecha": "2025-07-10",
+    "numeros": [
+      "09",
+      "10",
+      "13",
+      "17",
+      "44",
+      "47"
+    ],
+    "complementario": "38",
+    "reintegro": "2"
+  },
+  {
+    "semana": "28",
+    "sorteo": "083",
+    "fecha": "2025-07-12",
+    "numeros": [
+      "09",
+      "23",
+      "28",
+      "38",
+      "44",
+      "47"
+    ],
+    "complementario": "34",
+    "reintegro": "0"
+  },
+  {
+    "semana": "29",
+    "sorteo": "084",
+    "fecha": "2025-07-14",
+    "numeros": [
+      "04",
+      "06",
+      "17",
+      "20",
+      "45",
+      "46"
+    ],
+    "complementario": "26",
+    "reintegro": "1"
+  },
+  {
+    "semana": "29",
+    "sorteo": "085",
+    "fecha": "2025-07-17",
+    "numeros": [
+      "12",
+      "16",
+      "30",
+      "32",
+      "41",
+      "47"
+    ],
+    "complementario": "46",
+    "reintegro": "3"
+  },
+  {
+    "semana": "29",
+    "sorteo": "086",
+    "fecha": "2025-07-19",
+    "numeros": [
+      "15",
+      "16",
+      "20",
+      "39",
+      "40",
+      "47"
+    ],
+    "complementario": "19",
+    "reintegro": "4"
+  },
+  {
+    "semana": "30",
+    "sorteo": "087",
+    "fecha": "2025-07-21",
+    "numeros": [
+      "01",
+      "06",
+      "16",
+      "23",
+      "30",
+      "40"
+    ],
+    "complementario": "36",
+    "reintegro": "0"
+  },
+  {
+    "semana": "30",
+    "sorteo": "088",
+    "fecha": "2025-07-24",
+    "numeros": [
+      "18",
+      "19",
+      "24",
+      "28",
+      "32",
+      "44"
+    ],
+    "complementario": "23",
+    "reintegro": "8"
+  },
+  {
+    "semana": "30",
+    "sorteo": "089",
+    "fecha": "2025-07-26",
+    "numeros": [
+      "10",
+      "16",
+      "22",
+      "29",
+      "44",
+      "47"
+    ],
+    "complementario": "21",
+    "reintegro": "4"
+  },
+  {
+    "semana": "31",
+    "sorteo": "090",
+    "fecha": "2025-07-28",
+    "numeros": [
+      "04",
+      "15",
+      "24",
+      "37",
+      "38",
+      "40"
+    ],
+    "complementario": "19",
+    "reintegro": "5"
+  },
+  {
+    "semana": "31",
+    "sorteo": "091",
+    "fecha": "2025-07-31",
+    "numeros": [
+      "08",
+      "14",
+      "18",
+      "24",
+      "33",
+      "38"
+    ],
+    "complementario": "36",
+    "reintegro": "7"
+  },
+  {
+    "semana": "31",
+    "sorteo": "092",
+    "fecha": "2025-08-02",
+    "numeros": [
+      "08",
+      "36",
+      "40",
+      "42",
+      "43",
+      "48"
+    ],
+    "complementario": "41",
+    "reintegro": "9"
+  },
+  {
+    "semana": "32",
+    "sorteo": "093",
+    "fecha": "2025-08-04",
+    "numeros": [
+      "04",
+      "18",
+      "32",
+      "34",
+      "43",
+      "46"
+    ],
+    "complementario": "39",
+    "reintegro": "0"
+  },
+  {
+    "semana": "32",
+    "sorteo": "094",
+    "fecha": "2025-08-07",
+    "numeros": [
+      "03",
+      "13",
+      "19",
+      "21",
+      "24",
+      "26"
+    ],
+    "complementario": "33",
+    "reintegro": "7"
+  },
+  {
+    "semana": "32",
+    "sorteo": "095",
+    "fecha": "2025-08-09",
+    "numeros": [
+      "10",
+      "19",
+      "20",
+      "25",
+      "27",
+      "33"
+    ],
+    "complementario": "09",
+    "reintegro": "9"
+  },
+  {
+    "semana": "33",
+    "sorteo": "096",
+    "fecha": "2025-08-11",
+    "numeros": [
+      "11",
+      "20",
+      "32",
+      "40",
+      "44",
+      "46"
+    ],
+    "complementario": "15",
+    "reintegro": "8"
+  },
+  {
+    "semana": "33",
+    "sorteo": "097",
+    "fecha": "2025-08-14",
+    "numeros": [
+      "07",
+      "11",
+      "12",
+      "16",
+      "36",
+      "43"
+    ],
+    "complementario": "26",
+    "reintegro": "2"
+  },
+  {
+    "semana": "33",
+    "sorteo": "098",
+    "fecha": "2025-08-16",
+    "numeros": [
+      "11",
+      "14",
+      "22",
+      "45",
+      "46",
+      "48"
+    ],
+    "complementario": "30",
+    "reintegro": "6"
+  },
+  {
+    "semana": "34",
+    "sorteo": "099",
+    "fecha": "2025-08-18",
+    "numeros": [
+      "05",
+      "06",
+      "08",
+      "23",
+      "46",
+      "47"
+    ],
+    "complementario": "18",
+    "reintegro": "2"
+  },
+  {
+    "semana": "34",
+    "sorteo": "100",
+    "fecha": "2025-08-21",
+    "numeros": [
+      "06",
+      "22",
+      "34",
+      "38",
+      "43",
+      "46"
+    ],
+    "complementario": "36",
+    "reintegro": "2"
+  },
+  {
+    "semana": "34",
+    "sorteo": "101",
+    "fecha": "2025-08-23",
+    "numeros": [
+      "14",
+      "25",
+      "31",
+      "40",
+      "43",
+      "49"
+    ],
+    "complementario": "33",
+    "reintegro": "4"
+  },
+  {
+    "semana": "35",
+    "sorteo": "102",
+    "fecha": "2025-08-25",
+    "numeros": [
+      "06",
+      "07",
+      "16",
+      "26",
+      "39",
+      "49"
+    ],
+    "complementario": "17",
+    "reintegro": "9"
+  },
+  {
+    "semana": "35",
+    "sorteo": "103",
+    "fecha": "2025-08-28",
+    "numeros": [
+      "02",
+      "11",
+      "12",
+      "19",
+      "38",
+      "45"
+    ],
+    "complementario": "21",
+    "reintegro": "5"
+  },
+  {
+    "semana": "35",
+    "sorteo": "104",
+    "fecha": "2025-08-30",
+    "numeros": [
+      "06",
+      "28",
+      "36",
+      "40",
+      "41",
+      "48"
+    ],
+    "complementario": "39",
+    "reintegro": "8"
+  },
+  {
+    "semana": "36",
+    "sorteo": "105",
+    "fecha": "2025-09-01",
+    "numeros": [
+      "08",
+      "09",
+      "15",
+      "29",
+      "39",
+      "46"
+    ],
+    "complementario": "24",
+    "reintegro": "2"
+  },
+  {
+    "semana": "36",
+    "sorteo": "106",
+    "fecha": "2025-09-04",
+    "numeros": [
+      "08",
+      "09",
+      "17",
+      "28",
+      "41",
+      "46"
+    ],
+    "complementario": "44",
+    "reintegro": "8"
+  },
+  {
+    "semana": "36",
+    "sorteo": "107",
+    "fecha": "2025-09-06",
+    "numeros": [
+      "09",
+      "12",
+      "19",
+      "22",
+      "29",
+      "40"
+    ],
+    "complementario": "44",
+    "reintegro": "4"
+  },
+  {
+    "semana": "37",
+    "sorteo": "108",
+    "fecha": "2025-09-08",
+    "numeros": [
+      "02",
+      "07",
+      "09",
+      "26",
+      "36",
+      "46"
+    ],
+    "complementario": "18",
+    "reintegro": "3"
+  },
+  {
+    "semana": "37",
+    "sorteo": "109",
+    "fecha": "2025-09-11",
+    "numeros": [
+      "19",
+      "23",
+      "32",
+      "35",
+      "36",
+      "45"
+    ],
+    "complementario": "43",
+    "reintegro": "9"
+  },
+  {
+    "semana": "37",
+    "sorteo": "110",
+    "fecha": "2025-09-13",
+    "numeros": [
+      "09",
+      "14",
+      "18",
+      "19",
+      "23",
+      "30"
+    ],
+    "complementario": "15",
+    "reintegro": "1"
+  },
+  {
+    "semana": "38",
+    "sorteo": "111",
+    "fecha": "2025-09-15",
+    "numeros": [
+      "01",
+      "05",
+      "08",
+      "10",
+      "16",
+      "28"
+    ],
+    "complementario": "04",
+    "reintegro": "8"
+  },
+  {
+    "semana": "38",
+    "sorteo": "112",
+    "fecha": "2025-09-18",
+    "numeros": [
+      "04",
+      "07",
+      "15",
+      "17",
+      "19",
+      "38"
+    ],
+    "complementario": "22",
+    "reintegro": "8"
+  },
+  {
+    "semana": "38",
+    "sorteo": "113",
+    "fecha": "2025-09-20",
+    "numeros": [
+      "20",
+      "32",
+      "34",
+      "35",
+      "38",
+      "39"
+    ],
+    "complementario": "43",
+    "reintegro": "0"
+  },
+  {
+    "semana": "39",
+    "sorteo": "114",
+    "fecha": "2025-09-22",
+    "numeros": [
+      "18",
+      "21",
+      "24",
+      "26",
+      "46",
+      "48"
+    ],
+    "complementario": "36",
+    "reintegro": "4"
+  },
+  {
+    "semana": "39",
+    "sorteo": "115",
+    "fecha": "2025-09-25",
+    "numeros": [
+      "06",
+      "14",
+      "28",
+      "29",
+      "33",
+      "38"
+    ],
+    "complementario": "25",
+    "reintegro": "1"
+  },
+  {
+    "semana": "39",
+    "sorteo": "116",
+    "fecha": "2025-09-27",
+    "numeros": [
+      "18",
+      "27",
+      "33",
+      "41",
+      "44",
+      "46"
+    ],
+    "complementario": "06",
+    "reintegro": "7"
+  },
+  {
+    "semana": "40",
+    "sorteo": "117",
+    "fecha": "2025-09-29",
+    "numeros": [
+      "01",
+      "08",
+      "14",
+      "25",
+      "34",
+      "49"
+    ],
+    "complementario": "16",
+    "reintegro": "0"
+  },
+  {
+    "semana": "40",
+    "sorteo": "118",
+    "fecha": "2025-10-02",
+    "numeros": [
+      "05",
+      "18",
+      "26",
+      "29",
+      "34",
+      "39"
+    ],
+    "complementario": "08",
+    "reintegro": "9"
+  },
+  {
+    "semana": "40",
+    "sorteo": "119",
+    "fecha": "2025-10-04",
+    "numeros": [
+      "10",
+      "12",
+      "25",
+      "39",
+      "41",
+      "46"
+    ],
+    "complementario": "44",
+    "reintegro": "2"
+  },
+  {
+    "semana": "41",
+    "sorteo": "120",
+    "fecha": "2025-10-06",
+    "numeros": [
+      "10",
+      "12",
+      "14",
+      "19",
+      "30",
+      "44"
+    ],
+    "complementario": "08",
+    "reintegro": "4"
+  },
+  {
+    "semana": "41",
+    "sorteo": "121",
+    "fecha": "2025-10-09",
+    "numeros": [
+      "09",
+      "11",
+      "16",
+      "27",
+      "29",
+      "45"
+    ],
+    "complementario": "38",
+    "reintegro": "1"
+  },
+  {
+    "semana": "41",
+    "sorteo": "122",
+    "fecha": "2025-10-11",
+    "numeros": [
+      "08",
+      "10",
+      "29",
+      "38",
+      "45",
+      "47"
+    ],
+    "complementario": "43",
+    "reintegro": "6"
+  },
+  {
+    "semana": "42",
+    "sorteo": "123",
+    "fecha": "2025-10-13",
+    "numeros": [
+      "01",
+      "04",
+      "20",
+      "25",
+      "31",
+      "36"
+    ],
+    "complementario": "26",
+    "reintegro": "9"
+  },
+  {
+    "semana": "42",
+    "sorteo": "124",
+    "fecha": "2025-10-16",
+    "numeros": [
+      "02",
+      "04",
+      "07",
+      "13",
+      "19",
+      "34"
+    ],
+    "complementario": "17",
+    "reintegro": "6"
+  },
+  {
+    "semana": "42",
+    "sorteo": "125",
+    "fecha": "2025-10-18",
+    "numeros": [
+      "06",
+      "15",
+      "20",
+      "21",
+      "28",
+      "49"
+    ],
+    "complementario": "08",
+    "reintegro": "0"
+  },
+  {
+    "semana": "43",
+    "sorteo": "126",
+    "fecha": "2025-10-20",
+    "numeros": [
+      "02",
+      "08",
+      "14",
+      "24",
+      "28",
+      "39"
+    ],
+    "complementario": "43",
+    "reintegro": "3"
+  },
+  {
+    "semana": "43",
+    "sorteo": "127",
+    "fecha": "2025-10-23",
+    "numeros": [
+      "07",
+      "15",
+      "17",
+      "34",
+      "47",
+      "49"
+    ],
+    "complementario": "40",
+    "reintegro": "5"
+  },
+  {
+    "semana": "43",
+    "sorteo": "128",
+    "fecha": "2025-10-25",
+    "numeros": [
+      "05",
+      "13",
+      "14",
+      "36",
+      "44",
+      "46"
+    ],
+    "complementario": "12",
+    "reintegro": "1"
+  },
+  {
+    "semana": "44",
+    "sorteo": "129",
+    "fecha": "2025-10-27",
+    "numeros": [
+      "13",
+      "23",
+      "24",
+      "38",
+      "42",
+      "45"
+    ],
+    "complementario": "25",
+    "reintegro": "6"
+  },
+  {
+    "semana": "44",
+    "sorteo": "130",
+    "fecha": "2025-10-30",
+    "numeros": [
+      "08",
+      "09",
+      "19",
+      "34",
+      "39",
+      "42"
+    ],
+    "complementario": "13",
+    "reintegro": "2"
+  },
+  {
+    "semana": "44",
+    "sorteo": "131",
+    "fecha": "2025-11-01",
+    "numeros": [
+      "04",
+      "10",
+      "16",
+      "17",
+      "36",
+      "47"
+    ],
+    "complementario": "07",
+    "reintegro": "2"
+  },
+  {
+    "semana": "45",
+    "sorteo": "132",
+    "fecha": "2025-11-03",
+    "numeros": [
+      "14",
+      "19",
+      "29",
+      "37",
+      "40",
+      "41"
+    ],
+    "complementario": "48",
+    "reintegro": "9"
+  },
+  {
+    "semana": "45",
+    "sorteo": "133",
+    "fecha": "2025-11-06",
+    "numeros": [
+      "11",
+      "16",
+      "18",
+      "37",
+      "45",
+      "46"
+    ],
+    "complementario": "22",
+    "reintegro": "9"
+  },
+  {
+    "semana": "45",
+    "sorteo": "134",
+    "fecha": "2025-11-08",
+    "numeros": [
+      "02",
+      "17",
+      "22",
+      "25",
+      "32",
+      "40"
+    ],
+    "complementario": "44",
+    "reintegro": "8"
+  },
+  {
+    "semana": "46",
+    "sorteo": "135",
+    "fecha": "2025-11-10",
+    "numeros": [
+      "06",
+      "08",
+      "17",
+      "18",
+      "25",
+      "28"
+    ],
+    "complementario": "11",
+    "reintegro": "8"
+  },
+  {
+    "semana": "46",
+    "sorteo": "136",
+    "fecha": "2025-11-13",
+    "numeros": [
+      "02",
+      "06",
+      "07",
+      "25",
+      "41",
+      "49"
+    ],
+    "complementario": "48",
+    "reintegro": "7"
+  },
+  {
+    "semana": "46",
+    "sorteo": "137",
+    "fecha": "2025-11-15",
+    "numeros": [
+      "23",
+      "31",
+      "32",
+      "39",
+      "41",
+      "48"
+    ],
+    "complementario": "49",
+    "reintegro": "2"
+  },
+  {
+    "semana": "47",
+    "sorteo": "138",
+    "fecha": "2025-11-17",
+    "numeros": [
+      "02",
+      "08",
+      "12",
+      "13",
+      "45",
+      "46"
+    ],
+    "complementario": "04",
+    "reintegro": "2"
+  },
+  {
+    "semana": "47",
+    "sorteo": "139",
+    "fecha": "2025-11-20",
+    "numeros": [
+      "02",
+      "03",
+      "07",
+      "31",
+      "41",
+      "49"
+    ],
+    "complementario": "22",
+    "reintegro": "0"
+  },
+  {
+    "semana": "47",
+    "sorteo": "140",
+    "fecha": "2025-11-22",
+    "numeros": [
+      "09",
+      "12",
+      "15",
+      "22",
+      "34",
+      "48"
+    ],
+    "complementario": "13",
+    "reintegro": "5"
+  },
+  {
+    "semana": "48",
+    "sorteo": "141",
+    "fecha": "2025-11-24",
+    "numeros": [
+      "12",
+      "19",
+      "22",
+      "26",
+      "29",
+      "38"
+    ],
+    "complementario": "33",
+    "reintegro": "3"
+  },
+  {
+    "semana": "48",
+    "sorteo": "142",
+    "fecha": "2025-11-27",
+    "numeros": [
+      "01",
+      "13",
+      "26",
+      "31",
+      "32",
+      "35"
+    ],
+    "complementario": "10",
+    "reintegro": "3"
+  },
+  {
+    "semana": "48",
+    "sorteo": "143",
+    "fecha": "2025-11-29",
+    "numeros": [
+      "20",
+      "31",
+      "35",
+      "36",
+      "37",
+      "46"
+    ],
+    "complementario": "25",
+    "reintegro": "8"
+  },
+  {
+    "semana": "49",
+    "sorteo": "144",
+    "fecha": "2025-12-01",
+    "numeros": [
+      "02",
+      "16",
+      "28",
+      "38",
+      "41",
+      "47"
+    ],
+    "complementario": "01",
+    "reintegro": "1"
+  }
+]

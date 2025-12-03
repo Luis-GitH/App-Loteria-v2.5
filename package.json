@@ -1,0 +1,48 @@
+{
+  "name": "appboletosloteria",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "process_ticket.v1nOld.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "procesa": "node process_ticket.js",
+    "week": "node scripts/run-week.js",
+    "week:today": "node scripts/run-week-today.js",
+    "week:range": "node scripts/run-week-range.js",
+    "verify:ticket": "node scripts/verify-ticket.mjs",
+    "verify:gordo": "node scripts/verify-ticket.mjs --tipo=gordo",
+    "verify:primi": "node scripts/verify-ticket.mjs --tipo=primitiva",
+    "verify:eurom": "node scripts/verify-ticket.mjs --tipo=euromillones",
+    "gordo:fetch:day": "node scripts/fetch-gordo-day.mjs",
+    "migrate:images": "node scripts/migrate-image-paths.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.1",
+    "bcryptjs": "^2.4.3",
+    "canvas": "^3.2.0",
+    "cheerio": "^1.1.2",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-ejs-layouts": "^2.5.1",
+    "express-mysql-session": "^3.0.3",
+    "express-session": "^1.18.2",
+    "fs-extra": "^11.3.2",
+    "jsqr": "^1.4.0",
+    "mariadb": "^3.4.5",
+    "multer": "1.4.5-lts.1",
+    "nodemailer": "^7.0.10",
+    "opencv.js": "^1.2.1",
+    "xlsx": "0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "identificador": "1288907021571787920244795636864894",
+  "tipo": "euromillones",
+  "sorteoCodigo": "08214OCT25:2",
+  "sorteos": [
+    {
+      "sorteo": 82,
+      "fecha": "2025-10-14",
+      "dia": "martes",
+      "lunesSemana": "2025-10-13"
+    },
+    {
+      "sorteo": 83,
+      "fecha": "2025-10-17",
+      "dia": "viernes",
+      "lunesSemana": "2025-10-13"
+    }
+  ],
+  "fechaLunes": "2025-10-13",
+  "combinacion": "0209212329",
+  "estrellas": "0811",
+  "reintegro": "",
+  "clave": "",
+  "millon": "TSC25748",
+  "semanas": 1,
+  "terminal": "95695-2",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-13_euromillones_64894.png"
+}

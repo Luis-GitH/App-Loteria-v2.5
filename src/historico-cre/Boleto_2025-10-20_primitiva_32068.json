@@ -1,0 +1,35 @@
+{
+  "identificador": "1289601021016284309586813150632068",
+  "tipo": "primitiva",
+  "sorteoCodigo": "12620OCT25:3",
+  "sorteos": [
+    {
+      "sorteo": 126,
+      "fecha": "2025-10-20",
+      "dia": "lunes",
+      "lunesSemana": "2025-10-20"
+    },
+    {
+      "sorteo": 127,
+      "fecha": "2025-10-23",
+      "dia": "jueves",
+      "lunesSemana": "2025-10-20"
+    },
+    {
+      "sorteo": 128,
+      "fecha": "2025-10-25",
+      "dia": "sábado",
+      "lunesSemana": "2025-10-20"
+    }
+  ],
+  "fechaLunes": "2025-10-20",
+  "combinacion": "010612244145",
+  "estrellas": "",
+  "reintegro": "3",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "96790-0",
+  "joker": "NO",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-20_primitiva_32068.png"
+}

@@ -1,0 +1,53 @@
+<section class="profile">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h2 class="mb-0"><%= mode === 'create' ? 'Nuevo usuario' : 'Editar usuario' %></h2>
+    <a href="/admin/users" class="btn btn-secondary">&larr; Volver</a>
+  </div>
+
+  <form method="post" class="card profile-form">
+    <div class="form-field">
+      <label for="user-nombre">Nombre</label>
+      <input id="user-nombre" name="nombre" value="<%= userData?.nombre || '' %>" autocomplete="name" required />
+    </div>
+
+    <div class="form-field">
+      <label for="user-email">Email</label>
+      <input id="user-email" name="email" type="email" value="<%= userData?.email || '' %>" autocomplete="email" required />
+    </div>
+
+    <div class="form-field">
+      <label for="user-tipo">Tipo</label>
+      <select id="user-tipo" name="tipo" required>
+        <option value="user" <%= userData?.tipo==='user' ? 'selected' : '' %>>user</option>
+        <option value="admin" <%= userData?.tipo==='admin' ? 'selected' : '' %>>admin</option>
+      </select>
+    </div>
+
+    <fieldset class="password-change">
+      <legend>Credenciales</legend>
+      <div class="form-field">
+        <label for="user-password"><%= mode==='create' ? 'Password' : 'Password (opcional)' %></label>
+        <input
+          id="user-password"
+          name="password"
+          type="password"
+          minlength="8"
+          autocomplete="<%= mode==='create' ? 'new-password' : 'off' %>"
+          <%= mode==='create' ? 'required' : '' %>
+        />
+      </div>
+      <small>
+        <% if (mode==='create') { %>
+          La password debe tener al menos 8 caracteres.
+        <% } else { %>
+          Deja el campo en blanco para mantener la password actual.
+        <% } %>
+      </small>
+    </fieldset>
+
+    <div class="form-actions">
+      <button type="submit" class="btn"><%= mode==='create' ? 'Crear usuario' : 'Guardar cambios' %></button>
+      <a href="/admin/users" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</section>

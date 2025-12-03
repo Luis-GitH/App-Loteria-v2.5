@@ -1,0 +1,35 @@
+{
+  "identificador": "1288901021208522199460725999937547",
+  "tipo": "primitiva",
+  "sorteoCodigo": "12313OCT25:3",
+  "sorteos": [
+    {
+      "sorteo": 123,
+      "fecha": "2025-10-13",
+      "dia": "lunes",
+      "lunesSemana": "2025-10-13"
+    },
+    {
+      "sorteo": 124,
+      "fecha": "2025-10-16",
+      "dia": "jueves",
+      "lunesSemana": "2025-10-13"
+    },
+    {
+      "sorteo": 125,
+      "fecha": "2025-10-18",
+      "dia": "sábado",
+      "lunesSemana": "2025-10-13"
+    }
+  ],
+  "fechaLunes": "2025-10-13",
+  "combinacion": "030410243342",
+  "estrellas": "",
+  "reintegro": "7",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "95695-2",
+  "joker": "NO",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-13_primitiva_37547.png"
+}

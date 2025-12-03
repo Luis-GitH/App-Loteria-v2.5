@@ -1,0 +1,35 @@
+{
+  "identificador": "1291001021088334953100780893660350",
+  "tipo": "primitiva",
+  "sorteoCodigo": "13203NOV25:3",
+  "sorteos": [
+    {
+      "sorteo": 132,
+      "fecha": "2025-11-03",
+      "dia": "lunes",
+      "lunesSemana": "2025-11-03"
+    },
+    {
+      "sorteo": 133,
+      "fecha": "2025-11-06",
+      "dia": "jueves",
+      "lunesSemana": "2025-11-03"
+    },
+    {
+      "sorteo": 134,
+      "fecha": "2025-11-08",
+      "dia": "sábado",
+      "lunesSemana": "2025-11-03"
+    }
+  ],
+  "fechaLunes": "2025-11-03",
+  "combinacion": "061519323544",
+  "estrellas": "",
+  "reintegro": "5",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-11-03_primitiva_60350.png"
+}

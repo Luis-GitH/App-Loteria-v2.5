@@ -1,0 +1,29 @@
+{
+  "identificador": "1291707021812925008159198782634869",
+  "tipo": "euromillones",
+  "sorteoCodigo": "09011NOV25:2",
+  "sorteos": [
+    {
+      "sorteo": 90,
+      "fecha": "2025-11-11",
+      "dia": "martes",
+      "lunesSemana": "2025-11-10"
+    },
+    {
+      "sorteo": 91,
+      "fecha": "2025-11-14",
+      "dia": "viernes",
+      "lunesSemana": "2025-11-10"
+    }
+  ],
+  "fechaLunes": "2025-11-10",
+  "combinacion": "0923263135",
+  "estrellas": "0209",
+  "reintegro": "",
+  "clave": "",
+  "millon": "VKN83863",
+  "semanas": 1,
+  "terminal": "95695-1",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-11-10_euromillones_34869.png"
+}

@@ -1,0 +1,45 @@
+<section class="ticket-viewer">
+  <div class="viewer-header">
+    <div>
+      <a class="btn" href="/tickets?week=<%= weekISO %>">&larr; Volver a boletos</a>
+    </div>
+    <div class="viewer-actions">
+      <% if (boleto.imagenUrl) { %>
+        <a class="btn" href="<%= boleto.imagenUrl %>" download>Descargar</a>
+      <% } %>
+      <a class="btn" href="/tickets?week=<%= weekISO %>">Cerrar</a>
+    </div>
+  </div>
+
+  <div class="viewer-main">
+    <% if (boleto.imagenUrl) { %>
+      <img src="<%= boleto.imagenUrl %>" alt="Boleto <%= boleto.identificadorBoleto %>" class="viewer-image" />
+    <% } else { %>
+      <p class="text-muted">No hay imagen asociada a este boleto.</p>
+    <% } %>
+  </div>
+
+  <div class="viewer-nav">
+    <% if (prev) { %>
+      <a class="btn" href="/tickets/boletos/<%= tipo %>/<%= encodeURIComponent(prev.identificadorBoleto) %>?week=<%= weekISO %>">&larr; Anterior</a>
+    <% } else { %>
+      <span></span>
+    <% } %>
+    <% if (next) { %>
+      <a class="btn" href="/tickets/boletos/<%= tipo %>/<%= encodeURIComponent(next.identificadorBoleto) %>?week=<%= weekISO %>">Siguiente &rarr;</a>
+    <% } else { %>
+      <span></span>
+    <% } %>
+  </div>
+
+  <div class="viewer-details card p-4 mt-3">
+    <h3 class="h5">Detalle del boleto</h3>
+    <p><strong>ID:</strong> <%= boleto.identificadorBoleto %></p>
+    <p><strong>Tipo:</strong> <%= ({ euromillones: 'Euromillones', primitiva: 'Primitiva', gordo: 'El Gordo' }[boleto.tipo] || boleto.tipo) %></p>
+    <p><strong>Sorteos:</strong> <%= boleto.sorteosCount || 1 %></p>
+    <% if (boleto.combinacion) { %><p><strong>Combinación:</strong> <%= boleto.combinacion %></p><% } %>
+    <% if (boleto.estrellas) { %><p><strong>Estrellas:</strong> <%= boleto.estrellas %></p><% } %>
+    <% if (boleto.reintegro) { %><p><strong>Reintegro:</strong> <%= boleto.reintegro %></p><% } %>
+    <% if (boleto.clave) { %><p><strong>Clave:</strong> <%= boleto.clave %></p><% } %>
+  </div>
+</section>

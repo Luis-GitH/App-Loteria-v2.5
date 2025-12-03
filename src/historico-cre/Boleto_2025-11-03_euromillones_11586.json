@@ -1,0 +1,29 @@
+{
+  "identificador": "1291007020637629481531494326811586",
+  "tipo": "euromillones",
+  "sorteoCodigo": "08804NOV25:2",
+  "sorteos": [
+    {
+      "sorteo": 88,
+      "fecha": "2025-11-04",
+      "dia": "martes",
+      "lunesSemana": "2025-11-03"
+    },
+    {
+      "sorteo": 89,
+      "fecha": "2025-11-07",
+      "dia": "viernes",
+      "lunesSemana": "2025-11-03"
+    }
+  ],
+  "fechaLunes": "2025-11-03",
+  "combinacion": "0813364049",
+  "estrellas": "0208",
+  "reintegro": "",
+  "clave": "",
+  "millon": "VFZ46217",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-11-03_euromillones_11586.png"
+}

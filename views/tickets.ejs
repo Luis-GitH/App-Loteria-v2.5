@@ -1,0 +1,409 @@
+<section>
+  <h2>Boletos de la semana</h2>
+  <form class="week-picker" action="/tickets" method="get" style="margin: .5rem 0;">
+    <label for="week">Seleccionar semana:&nbsp;</label>
+    <input type="week" id="week" name="week" value="<%= weekISO %>" />
+    <noscript><button class="btn" type="submit">Ir</button></noscript>
+  </form>
+  <script>
+    (function () {
+      var el = document.getElementById('week');
+      if (el) el.addEventListener('change', function () { this.form.submit(); });
+    })();
+  </script>
+  <div class="week-nav">
+    <a class="btn" href="/tickets?week=<%= weekISOPrev %>">Semana anterior</a>
+    <a class="btn" href="/tickets?week=<%= weekISONow %>">&laquo; Semana actual</a>
+    <a class="btn" href="/tickets?week=<%= weekISONext %>">Semana siguiente</a>
+    <a class="btn" href="/tickets/email?week=<%= weekISO %>">Ver premios de esta semana</a>
+  </div>
+
+  <p><br>Del lunes <strong>
+      <%= lunes %>
+    </strong> al domingo <strong>
+      <%= domingo %>
+    </strong></p>
+
+  <div class="bet-sections">
+    <section class="bet-section">
+      <header class="bet-section-header">
+        <h3>Euromillones</h3>
+        <p>
+          <%= (grupos.euromillones || []).length %> boleto(s)
+        </p>
+      </header>
+      <div class="ticket-list">
+        <% if ((grupos.euromillones || []).length===0) { %>
+          <p class="empty-note">Sin boletos registrados esta semana.</p>
+          <% } %>
+            <% (grupos.euromillones || []).forEach(function(b){ const nums=typeof comboParts==='function' ?
+              comboParts(b.combinacion) : String(b.combinacion || '' ).trim().split(/\s+/).filter(Boolean); const
+              stars=typeof comboParts==='function' ? comboParts(b.estrellas) : String(b.estrellas || ''
+              ).trim().split(/\s+/).filter(Boolean); const hasCombo=nums.length || stars.length; %>
+              <div class="card ticket mb-2">
+                <div class="ticket-meta ticket-apuesta">
+                  <div class="ticket-header">
+                    <span class="ticket-id sr-only">ID <%= b.identificadorBoleto %></span>
+                    <% if (b.imagenUrl) { %>
+                      <a class="ticket-link icon-only"
+                        href="/tickets/boletos/euromillones/<%= encodeURIComponent(b.identificadorBoleto) %>?week=<%= weekISO %>"
+                        title="Ver boleto">
+                        <i class="bi bi-eye"></i>
+                      </a> Apuestas del boleto para <%= b.sorteosCount %> sorteo<%= b.sorteosCount===1 ? '' : 's' %>
+                          esta semana.
+                          <% } %>
+                  </div>
+                  <div class="ticket-info">
+                    <hr>
+
+                  </div>
+                  <% if (hasCombo) { %>
+                    <div class="ticket-combo">
+                      <% if (nums.length) { %>
+                        <div class="combo-balls">
+                          <% nums.forEach(function(n){ %>
+                            <span class="combo-ball combo-ball-eu">
+                              <%= n %>
+                            </span>
+                            <% }) %>
+                        </div>
+                        <% } %>
+                          <% if (stars.length) { %>
+                            <div class="combo-balls combo-stars">
+                              <% stars.forEach(function(n){ %>
+                                <span class="combo-star" title="Estrella del Euromillones">
+                                  <strong>
+                                    <%= n %>
+                                  </strong>
+                                </span>
+                                <% }) %>
+                            </div>
+                            <% } %>
+                    </div>
+                    <% } else { %>
+                      <p class="empty-note">Sin combinación registrada para este boleto.</p>
+                      <% } %>
+                </div>
+              </div>
+              <% }) %>
+      </div>
+      <div class="bet-results">
+        <h4>Combinaciones ganadoras</h4>
+        <ul class="combo-list">
+          <% (r_eu || []).forEach(function(r){ const nums=typeof comboParts==='function' ? comboParts(r.numeros) :
+            String(r.numeros || '' ).trim().split(/\s+/).filter(Boolean); const stars=typeof comboParts==='function' ?
+            comboParts(r.estrellas) : String(r.estrellas || '' ).trim().split(/\s+/).filter(Boolean); %>
+            <li class="combo-row">
+              <span class="combo-date">
+                <%= typeof fmtDateShort==='function' ? fmtDateShort(r.fecha) : (typeof fechaISO==='function' ? fechaISO(r.fecha) : r.fecha) %>
+              </span>
+              <div class="combo-balls">
+                <% nums.forEach(function(n){ %>
+                  <span class="combo-ball combo-ball-eu">
+                    <%= n %>
+                  </span>
+                  <% }) %>
+              </div>
+              <div class="combo-balls combo-stars">
+                <% stars.forEach(function(n){ %>
+                  <span class="combo-star" title="Estrella del Euromillones">
+                    <strong>
+                      <%= n %>
+                    </strong>
+                  </span>
+                  <% }) %>
+              </div>
+            </li>
+            <% }) %>
+        </ul>
+        <% if (!(r_eu || []).length) { %>
+          <p class="empty-note">No hay resultados publicados esta semana.</p>
+          <% } %>
+      </div>
+      <div class="bet-hits">
+        <h4>Aciertos</h4>
+        <% const hitsEu=(aciertos?.euromillones || []); if (hitsEu.length) { %>
+          <ul class="hits-list">
+            <% hitsEu.forEach(function(hit){ %>
+              <li class="hit-row">
+                <div class="hit-info">
+                  <span class="hit-date">
+                    <%= typeof fmtDateShort==='function' ? fmtDateShort(hit.fecha) : (typeof fechaISO==='function' ? fechaISO(hit.fecha) : hit.fecha) %>
+                  </span>
+                  <span class="hit-detail">
+                    <%= hit.detalle %>
+                  </span>
+                  <span class="hit-id">Boleto <%= hit.identificador %></span>
+                </div>
+                <% if (hit.categoria || hit.premio_text || hit.premio) { %>
+                  <span class="hit-prize">Cat <%= hit.categoria || '?' %> · <%= hit.premio_text || (typeof
+                        fmtEUR==='function' ? fmtEUR(hit.premio) : hit.premio) %></span>
+                  <% } %>
+              </li>
+              <% }) %>
+          </ul>
+          <% } else { %>
+            <p class="empty-note">Sin aciertos registrados esta semana.</p>
+            <% } %>
+      </div>
+    </section>
+
+    <section class="bet-section">
+      <header class="bet-section-header">
+        <h3>Primitiva</h3>
+        <p>
+          <%= (grupos.primitiva || []).length %> boleto(s)
+        </p>
+      </header>
+      <div class="ticket-list">
+        <% if ((grupos.primitiva || []).length===0) { %>
+          <p class="empty-note">Sin boletos registrados esta semana.</p>
+          <% } %>
+            <% (grupos.primitiva || []).forEach(function(b){ const nums=typeof comboParts==='function' ?
+              comboParts(b.combinacion) : String(b.combinacion || '' ).trim().split(/\s+/).filter(Boolean); const
+              rein=typeof comboParts==='function' ? comboParts(b.reintegro) : String(b.reintegro || ''
+              ).trim().split(/\s+/).filter(Boolean); const hasCombo=nums.length || rein.length; %>
+              <div class="card ticket mb-2">
+                <div class="ticket-meta ticket-apuesta">
+                  <div class="ticket-header">
+                    <span class="ticket-id sr-only">ID <%= b.identificadorBoleto %></span>
+                    <% if (b.imagenUrl) { %>
+                      <a class="ticket-link icon-only"
+                        href="/tickets/boletos/primitiva/<%= encodeURIComponent(b.identificadorBoleto) %>?week=<%= weekISO %>"
+                        title="Ver boleto">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                      Apuestas del boleto para <%= b.sorteosCount %> sorteo<%= b.sorteosCount===1 ? '' : 's' %> esta
+                          semana
+                          <% } %>
+                  </div>
+                  <div class="ticket-info">
+                  </div>
+                  <% if (hasCombo) { %>
+                    <div class="ticket-combo">
+                      <% if (nums.length) { %>
+                        <div class="combo-balls">
+                          <% nums.forEach(function(n){ %>
+                            <span class="combo-ball combo-ball-pr">
+                              <%= n %>
+                            </span>
+                            <% }) %>
+                        </div>
+                        <% } %>
+                          <% if (rein.length) { %>
+                            <div class="combo-extras">
+                              <span class="combo-label">R</span>
+                              <% rein.forEach(function(n){ %>
+                                <span class="combo-ball combo-ball-pr combo-ball-sm">
+                                  <%= n %>
+                                </span>
+                                <% }) %>
+                            </div>
+                            <% } %>
+                    </div>
+                    <% } else { %>
+                      <p class="empty-note">Sin combinaci&oacute;n registrada para este boleto.</p>
+                      <% } %>
+                </div>
+              </div>
+              <% }) %>
+      </div>
+
+      <div class="bet-results">
+        <h4>Combinaciones ganadoras</h4>
+        <ul class="combo-list">
+          <% (r_pr || []).forEach(function(r){ const nums=typeof comboParts==='function' ? comboParts(r.numeros) :
+            String(r.numeros || '' ).trim().split(/\s+/).filter(Boolean); const comp=typeof comboParts==='function' ?
+            comboParts(r.complementario) : String(r.complementario || '' ).trim().split(/\s+/).filter(Boolean); const
+            rein=typeof comboParts==='function' ? comboParts(r.reintegro) : String(r.reintegro || ''
+            ).trim().split(/\s+/).filter(Boolean); %>
+            <li class="combo-row">
+              <span class="combo-date">
+                <%= typeof fmtDateShort==='function' ? fmtDateShort(r.fecha) : (typeof fechaISO==='function' ? fechaISO(r.fecha) : r.fecha) %>
+              </span>
+              <div class="combo-balls">
+                <% nums.forEach(function(n){ %>
+                  <span class="combo-ball combo-ball-pr">
+                    <%= n %>
+                  </span>
+                  <% }) %>
+              </div>
+              <div class="combo-extras">
+                <span class="combo-label">C</span>
+                <% comp.forEach(function(n){ %>
+                  <span class="combo-ball combo-ball-pr combo-ball-sm">
+                    <%= n %>
+                  </span>
+                  <% }) %>
+                    <span class="combo-label">R</span>
+                    <% rein.forEach(function(n){ %>
+                      <span class="combo-ball combo-ball-pr combo-ball-sm">
+                        <%= n %>
+                      </span>
+                      <% }) %>
+              </div>
+            </li>
+            <% }) %>
+        </ul>
+        <% if (!(r_pr || []).length) { %>
+          <p class="empty-note">No hay resultados publicados esta semana.</p>
+          <% } %>
+      </div>
+      <div class="bet-hits">
+        <h4>Aciertos</h4>
+        <% const hitsPr=(aciertos?.primitiva || []); if (hitsPr.length) { %>
+          <ul class="hits-list">
+            <% hitsPr.forEach(function(hit){ %>
+              <li class="hit-row">
+                <div class="hit-info">
+                  <span class="hit-date">
+                    <%= typeof fmtDateShort==='function' ? fmtDateShort(hit.fecha) : (typeof fechaISO==='function' ? fechaISO(hit.fecha) : hit.fecha) %>
+                  </span>
+                  <span class="hit-detail">
+                    <%= hit.detalle %>
+                  </span>
+                  <span class="hit-id">Boleto <%= hit.identificador %></span>
+                </div>
+                <% if (hit.categoria || hit.premio_text || hit.premio) { %>
+                  <span class="hit-prize">Cat <%= hit.categoria || '?' %> · <%= hit.premio_text || (typeof
+                        fmtEUR==='function' ? fmtEUR(hit.premio) : hit.premio) %></span>
+                  <% } %>
+              </li>
+              <% }) %>
+          </ul>
+          <% } else { %>
+            <p class="empty-note">Sin aciertos registrados esta semana.</p>
+            <% } %>
+      </div>
+    </section>
+
+    <section class="bet-section">
+      <header class="bet-section-header">
+        <h3>Gordo</h3>
+        <p>
+          <%= (grupos.gordo || []).length %> boleto(s)
+        </p>
+      </header>
+      <div class="ticket-list">
+        <% if ((grupos.gordo || []).length===0) { %>
+          <p class="empty-note">Sin boletos registrados esta semana.</p>
+          <% } %>
+            <% (grupos.gordo || []).forEach(function(b){ const nums=typeof comboParts==='function' ?
+              comboParts(b.combinacion) : String(b.combinacion || '' ).trim().split(/\s+/).filter(Boolean); const
+              clave=typeof comboParts==='function' ? comboParts(b.clave) : String(b.clave || ''
+              ).trim().split(/\s+/).filter(Boolean); const hasCombo=nums.length || clave.length; %>
+              <div class="card ticket mb-2">
+                <div class="ticket-meta ticket-apuesta">
+                  <div class="ticket-header">
+                    <span class="ticket-id sr-only">ID <%= b.identificadorBoleto %></span>
+                    <% if (b.imagenUrl) { %>
+                      <a class="ticket-link icon-only"
+                        href="/tickets/boletos/gordo/<%= encodeURIComponent(b.identificadorBoleto) %>?week=<%= weekISO %>"
+                        title="Ver boleto">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                      <% } %>
+                        Apuestas del boleto para esta semana (<%= b.sorteosCount %> sorteo<%= b.sorteosCount===1 ? ''
+                            : 's' %>)
+                  </div>
+                  <div class="ticket-info">
+                  </div>
+                  <% if (hasCombo) { %>
+                    <div class="ticket-combo">
+                      <% if (nums.length) { %>
+                        <div class="combo-balls">
+                          <% nums.forEach(function(n){ %>
+                            <span class="combo-ball combo-ball-go">
+                              <%= n %>
+                            </span>
+                            <% }) %>
+                        </div>
+                        <% } %>
+                          <% if (clave.length) { %>
+                            <div class="combo-extras">
+                              <span class="combo-label">Clave</span>
+                              <% clave.forEach(function(n){ %>
+                                <span class="combo-ball combo-ball-go combo-ball-sm">
+                                  <%= n %>
+                                </span>
+                                <% }) %>
+                            </div>
+                            <% } %>
+                    </div>
+                    <% } else { %>
+                      <p class="empty-note">Sin combinación registrada para este boleto.</p>
+                      <% } %>
+                </div>
+              </div>
+              <% }) %>
+      </div>
+
+      <div class="bet-results">
+        <h4>Combinación ganadora</h4>
+        <ul class="combo-list">
+          <% (r_go || []).forEach(function(r){ const nums=typeof comboParts==='function' ? comboParts(r.numeros) :
+            String(r.numeros || '' ).trim().split(/\s+/).filter(Boolean); const clave=typeof comboParts==='function' ?
+            comboParts(r.numeroClave) : String(r.numeroClave || '' ).trim().split(/\s+/).filter(Boolean); %>
+            <li class="combo-row">
+              <span class="combo-date">
+                <%= typeof fmtDateShort==='function' ? fmtDateShort(r.fecha) : (typeof fechaISO==='function' ? fechaISO(r.fecha) : r.fecha) %>
+              </span>
+              <div class="combo-balls">
+                <% nums.forEach(function(n){ %>
+                  <span class="combo-ball combo-ball-go">
+                    <%= n %>
+                  </span>
+                  <% }) %>
+              </div>
+              <div class="combo-extras">
+                <span class="combo-label">Clave</span>
+                <% clave.forEach(function(n){ %>
+                  <span class="combo-ball combo-ball-go combo-ball-sm">
+                    <%= n %>
+                  </span>
+                  <% }) %>
+              </div>
+            </li>
+            <% }) %>
+        </ul>
+        <% if (!(r_go || []).length) { %>
+          <p class="empty-note">No hay resultados publicados esta semana.</p>
+          <% } %>
+      </div>
+      <div class="bet-hits">
+        <h4>Aciertos</h4>
+        <% const hitsGo=(aciertos?.gordo || []); if (hitsGo.length) { %>
+          <ul class="hits-list">
+            <% hitsGo.forEach(function(hit){ %>
+              <li class="hit-row">
+                <div class="hit-info">
+                  <span class="hit-date">
+                    <%= typeof fmtDateShort==='function' ? fmtDateShort(hit.fecha) : (typeof fechaISO==='function' ? fechaISO(hit.fecha) : hit.fecha) %>
+                  </span>
+                  <span class="hit-detail">
+                    <%= hit.detalle %>
+                  </span>
+                  <span class="hit-id">Boleto <%= hit.identificador %></span>
+                </div>
+                <% if (hit.categoria || hit.premio_text || hit.premio) { const totalText=hit.premio_text || (typeof
+                  fmtEUR==='function' ? fmtEUR(hit.premio) : hit.premio); const baseText=hit.premio_categoria_text ||
+                  totalText; const reinText=hit.reintegro_text || (typeof fmtEUR==='function' ? fmtEUR(hit.reintegro) :
+                  hit.reintegro); const hasReintegro=Boolean(hit.reintegro || hit.reintegro_text); %>
+                  <span class="hit-prize">
+                    Cat <%= hit.categoria || '?' %> · <%= baseText %>
+                        <% if (hasReintegro) { %>
+                          <span class="hit-extra">+ Reintegro · <%= reinText %></span>
+                          <span class="hit-total">=> Total <%= totalText %></span>
+                          <% } %>
+                  </span>
+                  <% } %>
+              </li>
+              <% }) %>
+          </ul>
+          <% } else { %>
+            <p class="empty-note">Sin aciertos registrados esta semana.</p>
+            <% } %>
+      </div>
+    </section>
+  </div>
+</section>

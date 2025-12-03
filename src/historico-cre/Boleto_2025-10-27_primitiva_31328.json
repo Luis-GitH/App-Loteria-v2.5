@@ -1,0 +1,35 @@
+{
+  "identificador": "1290301020346136873737945312531328",
+  "tipo": "primitiva",
+  "sorteoCodigo": "12927OCT25:3",
+  "sorteos": [
+    {
+      "sorteo": 129,
+      "fecha": "2025-10-27",
+      "dia": "lunes",
+      "lunesSemana": "2025-10-27"
+    },
+    {
+      "sorteo": 130,
+      "fecha": "2025-10-30",
+      "dia": "jueves",
+      "lunesSemana": "2025-10-27"
+    },
+    {
+      "sorteo": 131,
+      "fecha": "2025-11-01",
+      "dia": "sábado",
+      "lunesSemana": "2025-10-27"
+    }
+  ],
+  "fechaLunes": "2025-10-27",
+  "combinacion": "010922244043",
+  "estrellas": "",
+  "reintegro": "5",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-27_primitiva_31328.png"
+}

@@ -1,0 +1,35 @@
+{
+  "identificador": "1292401021460704417104738369355550",
+  "tipo": "primitiva",
+  "sorteoCodigo": "13817NOV25:3",
+  "sorteos": [
+    {
+      "sorteo": 138,
+      "fecha": "2025-11-17",
+      "dia": "lunes",
+      "lunesSemana": "2025-11-17"
+    },
+    {
+      "sorteo": 139,
+      "fecha": "2025-11-20",
+      "dia": "jueves",
+      "lunesSemana": "2025-11-17"
+    },
+    {
+      "sorteo": 140,
+      "fecha": "2025-11-22",
+      "dia": "sábado",
+      "lunesSemana": "2025-11-17"
+    }
+  ],
+  "fechaLunes": "2025-11-17",
+  "combinacion": "052125414245",
+  "estrellas": "",
+  "reintegro": "9",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "/historico/Boleto_2025-11-17_primitiva_55550.jpg"
+}

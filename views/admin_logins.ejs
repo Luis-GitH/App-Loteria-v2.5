@@ -1,0 +1,38 @@
+<section class="admin-logins">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+    <div>
+      <h2>Accesos recientes</h2>
+      <p>Listado de los &uacute;ltimos 100 inicios de sesi&oacute;n registrados en el sistema.</p>
+    </div>
+    <a class="btn btn-secondary" href="/admin">&larr; Volver al mantenimiento</a>
+  </div>
+
+  <% if (logins && logins.length) { %>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>IP</th>
+            <th>User-Agent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% logins.forEach((login) => { %>
+            <tr>
+              <td><%= typeof fmtDateTime === 'function' ? fmtDateTime(login.created_at) : (login.created_at || '') %></td>
+              <td><%= login.nombre || '' %></td>
+              <td><%= login.email || '' %></td>
+              <td><%= login.ip || '' %></td>
+              <td style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= login.user_agent || '' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <p>No hay registros de accesos por ahora.</p>
+  <% } %>
+</section>

@@ -1,0 +1,22 @@
+<section>
+  <h2>Importar movimientos desde Excel</h2>
+  <p>Sube un archivo Excel con cabeceras: <strong>Fecha</strong>, <strong>Concepto</strong>, <strong>Importe</strong>, <strong>Comentarios</strong>.</p>
+  <form method="post" action="/movimientos/import" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label">Archivo Excel (.xlsx/.xls)</label>
+      <input type="file" name="excel" accept=".xlsx,.xls" class="form-control" required />
+    </div>
+    <button class="btn" type="submit">Importar</button>
+    <a href="/movimientos" class="btn" style="background:#888">Cancelar</a>
+  </form>
+
+  <hr />
+  <p>Reglas:
+    <ul>
+      <li>Si el <em>Concepto</em> contiene “aport…”, se marca como tipo <code>aportacion</code>.</li>
+      <li>Si el <em>Concepto</em> contiene “premio” o el <em>Importe</em> es positivo, se marca como <code>ingreso</code>.</li>
+      <li>Si el <em>Concepto</em> contiene “boleto/gasto” o el <em>Importe</em> es negativo, se marca como <code>gasto</code>.</li>
+    </ul>
+  </p>
+</section>
+

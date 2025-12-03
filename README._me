@@ -1,0 +1,6 @@
+para usar verify-week.js
+
+
+Ambas variantes: node verify-week.js --week --all
+Variante concreta: node verify-week.js --week --variant=family
+Rango por variantes: node verify-week.js --rango=2025-12-01,2025-12-15 --all

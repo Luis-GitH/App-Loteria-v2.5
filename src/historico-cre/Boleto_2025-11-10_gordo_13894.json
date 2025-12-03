@@ -1,0 +1,23 @@
+{
+  "identificador": "1291704020321555175126269102313894",
+  "tipo": "gordo",
+  "sorteoCodigo": "04616NOV25:1",
+  "sorteos": [
+    {
+      "sorteo": 46,
+      "fecha": "2025-11-16",
+      "dia": "domingo",
+      "lunesSemana": "2025-11-10"
+    }
+  ],
+  "fechaLunes": "2025-11-10",
+  "combinacion": "0314475052",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "05",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "95695-1",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-11-10_gordo_13894.png"
+}

@@ -1,0 +1,35 @@
+{
+  "identificador": "1293801021541075460822393710900068",
+  "tipo": "primitiva",
+  "sorteoCodigo": "14401DIC25:3",
+  "sorteos": [
+    {
+      "sorteo": 144,
+      "fecha": "2025-12-01",
+      "dia": "lunes",
+      "lunesSemana": "2025-12-01"
+    },
+    {
+      "sorteo": 145,
+      "fecha": "2025-12-04",
+      "dia": "jueves",
+      "lunesSemana": "2025-12-01"
+    },
+    {
+      "sorteo": 146,
+      "fecha": "2025-12-06",
+      "dia": "sábado",
+      "lunesSemana": "2025-12-01"
+    }
+  ],
+  "fechaLunes": "2025-12-01",
+  "combinacion": "030921252829",
+  "estrellas": "",
+  "reintegro": "9",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "/historico/Boleto_2025-12-01_primitiva_00068.jpg"
+}

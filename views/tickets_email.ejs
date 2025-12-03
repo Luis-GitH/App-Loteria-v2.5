@@ -1,0 +1,26 @@
+<section>
+  <h2>Resumen semanal de resultados y premios</h2>
+  <div class="week-nav">
+    <a class="btn" href="/tickets?week=<%= weekISO %>">Volver a boletos</a>
+  </div>
+  <p>Del <strong><%= lunes %></strong> al <strong><%= domingo %></strong></p>
+
+  <div class="card" style="padding: 1rem; margin: 1rem 0;">
+    <pre style="white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;"><%= resumenFinal %></pre>
+  </div>
+
+  <% if (adjuntos && adjuntos.length) { %>
+    <h3>Imágenes adjuntas</h3>
+    <div class="row g-2">
+      <% adjuntos.forEach(function(img){ %>
+        <div class="col-6 col-md-3">
+          <div class="card" style="padding:.5rem;">
+            <a href="<%= img %>" target="_blank" rel="noopener">
+              <img src="<%= img %>" alt="adjunto" style="max-width:100%; height:auto;" />
+            </a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</section>

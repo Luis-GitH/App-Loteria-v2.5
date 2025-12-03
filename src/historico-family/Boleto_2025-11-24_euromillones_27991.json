@@ -1,0 +1,29 @@
+{
+  "identificador": "1293107021128908115611311389327991",
+  "tipo": "euromillones",
+  "sorteoCodigo": "09425NOV25:2",
+  "sorteos": [
+    {
+      "sorteo": 94,
+      "fecha": "2025-11-25",
+      "dia": "martes",
+      "lunesSemana": "2025-11-24"
+    },
+    {
+      "sorteo": 95,
+      "fecha": "2025-11-28",
+      "dia": "viernes",
+      "lunesSemana": "2025-11-24"
+    }
+  ],
+  "fechaLunes": "2025-11-24",
+  "combinacion": "1129394349",
+  "estrellas": "0411",
+  "reintegro": "",
+  "clave": "",
+  "millon": "VVG55167",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "/historico/Boleto_2025-11-24_euromillones_27991.jpg"
+}

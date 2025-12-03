@@ -1,0 +1,35 @@
+{
+  "identificador": "1293101020138266322093161864829687",
+  "tipo": "primitiva",
+  "sorteoCodigo": "14124NOV25:3",
+  "sorteos": [
+    {
+      "sorteo": 141,
+      "fecha": "2025-11-24",
+      "dia": "lunes",
+      "lunesSemana": "2025-11-24"
+    },
+    {
+      "sorteo": 142,
+      "fecha": "2025-11-27",
+      "dia": "jueves",
+      "lunesSemana": "2025-11-24"
+    },
+    {
+      "sorteo": 143,
+      "fecha": "2025-11-29",
+      "dia": "sábado",
+      "lunesSemana": "2025-11-24"
+    }
+  ],
+  "fechaLunes": "2025-11-24",
+  "combinacion": "050912262735",
+  "estrellas": "",
+  "reintegro": "7",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "/historico/Boleto_2025-11-24_primitiva_29687.jpg"
+}

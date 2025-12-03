@@ -1,0 +1,35 @@
+{
+  "identificador": "1288201021793391329531785292825824",
+  "tipo": "primitiva",
+  "sorteoCodigo": "12006OCT25:3",
+  "sorteos": [
+    {
+      "sorteo": 120,
+      "fecha": "2025-10-06",
+      "dia": "lunes",
+      "lunesSemana": "2025-10-06"
+    },
+    {
+      "sorteo": 121,
+      "fecha": "2025-10-09",
+      "dia": "jueves",
+      "lunesSemana": "2025-10-06"
+    },
+    {
+      "sorteo": 122,
+      "fecha": "2025-10-11",
+      "dia": "sábado",
+      "lunesSemana": "2025-10-06"
+    }
+  ],
+  "fechaLunes": "2025-10-06",
+  "combinacion": "202226293135",
+  "estrellas": "",
+  "reintegro": "1",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-06_primitiva_25824.png"
+}

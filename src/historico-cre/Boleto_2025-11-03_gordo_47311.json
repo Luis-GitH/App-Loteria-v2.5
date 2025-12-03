@@ -1,0 +1,23 @@
+{
+  "identificador": "1291004021261096162012827443347311",
+  "tipo": "gordo",
+  "sorteoCodigo": "04509NOV25:1",
+  "sorteos": [
+    {
+      "sorteo": 45,
+      "fecha": "2025-11-09",
+      "dia": "domingo",
+      "lunesSemana": "2025-11-03"
+    }
+  ],
+  "fechaLunes": "2025-11-03",
+  "combinacion": "1417212330",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "01",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-11-03_gordo_47311.png"
+}

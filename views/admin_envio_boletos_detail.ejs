@@ -1,0 +1,22 @@
+<% /* Detalle de un envío */ %>
+<section class="admin-envio-detail">
+  <h2>Envío #<%= envio.id %></h2>
+  <p><strong>Fecha envío:</strong> <%= envio.fecha_envio ? new Date(envio.fecha_envio).toLocaleString('es-ES') : '' %></p>
+  <p><strong>Enviado por:</strong> <%= envio.enviado_por_nombre || envio.enviado_por || '—' %></p>
+  <p><strong>Semana (lunes):</strong> <%= envio.fecha_lunes ? fmtDate(envio.fecha_lunes) : '' %></p>
+  <p><strong>Destinatarios:</strong> <%= envio.destinatarios || '—' %></p>
+  <p><strong>Estado:</strong> <%= envio.estado %> <% if (envio.estado === 'error' && envio.error_message) { %> — <%= envio.error_message %><% } %></p>
+
+  <h3>Adjuntos (<%= envio.adjuntos_count || 0 %>)</h3>
+  <% if (!adjuntos || adjuntos.length === 0) { %>
+    <p>No hay adjuntos registrados.</p>
+  <% } else { %>
+    <ul>
+      <% adjuntos.forEach(f => { %>
+        <li><a href="/historico/<%= encodeURIComponent(f) %>" target="_blank" rel="noopener noreferrer"><%= f %></a></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <p><a class="btn btn-secondary" href="/admin/envios-boletos">Volver al listado</a></p>
+</section>

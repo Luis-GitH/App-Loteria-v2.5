@@ -1,0 +1,70 @@
+<section class="admin-scan">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+    <div>
+      <h2>Resultado del escaneo</h2>
+      <p>Verifica los datos del boleto y sus sorteos relacionados.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn" href="/admin/escanear">Escanear otro QR</a>
+      <a class="btn" href="/admin">Volver al mantenimiento</a>
+    </div>
+  </div>
+
+  <% if (error) { %>
+    <div class="card p-4">
+      <h3 class="h5 text-danger">No se pudo procesar el boleto</h3>
+      <p><%= error %></p>
+    </div>
+    <div class="mt-3">
+      <a class="btn" href="/admin/escanear">Intentar de nuevo</a>
+    </div>
+  <% } else if (resultado && resultado.boleto) { %>
+    <div class="card p-4 mb-4">
+      <h3 class="h5">Datos del boleto</h3>
+      <% const boleto = resultado.boleto; %>
+      <p><strong>Tipo:</strong> <%= ({ euromillones: 'Euromillones', primitiva: 'Primitiva', gordo: 'El Gordo' }[boleto.tipo] || boleto.tipo || 'Desconocido') %></p>
+      <% if (boleto.identificador) { %><p><strong>ID:</strong> <%= boleto.identificador %></p><% } %>
+      <% if (boleto.combinacion) { %><p><strong>Combinación:</strong> <%= boleto.combinacion %></p><% } %>
+      <% if (boleto.estrellas) { %><p><strong>Estrellas:</strong> <%= boleto.estrellas %></p><% } %>
+      <% if (boleto.reintegro) { %><p><strong>Reintegro:</strong> <%= boleto.reintegro %></p><% } %>
+      <% if (boleto.clave) { %><p><strong>Clave:</strong> <%= boleto.clave %></p><% } %>
+      <% if (boleto.millon) { %><p><strong>Código El Millón:</strong> <%= boleto.millon %></p><% } %>
+      <% if (resultado.message) { %><p class="text-muted mb-0"><%= resultado.message %></p><% } %>
+    </div>
+
+    <% if (resultado.evaluaciones && resultado.evaluaciones.length) { %>
+      <div class="scan-checks">
+        <% resultado.evaluaciones.forEach(function(ev, idx){ %>
+          <div class="scan-check card mb-3 p-3">
+            <h4 class="h6 mb-1">
+              <% const sorteoLabel = ev?.sorteo?.sorteo || ev?.resultado?.sorteo || (idx + 1); %>
+              Sorteo <%= sorteoLabel %> &middot; <%= ev?.sorteo?.fecha || ev?.resultado?.fecha || 'Fecha no registrada' %>
+            </h4>
+            <% let detalle = ''; %>
+            <% if (boleto.tipo === 'euromillones' && ev.comparativa) { detalle = `${ev.comparativa.aciertosNumeros} números y ${ev.comparativa.aciertosEstrellas} estrellas`; } %>
+            <% if (boleto.tipo === 'primitiva' && ev.comparativa) { detalle = `${ev.comparativa.aciertosNumeros} aciertos${ev.comparativa.aciertoComplementario ? ' + complementario' : ''}${ev.comparativa.aciertoReintegro ? ' + reintegro' : ''}`; } %>
+            <% if (boleto.tipo === 'gordo' && ev.comparativa) { detalle = `${ev.comparativa.aciertosNumeros} aciertos${ev.comparativa.aciertoClave ? ' + número clave' : ''}`; } %>
+            <p class="mb-1"><strong>Aciertos:</strong> <%= detalle || 'Sin coincidencias' %></p>
+            <% let premioStr = 'Sin premio registrado.'; %>
+            <% if (ev.status === 'sin_resultado') { premioStr = 'Sin resultados cargados para este sorteo.'; } else if (ev.premio) { if (ev.premio.pendiente) premioStr = 'Premio pendiente de actualización.'; else { const cat = ev.premio.categoria || 'N/D'; const importe = typeof ev.premio.premio === 'number' ? (typeof fmtEUR === 'function' ? fmtEUR(ev.premio.premio) : ev.premio.premio) : (ev.premio.premio_text || 'Importe no informado'); premioStr = `Categoría ${cat} · ${importe}`; } } %>
+            <p class="mb-0"><strong>Premio:</strong> <%= premioStr %></p>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="card p-3">
+        <p class="mb-0 text-muted">No hay sorteos asociados en el QR.</p>
+      </div>
+    <% } %>
+
+    <div class="mt-4 d-flex flex-wrap gap-2">
+      <a class="btn" href="/admin/escanear">Escanear otro QR</a>
+      <a class="btn" href="/admin">Volver al mantenimiento</a>
+    </div>
+  <% } else { %>
+    <div class="card p-4">
+      <p>No se encontraron datos para mostrar.</p>
+      <a class="btn mt-2" href="/admin/escanear">Volver al lector</a>
+    </div>
+  <% } %>
+</section>

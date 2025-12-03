@@ -1,0 +1,23 @@
+{
+  "identificador": "1289604021764746935176705159801233",
+  "tipo": "gordo",
+  "sorteoCodigo": "04326OCT25:1",
+  "sorteos": [
+    {
+      "sorteo": 43,
+      "fecha": "2025-10-26",
+      "dia": "domingo",
+      "lunesSemana": "2025-10-20"
+    }
+  ],
+  "fechaLunes": "2025-10-20",
+  "combinacion": "0109123050",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "02",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "96790-0",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-20_gordo_01233.png"
+}

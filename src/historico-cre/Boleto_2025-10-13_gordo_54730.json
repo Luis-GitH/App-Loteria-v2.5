@@ -1,0 +1,23 @@
+{
+  "identificador": "1288904020746922309978870456254730",
+  "tipo": "gordo",
+  "sorteoCodigo": "04219OCT25:1",
+  "sorteos": [
+    {
+      "sorteo": 42,
+      "fecha": "2025-10-19",
+      "dia": "domingo",
+      "lunesSemana": "2025-10-13"
+    }
+  ],
+  "fechaLunes": "2025-10-13",
+  "combinacion": "0104414352",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "02",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "95695-2",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-13_gordo_54730.png"
+}

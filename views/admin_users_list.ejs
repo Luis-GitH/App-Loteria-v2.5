@@ -1,0 +1,35 @@
+<section>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h2 class="mb-0">Usuarios</h2>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-secondary" href="/admin">&larr; Volver al mantenimiento</a>
+      <a class="btn btn-primary" href="/admin/users/new">Nuevo usuario</a>
+    </div>
+  </div>
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr><th>ID</th><th>Nombre</th><th>Email</th><th>Tipo</th><th>Alta</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+      <% if (users && users.length) { %>
+        <% users.forEach(u => { %>
+          <tr>
+            <td><%= u.id %></td>
+            <td><%= u.nombre %></td>
+            <td><%= u.email %></td>
+            <td><%= u.tipo %></td>
+            <td><%= (typeof fechaISO==='function' ? fechaISO(u.created_at) : u.created_at) || '' %></td>
+            <td>
+              <a class="btn" href="/admin/users/<%= u.id %>/edit">Editar</a>
+              <form method="post" action="/admin/users/<%= u.id %>/delete" style="display:inline" onsubmit="return confirm('¿Eliminar usuario?')">
+                <button class="btn" style="background:#c62828">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
+        <tr><td colspan="6">Sin usuarios</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</section>

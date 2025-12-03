@@ -1,0 +1,30 @@
+Funciones en gordo.js
+
+Anual (histórico): scrapeResultadosGordoYear(anio)
+Antes: scrapeResultadosGordoByFecha(anio) → la renombré para claridad.
+Diario (página del día): scrapeResultadoGordoDia(fechaISO)
+Usa la página que indicas (“Sorteo-dd-mm-yyyy.html”), con fallback.
+Calcula sorteo=semana ISO (NNN) si el NNN no aparece en la página.
+Wrapper con inserción: getResultadoGordo(fechaISO)
+Llama a la diaria, y si obtiene datos inserta/actualiza en r_gordo (UPERT).
+Devuelve true/false.
+Consumo en el resto de la app
+
+update-today.js
+Para Gordo, ahora usa getResultadoGordo(fecha) en lugar de la anual.
+verify-week.js
+En el auto-update de resultados de Gordo, ahora usa getResultadoGordo(fecha).
+reset-all.js
+Para histórico anual, usa scrapeResultadosGordoYear(ANIO).
+Script manual para hoy (por si lo quieres usar)
+
+scripts/fetch-gordo-day.mjs
+Inserta resultado de un día y asegura que sorteo = número de semana (NNN).
+Comando: npm run gordo:fetch:day -- --fecha=YYYY-MM-DD
+Por qué mantener ambas
+
+Diario (…Dia) y getResultadoGordo(fechaISO): ideal para el día de sorteo (domingo), obtener el resultado antes de que se actualice el índice anual.
+Anual (…Year): óptimo para resets anuales o reconstruir históricos con una sola petición por año.
+Con esto, no deberías ver “sorteo = 000” ni desajustes. Además, al usar getResultadoGordo(fecha) en los flujos diarios/semanales, ya no dependes de que el índice anual esté actualizado.
+
+¿Quieres que añada en update-today un flag --force-gordo para ejecutar Gordo también en domingo y no solo el lunes, usando getResultadoGordo(fecha de hoy)?

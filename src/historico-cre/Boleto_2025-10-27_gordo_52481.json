@@ -1,0 +1,23 @@
+{
+  "identificador": "1290304020586711749462237448852481",
+  "tipo": "gordo",
+  "sorteoCodigo": "04402NOV25:1",
+  "sorteos": [
+    {
+      "sorteo": 44,
+      "fecha": "2025-11-02",
+      "dia": "domingo",
+      "lunesSemana": "2025-10-27"
+    }
+  ],
+  "fechaLunes": "2025-10-27",
+  "combinacion": "1230323350",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "09",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-10-27_gordo_52481.png"
+}

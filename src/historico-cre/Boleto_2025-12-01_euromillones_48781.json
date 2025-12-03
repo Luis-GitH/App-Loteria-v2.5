@@ -1,0 +1,29 @@
+{
+  "identificador": "1293807020695634957970116993448781",
+  "tipo": "euromillones",
+  "sorteoCodigo": "09602DIC25:2",
+  "sorteos": [
+    {
+      "sorteo": 96,
+      "fecha": "2025-12-02",
+      "dia": "martes",
+      "lunesSemana": "2025-12-01"
+    },
+    {
+      "sorteo": 97,
+      "fecha": "2025-12-05",
+      "dia": "viernes",
+      "lunesSemana": "2025-12-01"
+    }
+  ],
+  "fechaLunes": "2025-12-01",
+  "combinacion": "1017364050",
+  "estrellas": "0103",
+  "reintegro": "",
+  "clave": "",
+  "millon": "WBM82588",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "/historico/Boleto_2025-12-01_euromillones_48781.jpg"
+}

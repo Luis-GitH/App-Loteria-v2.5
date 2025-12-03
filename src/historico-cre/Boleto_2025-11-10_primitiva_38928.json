@@ -1,0 +1,35 @@
+{
+  "identificador": "1291701021322059922075824613938928",
+  "tipo": "primitiva",
+  "sorteoCodigo": "13510NOV25:3",
+  "sorteos": [
+    {
+      "sorteo": 135,
+      "fecha": "2025-11-10",
+      "dia": "lunes",
+      "lunesSemana": "2025-11-10"
+    },
+    {
+      "sorteo": 136,
+      "fecha": "2025-11-13",
+      "dia": "jueves",
+      "lunesSemana": "2025-11-10"
+    },
+    {
+      "sorteo": 137,
+      "fecha": "2025-11-15",
+      "dia": "sábado",
+      "lunesSemana": "2025-11-10"
+    }
+  ],
+  "fechaLunes": "2025-11-10",
+  "combinacion": "101121252933",
+  "estrellas": "",
+  "reintegro": "7",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "95695-1",
+  "joker": "NO",
+  "imagen": "C:\\Users\\luisl\\Desktop\\DesarrolloX\\Server\\AppBoletosLoteria\\src\\procesadosQR\\2025-11-10_primitiva_38928.png"
+}
