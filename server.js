@@ -31,6 +31,9 @@ const UI_VARIANTS = {
     brandName: 'El Club de la Familia',
   },
 };
+
+console.log('Estamos en : ', process.env.NODE_ENV);
+
 const activeUI = UI_VARIANTS[APP_VARIANT] || UI_VARIANTS.cre;
 
 import express from 'express';

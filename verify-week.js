@@ -25,9 +25,9 @@ import {
     enumerateMondaysInRange,
 } from "./src/helpers/fechas.js";
 import {
-    dividirCadena,
-    parseNumberOrNull,
-    formatEuroText,
+   // dividirCadena,
+   // parseNumberOrNull,
+   // formatEuroText,
     sorteoNumeroNNN,
 } from "./src/helpers/funciones.js";
 import {
