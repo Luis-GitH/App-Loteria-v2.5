@@ -179,7 +179,7 @@ if (sendToDB) {
                 }_${boleto.identificador.slice(-5)}`;
                 // lo grabamo en el boleto.json
                 const fileDestPath = path.join(HISTORICO_DIR, newName + extension);
-                boleto.imagen = `/historico/${newName + extension}`;
+                boleto.imagen = newName + extension;
                 await guardarBoletoProcesado(boleto);
                 // mover a histórico json
                 let destino = path.join(HISTORICO_DIR, newName + ".json");

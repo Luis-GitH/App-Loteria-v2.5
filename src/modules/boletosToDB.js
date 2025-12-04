@@ -176,10 +176,10 @@ export async function procesarBoletosDesdeJSON(sendToDB, processQR) {
         const filePath = path.join(PROCESADOS_DIR, file);
         const data = JSON.parse(fse.readFileSync(filePath, "utf8"));
 
-        // Normalizar imagen a ruta web /historico/<nombre>
+        // Normalizar imagen a solo nombre de archivo (basename)
         const imgBase = path.basename((data.imagen || '').toString());
         if (imgBase) {
-            data.imagen = /historico/;
+            data.imagen = imgBase;
         }
 
         await guardarBoletoProcesado(data);
