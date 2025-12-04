@@ -1703,7 +1703,7 @@ app.get('/admin', requireAuth, requireRole('admin'), async (req, res) => {
 // EnvÃ­o de boletos de la semana actual por correo (admins)
 app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (req, res) => {
   const lunes = mondayOf(new Date());
-  // Resuelve rutas de imagen a paths FS (acepta /historico/, absolute paths o basename en src/historico)
+  // Resuelve rutas de imagen a paths FS (acepta /historico/, absolute paths o basename en data/historico)
 
   try {
     // Recolectar imagenes de las tres tablas para la semana (fechaLunes)

@@ -29,7 +29,7 @@ Automatización completa del flujo de escaneo, detección, lectura de QR y almac
 | 🔍 **Lectura QR (jsQR)** | Decodificación del código QR y análisis estructurado             |
 | 🧾 **Generación de JSON** | Crea archivos JSON normalizados con todos los datos del boleto  |
 | 💾 **Base de datos SQLite** | Inserción automática en tres tablas según tipo de juego       |
-| 🗂️ **Archivado histórico** | Mueve boletos y JSON procesados a `/src/historico`             |
+| 🗂️ **Archivado histórico** | Mueve boletos y JSON procesados a `/data/historico`             |
 | 🧩 **Modo modular** | Cada etapa puede ejecutarse de forma independiente                    |
 
 ---
@@ -84,7 +84,7 @@ npm install opencv.js jsqr canvas better-sqlite3 fs-extra date-fns
 
 🔹 3️⃣ Inserción en base de datos
        Inserta los boletos JSON en la base de datos SQLite /src/db/boletos.db
-       y mueve los archivos a /src/historico.
+     y mueve los archivos a /data/historico.
 
             node process_ticket.v1.mjs --db
 
