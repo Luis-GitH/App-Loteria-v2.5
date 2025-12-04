@@ -8,6 +8,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 import mariadb from 'mariadb';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,69 +22,12 @@ dotenv.config({ path: path.join(ROOT, '.env'), override: false });
 const VARIANTS = ['cre', 'family'];
 
 // ============================================================
-// SQLs de limpieza
-// ============================================================
-const CLEANUP_QUERIES = [
-  {
-    name: 'primitiva',
-    query: `UPDATE primitiva
-      SET imagen = SUBSTRING_INDEX(REPLACE(imagen, CHAR(92), '/'), '/', -1)
-      WHERE imagen IS NOT NULL 
-        AND imagen <> '' 
-        AND (imagen LIKE '/historico/%' OR imagen LIKE '%/%');`
-  },
-  {
-    name: 'euromillones',
-    query: `UPDATE euromillones
-      SET imagen = SUBSTRING_INDEX(REPLACE(imagen, CHAR(92), '/'), '/', -1)
-      WHERE imagen IS NOT NULL 
-        AND imagen <> '' 
-        AND (imagen LIKE '/historico/%' OR imagen LIKE '%/%');`
-  },
-  {
-    name: 'gordo',
-    query: `UPDATE gordo
-      SET imagen = SUBSTRING_INDEX(REPLACE(imagen, CHAR(92), '/'), '/', -1)
-      WHERE imagen IS NOT NULL 
-        AND imagen <> '' 
-        AND (imagen LIKE '/historico/%' OR imagen LIKE '%/%');`
-  }
-];
-
-// ============================================================
-// Verificación post-limpieza
-// ============================================================
-const VERIFY_QUERIES = [
-  {
-    name: 'primitiva_verify',
-    query: `SELECT COUNT(*) AS total, 
-           SUM(CASE WHEN imagen IS NOT NULL AND imagen <> '' THEN 1 ELSE 0 END) AS con_imagen,
-           GROUP_CONCAT(DISTINCT imagen LIMIT 3) AS sample
-           FROM primitiva;`
-  },
-  {
-    name: 'euromillones_verify',
-    query: `SELECT COUNT(*) AS total, 
-           SUM(CASE WHEN imagen IS NOT NULL AND imagen <> '' THEN 1 ELSE 0 END) AS con_imagen,
-           GROUP_CONCAT(DISTINCT imagen LIMIT 3) AS sample
-           FROM euromillones;`
-  },
-  {
-    name: 'gordo_verify',
-    query: `SELECT COUNT(*) AS total, 
-           SUM(CASE WHEN imagen IS NOT NULL AND imagen <> '' THEN 1 ELSE 0 END) AS con_imagen,
-           GROUP_CONCAT(DISTINCT imagen LIMIT 3) AS sample
-           FROM gordo;`
-  }
-];
-
-// ============================================================
 // Funciones
 // ============================================================
 
 function readEnvFile(filePath) {
   try {
-    const raw = require('fs').readFileSync(filePath);
+    const raw = fs.readFileSync(filePath);
     return dotenv.parse(raw);
   } catch {
     return {};
@@ -119,11 +63,44 @@ async function cleanupVariant(variant) {
   console.log(`🧹 Limpiando variante: ${variant.toUpperCase()}`);
   console.log('='.repeat(60));
 
+  const env = buildEnvForVariant(variant);
+  const database = env.DB_DATABASE;
+  
+  console.log(`📊 Base de datos: ${database}`);
+
   const pool = await createPoolForVariant(variant);
   const conn = await pool.getConnection();
 
   try {
     await conn.beginTransaction();
+
+    // Definir queries con nombre de BD explícito
+    const CLEANUP_QUERIES = [
+      {
+        name: 'primitiva',
+        query: `UPDATE ${database}.primitiva
+          SET imagen = SUBSTRING_INDEX(REPLACE(imagen, CHAR(92), '/'), '/', -1)
+          WHERE imagen IS NOT NULL 
+            AND imagen <> '' 
+            AND (imagen LIKE '/historico/%' OR imagen LIKE '%/%');`
+      },
+      {
+        name: 'euromillones',
+        query: `UPDATE ${database}.euromillones
+          SET imagen = SUBSTRING_INDEX(REPLACE(imagen, CHAR(92), '/'), '/', -1)
+          WHERE imagen IS NOT NULL 
+            AND imagen <> '' 
+            AND (imagen LIKE '/historico/%' OR imagen LIKE '%/%');`
+      },
+      {
+        name: 'gordo',
+        query: `UPDATE ${database}.gordo
+          SET imagen = SUBSTRING_INDEX(REPLACE(imagen, CHAR(92), '/'), '/', -1)
+          WHERE imagen IS NOT NULL 
+            AND imagen <> '' 
+            AND (imagen LIKE '/historico/%' OR imagen LIKE '%/%');`
+      }
+    ];
 
     // Ejecutar updates
     for (const { name, query } of CLEANUP_QUERIES) {
@@ -140,16 +117,42 @@ async function cleanupVariant(variant) {
     await conn.commit();
     console.log('\n✅ Transacción confirmada (COMMIT)');
 
+    // Definir queries de verificación con nombre de BD explícito
+    const VERIFY_QUERIES = [
+      {
+        name: 'primitiva_verify',
+        query: `SELECT COUNT(*) AS total, 
+               SUM(CASE WHEN imagen IS NOT NULL AND imagen <> '' THEN 1 ELSE 0 END) AS con_imagen,
+               GROUP_CONCAT(DISTINCT imagen LIMIT 3) AS sample
+               FROM ${database}.primitiva;`
+      },
+      {
+        name: 'euromillones_verify',
+        query: `SELECT COUNT(*) AS total, 
+               SUM(CASE WHEN imagen IS NOT NULL AND imagen <> '' THEN 1 ELSE 0 END) AS con_imagen,
+               GROUP_CONCAT(DISTINCT imagen LIMIT 3) AS sample
+               FROM ${database}.euromillones;`
+      },
+      {
+        name: 'gordo_verify',
+        query: `SELECT COUNT(*) AS total, 
+               SUM(CASE WHEN imagen IS NOT NULL AND imagen <> '' THEN 1 ELSE 0 END) AS con_imagen,
+               GROUP_CONCAT(DISTINCT imagen LIMIT 3) AS sample
+               FROM ${database}.gordo;`
+      }
+    ];
+
     // Verificación
     console.log('\n📊 VERIFICACIÓN POST-LIMPIEZA:');
     console.log('-'.repeat(60));
+
     for (const { name, query } of VERIFY_QUERIES) {
       try {
         const results = await conn.query(query);
         const row = results[0];
         console.log(`\n📋 ${name.replace('_verify', '').toUpperCase()}:`);
         console.log(`   Total registros: ${row.total}`);
-        console.log(`   Con imagen: ${row.con_imagen}`);
+        console.log(`   Con imagen: ${row.con_imagen || 0}`);
         console.log(`   Sample: ${row.sample || 'N/A'}`);
       } catch (err) {
         console.error(`❌ Error verificando ${name}:`, err.message);
