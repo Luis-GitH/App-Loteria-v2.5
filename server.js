@@ -2,17 +2,13 @@
 import dotenv from 'dotenv';
 // Carga común y luego específica según variante/app de PM2
 dotenv.config({ path: '.env', override: false });
-const specificEnvPath =
-  process.env.ENV_FILE ||
-  (process.env.APP_VARIANT ? `.env_${process.env.APP_VARIANT}` : null) ||
-  (process.env.PM2_APP_NAME === 'app-cre'
-    ? '.env_cre'
-    : process.env.PM2_APP_NAME === 'app-family'
-      ? '.env_family'
-      : null);
-if (specificEnvPath) {
-  dotenv.config({ path: specificEnvPath, override: true });
-}
+// Carga directa: si PM2 define `ENV_FILE` lo usamos; si no, se usa
+// `.env_<APP_VARIANT>` (por ejemplo `.env_cre` o `.env_family`).
+// No hacemos comprobaciones adicionales: si el fichero no existe,
+// dotenv lo reportará como "injecting env (0)".
+const specificEnvPath = process.env.ENV_FILE || (process.env.APP_VARIANT ? `.env_${process.env.APP_VARIANT}` : `.env_cre`);
+dotenv.config({ path: specificEnvPath, override: true });
+
 const APP_VARIANT =
   (process.env.APP_VARIANT ||
     (process.env.PM2_APP_NAME && process.env.PM2_APP_NAME.startsWith('app-') ? process.env.PM2_APP_NAME.slice(4) : process.env.PM2_APP_NAME) ||
@@ -55,15 +51,29 @@ import { cmpEuromillones, cmpPrimitiva, cmpGordo, buscarPremioPrimitiva, buscarP
 import { parseTicketQR } from './src/modules/parse_ticket_qr.js';
 import { getBotesActuales } from './src/modules/botes.js';
 import { format as formatDate } from 'date-fns';
+import { CLIENT_RENEG_LIMIT } from 'tls';
 ensureAppTimezone();
 const __root = path.resolve();
 const app = express();
+
+//  ***********************************
+
+//chequeo de variables de entorno obligatorias
+console.log('Comprobando variables de entorno obligatorias...');
+console.log('APP_VARIANT:', APP_VARIANT);
+console.log('host:', process.env.DB_HOST);
+console.log('user:', process.env.DB_USER);
+console.log('database:', process.env.DB_DATABASE);
+console.log('password:', process.env.DB_PASSWORD);
+console.log('port:', process.env.PORT || process.env.DB_PORT || 'undefined');
+
+// 
 // Manejo global de errores para ayudar al debugging local
 process.on('unhandledRejection', (reason, p) => {
-  console.error('ðŸ’¥ Unhandled Rejection at:', p, '\nReason:', reason);
+  console.error('Error Unhandled Rejection at:', p, '\nReason:', reason);
 });
 process.on('uncaughtException', (err) => {
-  console.error('ðŸ’¥ Uncaught Exception:', err);
+  console.error('Error Uncaught Exception:', err);
   process.exit(1);
 });
 const HISTORICO_DIRNAME = `historico-${APP_VARIANT}`;
@@ -89,6 +99,7 @@ app.use(express.json({ limit: '1mb' }));
 
 // Sessions
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-secret-change-me';
+
 
 const DB_PORT = process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306;
 const mysqlSessionOptions = {
@@ -2044,4 +2055,10 @@ await ensureMovimientosTable();
 await ensureAccessLogTables();
 await ensureEnviosBoletosTable();
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Web app listening on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Web app listening on http://localhost:${PORT}`);
+  // Signal PM2 that this process is ready (if running under PM2 with wait_ready)
+  if (process.send) {
+    process.send('ready');
+  }
+});

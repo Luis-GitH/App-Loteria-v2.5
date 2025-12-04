@@ -18,6 +18,10 @@ module.exports = {
         '*.log',
         '*.tmp'],
       cwd: './', // raíz del proyecto
+      time: true,
+      wait_ready: true,
+      listen_timeout: 10000,
+      kill_timeout: 5000,
       error_file: "./logs/cre-errores.log",
       out_file: "./logs/cre-out.log",
       env: {
@@ -42,6 +46,10 @@ module.exports = {
         '*.log',
         '*.tmp'],
       cwd: './',
+      time: true,
+      wait_ready: true,
+      listen_timeout: 10000,
+      kill_timeout: 5000,
       error_file: "./logs/family-errores.log",
       out_file: "./logs/family-out.log",
       env: {
