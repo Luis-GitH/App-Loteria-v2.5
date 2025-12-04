@@ -34,7 +34,7 @@ const APP_VARIANT = (
     "cre"
 ).toLowerCase();
 const PROCESADOS_DIR = path.join(ROOT, "src", "procesadosQR");
-const HISTORICO_DIR = path.join(ROOT, "src", `historico-${APP_VARIANT}`);
+const HISTORICO_DIR = path.join(ROOT, "data", `historico-${APP_VARIANT}`);
 await fse.ensureDir(HISTORICO_DIR);
 // ============================================================
 // 🧱 Inicializar BD con las 4 tablas

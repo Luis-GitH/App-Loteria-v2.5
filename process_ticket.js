@@ -34,7 +34,7 @@ const SCANS_DIR = path.join(ROOT, "src", "scans");
 const UPLOADS_DIR = path.join(ROOT, "src", "uploads");
 const PROCESADOS_DIR = path.join(ROOT, "src", "procesadosQR");
 const LOG_DIR = path.join(ROOT, "logs");
-const HISTORICO_DIR = path.join(ROOT, "src", `historico-${APP_VARIANT}`);
+const HISTORICO_DIR = path.join(ROOT, "data", `historico-${APP_VARIANT}`);
 // --- Asegurar directorios ---
 await fse.ensureDir(SCANS_DIR);
 await fse.ensureDir(UPLOADS_DIR);

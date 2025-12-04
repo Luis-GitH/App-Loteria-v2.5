@@ -65,7 +65,7 @@ const APP_VARIANT = (
 ).toLowerCase();
 const LOG_DIR = path.join(ROOT, "logs");
 const ENV_BASE = path.join(ROOT, ".env");
-const HISTORICO_DIR = path.join(ROOT, "src", `historico-${APP_VARIANT}`);
+const HISTORICO_DIR = path.join(ROOT, "data", `historico-${APP_VARIANT}`);
 const HISTORICO_DIRS = [HISTORICO_DIR];
 
 function readEnvFile(filePath) {
@@ -190,7 +190,7 @@ function toFsImagePath(p) {
         return path.join(HISTORICO_DIR, rel);
     }
     if (path.isAbsolute(s)) return s;
-    // Fallback: usar basename en /src/historico-<variant> o legacy si existe
+    // Fallback: usar basename en /data/historico-<variant> o legacy si existe
     const base = path.basename(s);
     for (const dir of HISTORICO_DIRS) {
         const candidate = path.join(dir, base);
