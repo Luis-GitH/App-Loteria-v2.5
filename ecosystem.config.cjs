@@ -9,7 +9,7 @@ module.exports = {
         'node_modules', 
         'logs',
         'data', 
-        'uploads',
+        'scr/uploads',
         'src/historico-cre/**',
         'src/historico-family/**',
         'src/procesadosQR/**',

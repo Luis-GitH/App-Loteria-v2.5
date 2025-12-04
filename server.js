@@ -69,7 +69,7 @@ process.on('uncaughtException', (err) => {
 const HISTORICO_DIRNAME = `historico-${APP_VARIANT}`;
 const HISTORICO_DIR = path.join(__root, 'src', HISTORICO_DIRNAME).replace(/\\/g, '/');
 const HISTORICO_DIRS = [HISTORICO_DIR];
-const upload = multer({ dest: path.join(__root, 'uploads') });
+const upload = multer({ dest: path.join(__root, 'scr', 'uploads') });
 // Trust proxy to capture real IPs when behind reverse proxies (e.g., Caddy)
 app.set('trust proxy', true);
 

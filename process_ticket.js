@@ -75,10 +75,10 @@ if (useScanner || useCut) {
 }
 
 // ====================================================================
-// 2️⃣ Procesar los boletos en /uploads y leer QR  (BLOQUE NUEVO)
+// 2️⃣ Procesar los boletos en /scr/uploads y leer QR  (BLOQUE NUEVO)
 // ====================================================================
 if (processQR) {
-    console.log("🔍 Iniciando lectura de QR en /uploads...\n");
+    console.log("🔍 Iniciando lectura de QR en /scr/uploads...\n");
 
     let archivos = await fse.readdir(UPLOADS_DIR);
     const imagenes = archivos.filter((f) =>
@@ -86,7 +86,7 @@ if (processQR) {
     );
 
     if (imagenes.length === 0) {
-        console.log("⚠️ No hay boletos en /uploads para procesar.");
+        console.log("⚠️ No hay boletos en /src/uploads para procesar.");
     } else {
         let totalOk = 0,
             totalFail = 0;
