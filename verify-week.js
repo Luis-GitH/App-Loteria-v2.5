@@ -7,15 +7,15 @@ import mariadb from "mariadb";
 import nodemailer from "nodemailer";
 dotenv.config({ path: ".env", override: false });
 const specificEnvPath =
-  process.env.ENV_FILE ||
-  (process.env.APP_VARIANT ? `.env_${process.env.APP_VARIANT}` : null) ||
-  (process.env.PM2_APP_NAME === "app-cre"
-    ? ".env_cre"
-    : process.env.PM2_APP_NAME === "app-family"
-      ? ".env_family"
-      : null);
+    process.env.ENV_FILE ||
+    (process.env.APP_VARIANT ? `.env_${process.env.APP_VARIANT}` : null) ||
+    (process.env.PM2_APP_NAME === "app-cre"
+        ? ".env_cre"
+        : process.env.PM2_APP_NAME === "app-family"
+            ? ".env_family"
+            : null);
 if (specificEnvPath) {
-  dotenv.config({ path: specificEnvPath, override: true });
+    dotenv.config({ path: specificEnvPath, override: true });
 }
 import {
     fechaISO,
@@ -25,9 +25,9 @@ import {
     enumerateMondaysInRange,
 } from "./src/helpers/fechas.js";
 import {
-   // dividirCadena,
-   // parseNumberOrNull,
-   // formatEuroText,
+    // dividirCadena,
+    // parseNumberOrNull,
+    // formatEuroText,
     sorteoNumeroNNN,
 } from "./src/helpers/funciones.js";
 import {
@@ -58,7 +58,7 @@ const ROOT = path.resolve();
 const APP_VARIANT = (
     process.env.APP_VARIANT ||
     (process.env.PM2_APP_NAME &&
-    process.env.PM2_APP_NAME.startsWith("app-")
+        process.env.PM2_APP_NAME.startsWith("app-")
         ? process.env.PM2_APP_NAME.slice(4)
         : process.env.PM2_APP_NAME) ||
     "cre"
@@ -82,10 +82,10 @@ function buildEnvForVariant(variant) {
         variant && variant !== "default"
             ? path.join(ROOT, `.env_${variant}`)
             : process.env.ENV_FILE
-            ? path.join(ROOT, process.env.ENV_FILE)
-            : process.env.APP_VARIANT
-            ? path.join(ROOT, `.env_${process.env.APP_VARIANT}`)
-            : null;
+                ? path.join(ROOT, process.env.ENV_FILE)
+                : process.env.APP_VARIANT
+                    ? path.join(ROOT, `.env_${process.env.APP_VARIANT}`)
+                    : null;
     const variantEnv = variantFile ? readEnvFile(variantFile) : {};
     return {
         ...base,
@@ -603,9 +603,8 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
     }
     if (publicados.length) {
         resumen += `💰 Resultados de primitiva (${fechaLunes}):\n`;
-        resumen += `📅 ${publicados.length} sorteo${
-            publicados.length > 1 ? "s" : ""
-        } esta semana\n`;
+        resumen += `📅 ${publicados.length} sorteo${publicados.length > 1 ? "s" : ""
+            } esta semana\n`;
         for (const s of publicados) resumen += cabeceraPrimi(s) + "\n";
     }
 
@@ -699,9 +698,8 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
 
     if (resultados.length) {
         resumen += `💰 Resultados de gordo (${fechaLunes}):\n`;
-        resumen += `📅 ${resultados.length} sorteo${
-            resultados.length > 1 ? "s" : ""
-        } esta semana\n`;
+        resumen += `📅 ${resultados.length} sorteo${resultados.length > 1 ? "s" : ""
+            } esta semana\n`;
         for (const s of resultados) resumen += cabeceraGordo(s) + "\n";
     }
 
@@ -861,18 +859,15 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
             `📆 Verificación de la semana (lunes: ${fechaLunes}):\n\n` +
             partes.filter(Boolean).join("\n\n") +
             `\n\n📊 Resumen de la semana:\n` +
-            `- Euromillones: ${e.premiados} boleto${
-                e.premiados !== 1 ? "s" : ""
+            `- Euromillones: ${e.premiados} boleto${e.premiados !== 1 ? "s" : ""
             } premiado${e.premiados !== 1 ? "s" : ""} → ${fmtEu(
                 e.totalImporte
             )}\n` +
-            `- Primitiva: ${p.premiados} boleto${
-                p.premiados !== 1 ? "s" : ""
+            `- Primitiva: ${p.premiados} boleto${p.premiados !== 1 ? "s" : ""
             } premiado${p.premiados !== 1 ? "s" : ""} → ${fmtEu(
                 p.totalImporte
             )}\n` +
-            `- Gordo: ${g.premiados} boleto${
-                g.premiados !== 1 ? "s" : ""
+            `- Gordo: ${g.premiados} boleto${g.premiados !== 1 ? "s" : ""
             } premiado${g.premiados !== 1 ? "s" : ""} → ${fmtEu(
                 g.totalImporte
             )}\n\n` +
@@ -924,6 +919,7 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
 
 // ================== MAIN (semana o rango) ==================
 import { pathToFileURL } from "url";
+import { CLIENT_RENEG_LIMIT } from "tls";
 const __isMain = (() => {
     try {
         return import.meta.url === pathToFileURL(process.argv[1] || "").href;
@@ -951,13 +947,13 @@ if (__isMain)
         const variants = runAll
             ? ["cre", "family"]
             : cliVariants.length
-            ? cliVariants
-            : flagFamily || flagCre
-            ? [
-                  ...(flagCre ? ["cre"] : []),
-                  ...(flagFamily ? ["family"] : []),
-              ]
-            : [fallbackVariant()];
+                ? cliVariants
+                : flagFamily || flagCre
+                    ? [
+                        ...(flagCre ? ["cre"] : []),
+                        ...(flagFamily ? ["family"] : []),
+                    ]
+                    : [fallbackVariant()];
 
         async function runOnce() {
             if (autoWeek && (argFecha || argRango)) {
@@ -1016,9 +1012,8 @@ if (__isMain)
                         html: `
           <h2>Comprobación de los resultados</h2>
           <p>A fecha: ${new Date().toLocaleString("es-ES")}</p>
-          <pre style="font-family: monospace; white-space: pre-wrap;">${
-              r.resumenFinal
-          }</pre>
+          <pre style="font-family: monospace; white-space: pre-wrap;">${r.resumenFinal
+                            }</pre>
         `,
                         adjuntos: r.adjuntosFinal,
                         to: recipients,
@@ -1074,7 +1069,7 @@ if (__isMain)
                 if (pool && typeof pool.end === "function") {
                     try {
                         await pool.end();
-                    } catch {}
+                    } catch { }
                     pool = null;
                 }
                 initEnvForVariant(variant);
@@ -1086,7 +1081,7 @@ if (__isMain)
                 );
             } finally {
                 if (pool && typeof pool.end === "function") {
-                    try { await pool.end(); } catch {}
+                    try { await pool.end(); } catch { }
                 }
             }
         }

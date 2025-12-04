@@ -19,7 +19,7 @@ import dotenv from "dotenv";
 import mariadb from "mariadb";
 import path from "path";
 import fs from "fs";
-import { fechaISO, addDays, weekday } from "./src/helpers/fechas.js";
+import { fechaISO, weekday } from "./src/helpers/fechas.js";
 
 // ?? scrapers (los añadimos en la entrega 4/6)
 import {
@@ -81,7 +81,7 @@ function readEnvFile(filePath) {
     }
 }
 function buildEnvForVariant(variant) {
-    const base = readEnvFile(ENV_BASE);
+    const base =''; // readEnvFile(ENV_BASE);
     const variantFile =
         variant && variant !== "default"
             ? path.join(ROOT, `.env_${variant}`)
@@ -275,6 +275,12 @@ async function runUpdateForVariant(variant) {
 (async () => {
     const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
     const runAll = process.argv.some((a) => a === "--all" || a === "--both");
+    if (!runAll) {
+        console.log(
+            "?? Los parámetros son --all, --both --cre o --family ");
+            process.exit(1);
+    } 
+    
     const variants = runAll
         ? ["cre", "family"]
         : args.length
