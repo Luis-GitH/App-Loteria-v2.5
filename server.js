@@ -62,11 +62,8 @@ const app = express();
 console.log('Comprobando variables de entorno obligatorias...');
 console.log('APP_VARIANT:', APP_VARIANT);
 console.log('host:', process.env.DB_HOST);
-console.log('user:', process.env.DB_USER);
 console.log('database:', process.env.DB_DATABASE);
-console.log('password:', process.env.DB_PASSWORD);
-console.log('port:', process.env.PORT || process.env.DB_PORT || 'undefined');
-
+console.log('port:', process.env.PORT);
 // 
 // Manejo global de errores para ayudar al debugging local
 process.on('unhandledRejection', (reason, p) => {
