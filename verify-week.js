@@ -7,15 +7,15 @@ import mariadb from "mariadb";
 import nodemailer from "nodemailer";
 dotenv.config({ path: ".env", override: false });
 const specificEnvPath =
-    process.env.ENV_FILE ||
-    (process.env.APP_VARIANT ? `.env_${process.env.APP_VARIANT}` : null) ||
-    (process.env.PM2_APP_NAME === "app-cre"
-        ? ".env_cre"
-        : process.env.PM2_APP_NAME === "app-family"
-            ? ".env_family"
-            : null);
+  process.env.ENV_FILE ||
+  (process.env.APP_VARIANT ? `.env_${process.env.APP_VARIANT}` : null) ||
+  (process.env.PM2_APP_NAME === "app-cre"
+    ? ".env_cre"
+    : process.env.PM2_APP_NAME === "app-family"
+      ? ".env_family"
+      : null);
 if (specificEnvPath) {
-    dotenv.config({ path: specificEnvPath, override: true });
+  dotenv.config({ path: specificEnvPath, override: true });
 }
 import {
     fechaISO,
@@ -25,9 +25,9 @@ import {
     enumerateMondaysInRange,
 } from "./src/helpers/fechas.js";
 import {
-    // dividirCadena,
-    // parseNumberOrNull,
-    // formatEuroText,
+   // dividirCadena,
+   // parseNumberOrNull,
+   // formatEuroText,
     sorteoNumeroNNN,
 } from "./src/helpers/funciones.js";
 import {
@@ -55,14 +55,35 @@ import {
 
 // ================== CONFIG ==================
 const ROOT = path.resolve();
-const APP_VARIANT = (
-    process.env.APP_VARIANT ||
-    (process.env.PM2_APP_NAME &&
+const VARIANT_ENV_MAP = {
+    cre: ".env_cre",
+    family: ".env_family",
+};
+const KNOWN_VARIANTS = Object.keys(VARIANT_ENV_MAP);
+const DEFAULT_VARIANT =
+    KNOWN_VARIANTS.includes("cre") && KNOWN_VARIANTS.length
+        ? "cre"
+        : KNOWN_VARIANTS[0] || "default";
+function normalizeVariantName(name) {
+    return (name || "").toString().trim().toLowerCase();
+}
+function pickVariant(candidate) {
+    const normalized = normalizeVariantName(candidate);
+    return KNOWN_VARIANTS.includes(normalized) ? normalized : null;
+}
+function resolvePm2Variant() {
+    if (
+        process.env.PM2_APP_NAME &&
         process.env.PM2_APP_NAME.startsWith("app-")
-        ? process.env.PM2_APP_NAME.slice(4)
-        : process.env.PM2_APP_NAME) ||
-    "cre"
-).toLowerCase();
+    ) {
+        return process.env.PM2_APP_NAME.slice(4);
+    }
+    return process.env.PM2_APP_NAME;
+}
+const APP_VARIANT =
+    pickVariant(process.env.APP_VARIANT) ||
+    pickVariant(resolvePm2Variant()) ||
+    DEFAULT_VARIANT;
 const LOG_DIR = path.join(ROOT, "logs");
 const ENV_BASE = path.join(ROOT, ".env");
 const HISTORICO_DIR = path.join(ROOT, "data", `historico-${APP_VARIANT}`);
@@ -78,20 +99,28 @@ function readEnvFile(filePath) {
 }
 function buildEnvForVariant(variant) {
     const base = readEnvFile(ENV_BASE);
+    const normalizedVariant =
+        pickVariant(variant) ||
+        pickVariant(process.env.APP_VARIANT) ||
+        pickVariant(resolvePm2Variant()) ||
+        APP_VARIANT ||
+        DEFAULT_VARIANT;
     const variantFile =
-        variant && variant !== "default"
-            ? path.join(ROOT, `.env_${variant}`)
+        normalizedVariant && normalizedVariant !== "default"
+            ? path.join(
+                  ROOT,
+                  VARIANT_ENV_MAP[normalizedVariant] ||
+                      `.env_${normalizedVariant}`
+              )
             : process.env.ENV_FILE
-                ? path.join(ROOT, process.env.ENV_FILE)
-                : process.env.APP_VARIANT
-                    ? path.join(ROOT, `.env_${process.env.APP_VARIANT}`)
-                    : null;
+            ? path.join(ROOT, process.env.ENV_FILE)
+            : null;
     const variantEnv = variantFile ? readEnvFile(variantFile) : {};
     return {
         ...base,
         ...process.env,
         ...variantEnv,
-        APP_VARIANT: variant || process.env.APP_VARIANT || "default",
+        APP_VARIANT: normalizedVariant || DEFAULT_VARIANT,
     };
 }
 function createPoolFromEnv(env) {
@@ -114,9 +143,9 @@ function buildMailConfig(env) {
     return {
         from: env.EMAIL_FROM,
         to: env.EMAIL_TO,
-        subject: `${subjectPrefix} Verificación semanal de resultados`,
+        subject: `${subjectPrefix} Verificaci�n semanal de resultados`,
         subjectRange: (ini, fin) =>
-            `${subjectPrefix} Verificación de resultados (${ini} -> ${fin})`,
+            `${subjectPrefix} Verificaci�n de resultados (${ini} -> ${fin})`,
         smtp: {
             host: env.EMAIL_HOST,
             port: Number(env.EMAIL_PORT || 465),
@@ -142,12 +171,10 @@ function initEnvForVariant(variant) {
 
 function fallbackVariant() {
     return (
+        pickVariant(process.env.APP_VARIANT) ||
+        pickVariant(resolvePm2Variant()) ||
         APP_VARIANT ||
-        process.env.APP_VARIANT ||
-        (process.env.PM2_APP_NAME && process.env.PM2_APP_NAME.startsWith("app-")
-            ? process.env.PM2_APP_NAME.slice(4)
-            : process.env.PM2_APP_NAME) ||
-        "cre"
+        DEFAULT_VARIANT
     );
 }
 function ensurePool() {
@@ -158,19 +185,19 @@ function ensurePool() {
 }
 
 const PUBLISH_HINT = {
-    euromillones: "normalmente tras la medianoche del día siguiente",
-    primitiva: "normalmente tras la medianoche del día siguiente",
-    gordo: "normalmente se publican el lunes por la mañana",
+    euromillones: "normalmente tras la medianoche del d�a siguiente",
+    primitiva: "normalmente tras la medianoche del d�a siguiente",
+    gordo: "normalmente se publican el lunes por la ma�ana",
 };
 
 const WEEKDAY_ES = [
     "domingo",
     "lunes",
     "martes",
-    "miércoles",
+    "mi�rcoles",
     "jueves",
     "viernes",
-    "sábado",
+    "s�bado",
 ];
 
 // ================== FECHAS ==================
@@ -232,7 +259,7 @@ function cabeceraEurom(s) {
     const elM = (s.elMillon || "").toString().trim();
     const sorteo = sorteoNumeroNNN(s.sorteo);
     const fecha = (s.fecha || "").toString().slice(0, 10);
-    const extra = elM ? ` · El Millon: ${elM}` : "";
+    const extra = elM ? ` � El Millon: ${elM}` : "";
     return `Sorteo ${sorteo} (${fecha}): ${nums} + ${est}${extra}`;
 }
 
@@ -246,7 +273,7 @@ function cabeceraPrimi(s) {
     const rein = (s.reintegro || "").toString();
     const sorteo = sorteoNumeroNNN(s.sorteo);
     const fecha = (s.fecha || "").toString().slice(0, 10);
-    return `Sorteo ${sorteo} (${fecha}): ${nums} · C:${comp} · R:${rein}`;
+    return `Sorteo ${sorteo} (${fecha}): ${nums} � C:${comp} � R:${rein}`;
 }
 
 function cabeceraGordo(s) {
@@ -258,7 +285,7 @@ function cabeceraGordo(s) {
     const clave = (s.numeroClave || s.clave || "").toString();
     const sorteo = sorteoNumeroNNN(s.sorteo);
     const fecha = (s.fecha || "").toString().slice(0, 10);
-    return `Sorteo ${sorteo} (${fecha}): ${nums} · Clave:${clave}`;
+    return `Sorteo ${sorteo} (${fecha}): ${nums} � Clave:${clave}`;
 }
 
 // ================== DB HELPERS ==================
@@ -314,7 +341,7 @@ async function existePremiosPorFecha(conn, tipoApuesta, fechaISO) {
         [tipoApuesta, nnn, fechaStr]
     );
     if ((p[0]?.n || 0) > 0) return true;
-    // Fallback: si no hay fecha asociada en premios_sorteos, comprobar por sorteo únicamente (acepta registros antiguos "YYYY/NNN")
+    // Fallback: si no hay fecha asociada en premios_sorteos, comprobar por sorteo �nicamente (acepta registros antiguos "YYYY/NNN")
     const r = await conn.query(
         `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND (sorteo=? OR sorteo LIKE ?)`,
         [tipoApuesta, nnn, `%/${nnn}`]
@@ -332,15 +359,15 @@ async function sorteoTieneCategorias(conn, tipo, sorteoNNN) {
 // ================== SAFE SCRAPE (marca pendientes) ==================
 async function safeScrape({ label, tipo, fecha, fn, pendientes }) {
     try {
-        console.log(`   🌐 ${label} ${fecha}`);
+        console.log(`   < ${label} ${fecha}`);
         const res = await fn();
         if (Array.isArray(res)) {
             if (res.length > 0)
-                console.log(`      ✅ OK (${res.length} elemento(s))`);
-            else console.log(`      ℹ️ Sin datos publicados aún`);
+                console.log(`       OK (${res.length} elemento(s))`);
+            else console.log(`      9 Sin datos publicados a�n`);
         } else if (typeof res === "boolean") {
-            if (res) console.log(`      ✅ Guardado en BD`);
-            else console.log(`      ℹ️ No disponible todavía (sin guardar)`);
+            if (res) console.log(`       Guardado en BD`);
+            else console.log(`      9 No disponible todav�a (sin guardar)`);
         }
     } catch (err) {
         const status = err?.response?.status;
@@ -352,11 +379,11 @@ async function safeScrape({ label, tipo, fecha, fn, pendientes }) {
             status === 500
         ) {
             pendientes.push({ tipo, fecha, label, status, url });
-            console.warn(`   ⚠️ Pendiente: ${label} ${fecha} (HTTP ${status})`);
+            console.warn(`   � Pendiente: ${label} ${fecha} (HTTP ${status})`);
             return;
         }
         console.warn(
-            `   ⚠️ Error no fatal en ${label} ${fecha}:`,
+            `   � Error no fatal en ${label} ${fecha}:`,
             status || err.message
         );
     }
@@ -366,7 +393,7 @@ async function safeScrape({ label, tipo, fecha, fn, pendientes }) {
 async function ensureDataForWeek(conn, fechaLunes, { verbose = true } = {}) {
     const fechas = {
         euromillones: [addDays(fechaLunes, 1), addDays(fechaLunes, 4)], // mar, vie
-        primitiva: [fechaLunes, addDays(fechaLunes, 3), addDays(fechaLunes, 5)], // lun, jue, sáb
+        primitiva: [fechaLunes, addDays(fechaLunes, 3), addDays(fechaLunes, 5)], // lun, jue, s�b
         gordo: [addDays(fechaLunes, 6)], // dom
     };
 
@@ -374,7 +401,8 @@ async function ensureDataForWeek(conn, fechaLunes, { verbose = true } = {}) {
 
     if (verbose) {
         console.log(
-            `🔍 Comprobando datos de la semana ${fechaLunes} → ${addDays(
+            `=
+ Comprobando datos de la semana ${fechaLunes} � ${addDays(
                 fechaLunes,
                 6
             )}...`
@@ -492,7 +520,7 @@ async function ensureDataForWeek(conn, fechaLunes, { verbose = true } = {}) {
         }
     }
 
-    if (verbose) console.log("✅ Datos de la semana actualizados si faltaban.");
+    if (verbose) console.log(" Datos de la semana actualizados si faltaban.");
     return pendientes;
 }
 
@@ -514,8 +542,8 @@ async function procesarEurom(conn, fechaLunes, fechaDomingo) {
     let totalImporte = 0;
 
     if (resultados.length) {
-        resumen += `💰 Resultados de euromillones (${fechaLunes}):\n`;
-        resumen += `📅 ${resultados.length} sorteos esta semana\n`;
+        resumen += `=� Resultados de euromillones (${fechaLunes}):\n`;
+        resumen += `=� ${resultados.length} sorteos esta semana\n`;
         for (const s of resultados) resumen += cabeceraEurom(s) + "\n";
     }
 
@@ -539,10 +567,10 @@ async function procesarEurom(conn, fechaLunes, fechaDomingo) {
             if (!premio) continue;
 
             const boletoId = b.identificadorBoleto.slice(-5);
-            const header = `🎯 Boleto ${boletoId}`;
-            let detalle = `${cmp.aciertosNumeros} números y ${cmp.aciertosEstrellas} estrellas`;
-            if (premio.categoria) detalle += ` → Categoría ${premio.categoria}`;
-            detalle += ` → ${fmtEu(premio.premio)}`;
+            const header = `<� Boleto ${boletoId}`;
+            let detalle = `${cmp.aciertosNumeros} n�meros y ${cmp.aciertosEstrellas} estrellas`;
+            if (premio.categoria) detalle += ` � Categor�a ${premio.categoria}`;
+            detalle += ` � ${fmtEu(premio.premio)}`;
 
             lineas.push({ boletoId, texto: header });
             lineas.push({ boletoId, texto: "   " + detalle });
@@ -571,9 +599,9 @@ async function procesarEurom(conn, fechaLunes, fechaDomingo) {
     }
 
     if (!resultados.length) {
-        resumen += `ℹ️ No hay sorteos en euromillones con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
+        resumen += `9 No hay sorteos en euromillones con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
     } else if (!lineas.length) {
-        resumen += `✔️ Sin aciertos en euromillones esta semana.\n`;
+        resumen += ` Sin aciertos en euromillones esta semana.\n`;
     } else {
         lineas.sort((a, b) => a.boletoId.localeCompare(b.boletoId));
         resumen += "\n" + lineas.map((x) => x.texto).join("\n") + "\n";
@@ -602,9 +630,10 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
         if (ok) publicados.push(s);
     }
     if (publicados.length) {
-        resumen += `💰 Resultados de primitiva (${fechaLunes}):\n`;
-        resumen += `📅 ${publicados.length} sorteo${publicados.length > 1 ? "s" : ""
-            } esta semana\n`;
+        resumen += `=� Resultados de primitiva (${fechaLunes}):\n`;
+        resumen += `=� ${publicados.length} sorteo${
+            publicados.length > 1 ? "s" : ""
+        } esta semana\n`;
         for (const s of publicados) resumen += cabeceraPrimi(s) + "\n";
     }
 
@@ -631,19 +660,19 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
             if (!premio) continue;
 
             const boletoId = b.identificadorBoleto.slice(-5);
-            const header = `🎯 Boleto ${boletoId}`;
+            const header = `<� Boleto ${boletoId}`;
 
             let detalle = "";
             if (premio.aciertos === "R") detalle = `Reintegro acertado`;
             else if (premio.aciertos === "5+C")
-                detalle = `5 números + complementario`;
+                detalle = `5 n�meros + complementario`;
             else if (premio.aciertos === "6+R")
-                detalle = `6 números + reintegro`;
+                detalle = `6 n�meros + reintegro`;
             else if (/^\d$/.test(premio.aciertos))
-                detalle = `${premio.aciertos} números`;
+                detalle = `${premio.aciertos} n�meros`;
             else detalle = `Aciertos ${premio.aciertos}`;
-            if (premio.categoria) detalle += ` → Categoría ${premio.categoria}`;
-            detalle += ` → ${fmtEu(premio.premio)}`;
+            if (premio.categoria) detalle += ` � Categor�a ${premio.categoria}`;
+            detalle += ` � ${fmtEu(premio.premio)}`;
 
             lineas.push({ boletoId, texto: header });
             lineas.push({ boletoId, texto: "   " + detalle });
@@ -672,9 +701,9 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
     }
 
     if (!resultados.length) {
-        resumen += `ℹ️ No hay sorteos en primitiva con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
+        resumen += `9 No hay sorteos en primitiva con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
     } else if (!lineas.length) {
-        resumen += `✔️ Sin aciertos en primitiva esta semana.\n`;
+        resumen += ` Sin aciertos en primitiva esta semana.\n`;
     } else {
         lineas.sort((a, b) => a.boletoId.localeCompare(b.boletoId));
         resumen += "\n" + lineas.map((x) => x.texto).join("\n") + "\n";
@@ -697,9 +726,10 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
     let totalImporte = 0;
 
     if (resultados.length) {
-        resumen += `💰 Resultados de gordo (${fechaLunes}):\n`;
-        resumen += `📅 ${resultados.length} sorteo${resultados.length > 1 ? "s" : ""
-            } esta semana\n`;
+        resumen += `=� Resultados de gordo (${fechaLunes}):\n`;
+        resumen += `=� ${resultados.length} sorteo${
+            resultados.length > 1 ? "s" : ""
+        } esta semana\n`;
         for (const s of resultados) resumen += cabeceraGordo(s) + "\n";
     }
 
@@ -723,16 +753,16 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
             if (!premio) continue;
 
             const boletoId = b.identificadorBoleto.slice(-5);
-            const header = `🎯 Boleto ${boletoId}`;
+            const header = `<� Boleto ${boletoId}`;
 
             let detalle = "";
             if (premio.aciertos.endsWith("+C"))
                 detalle = `${premio.aciertos.replace(
                     "+C",
                     ""
-                )} números + clave`;
+                )} n�meros + clave`;
             else if (/^\d$/.test(premio.aciertos))
-                detalle = `${premio.aciertos} números`;
+                detalle = `${premio.aciertos} n�meros`;
             else detalle = `Aciertos ${premio.aciertos}`;
 
             const catAmount =
@@ -740,17 +770,17 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
                     ? fmtEu(premio.premio_categoria)
                     : fmtEu(premio.premio);
             if (premio.categoria)
-                detalle += ` → Categoría ${premio.categoria} (${catAmount})`;
-            else detalle += ` → ${catAmount}`;
+                detalle += ` � Categor�a ${premio.categoria} (${catAmount})`;
+            else detalle += ` � ${catAmount}`;
             if (
                 premio.incluyeReintegro &&
                 typeof premio.reintegro === "number"
             ) {
                 detalle += ` + Reintegro (${fmtEu(
                     premio.reintegro
-                )}) → Total ${fmtEu(premio.premio)}`;
+                )}) � Total ${fmtEu(premio.premio)}`;
             } else {
-                detalle += ` → ${fmtEu(premio.premio)}`;
+                detalle += ` � ${fmtEu(premio.premio)}`;
             }
 
             lineas.push({ boletoId, texto: header });
@@ -780,9 +810,9 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
     }
 
     if (!resultados.length) {
-        resumen += `ℹ️ No hay sorteos en gordo con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
+        resumen += `9 No hay sorteos en gordo con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
     } else if (!lineas.length) {
-        resumen += `✔️ Sin aciertos en gordo esta semana.\n`;
+        resumen += ` Sin aciertos en gordo esta semana.\n`;
     } else {
         lineas.sort((a, b) => a.boletoId.localeCompare(b.boletoId));
         resumen += "\n" + lineas.map((x) => x.texto).join("\n") + "\n";
@@ -804,14 +834,14 @@ async function enviarCorreoResumen({ subject, html, adjuntos = [], to }) {
             attachments: adjuntos,
         });
         console.log(
-            "📧 Correo enviado a",
+            "=� Correo enviado a",
             toList.length ? toList.length : MAIL_CONFIG.to ? 1 : 0,
             "destinatario(s) con",
             adjuntos.length,
             "imagen(es)."
         );
     } catch (err) {
-        console.error("❌ Error enviando correo:", err.message);
+        console.error("L Error enviando correo:", err.message);
     }
 }
 
@@ -841,8 +871,8 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
     let totalImporte = 0;
 
     try {
-        console.log(`🔧 DEBUG: autoUpdate = ${autoUpdate}`);
-        console.log(`🏁 Semana ${fechaLunes} → ${fechaDomingo}`);
+        console.log(`=' DEBUG: autoUpdate = ${autoUpdate}`);
+        console.log(`<� Semana ${fechaLunes} � ${fechaDomingo}`);
 
         const pendientes = autoUpdate
             ? await ensureDataForWeek(conn, fechaLunes, { verbose: true })
@@ -856,24 +886,27 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
         totalImporte = e.totalImporte + p.totalImporte + g.totalImporte;
 
         resumenFinal =
-            `📆 Verificación de la semana (lunes: ${fechaLunes}):\n\n` +
+            `=� Verificaci�n de la semana (lunes: ${fechaLunes}):\n\n` +
             partes.filter(Boolean).join("\n\n") +
-            `\n\n📊 Resumen de la semana:\n` +
-            `- Euromillones: ${e.premiados} boleto${e.premiados !== 1 ? "s" : ""
-            } premiado${e.premiados !== 1 ? "s" : ""} → ${fmtEu(
+            `\n\n=� Resumen de la semana:\n` +
+            `- Euromillones: ${e.premiados} boleto${
+                e.premiados !== 1 ? "s" : ""
+            } premiado${e.premiados !== 1 ? "s" : ""} � ${fmtEu(
                 e.totalImporte
             )}\n` +
-            `- Primitiva: ${p.premiados} boleto${p.premiados !== 1 ? "s" : ""
-            } premiado${p.premiados !== 1 ? "s" : ""} → ${fmtEu(
+            `- Primitiva: ${p.premiados} boleto${
+                p.premiados !== 1 ? "s" : ""
+            } premiado${p.premiados !== 1 ? "s" : ""} � ${fmtEu(
                 p.totalImporte
             )}\n` +
-            `- Gordo: ${g.premiados} boleto${g.premiados !== 1 ? "s" : ""
-            } premiado${g.premiados !== 1 ? "s" : ""} → ${fmtEu(
+            `- Gordo: ${g.premiados} boleto${
+                g.premiados !== 1 ? "s" : ""
+            } premiado${g.premiados !== 1 ? "s" : ""} � ${fmtEu(
                 g.totalImporte
             )}\n\n` +
-            `💵 TOTAL GANADO ESTA SEMANA: ${fmtEu(totalImporte)}\n`;
+            `=� TOTAL GANADO ESTA SEMANA: ${fmtEu(totalImporte)}\n`;
 
-        // Bloque de pendientes (agrupado y con día de la semana)
+        // Bloque de pendientes (agrupado y con d�a de la semana)
         if (pendientes.length > 0) {
             const porTipo = pendientes.reduce((acc, p) => {
                 (acc[p.tipo] ||= []).push(p.fecha);
@@ -882,16 +915,16 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
             const lineasPend = Object.entries(porTipo)
                 .map(([tipo, fechas]) => {
                     const hint =
-                        PUBLISH_HINT[tipo] || "pendiente de publicación";
+                        PUBLISH_HINT[tipo] || "pendiente de publicaci�n";
                     const lista = [...new Set(fechas)]
                         .sort()
                         .map((f) => `${WEEKDAY_ES[weekday(f)]} ${f}`)
                         .join(", ");
-                    return `- ${tipo}: ${lista} → ${hint}`;
+                    return `- ${tipo}: ${lista} � ${hint}`;
                 })
                 .join("\n");
 
-            resumenFinal += `\n⚠️ Sorteos pendientes de publicación:\n${lineasPend}\n`;
+            resumenFinal += `\n� Sorteos pendientes de publicaci�n:\n${lineasPend}\n`;
         }
 
         // Adjuntos de-dup
@@ -904,9 +937,9 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
             }
         );
 
-        console.log(`📁 Log guardado en: ${LOG_FILE}`);
+        console.log(`=� Log guardado en: ${LOG_FILE}`);
     } catch (err) {
-        console.error("❌ Error verificando semana:", err.stack || err.message);
+        console.error("L Error verificando semana:", err.stack || err.message);
     } finally {
         conn.release();
         logStream.end();
@@ -917,9 +950,100 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
     return { fechaLunes, resumenFinal, adjuntosFinal, totalImporte };
 }
 
+function parseVariantsArg(rawArgs) {
+    const runAll = rawArgs.some((a) => a === "--all" || a === "--both");
+    const flagFamily = rawArgs.includes("--family");
+    const flagCre = rawArgs.includes("--cre");
+    const cliVariants = rawArgs
+        .filter((a) => a.startsWith("--variant="))
+        .map((a) => normalizeVariantName(a.split("=")[1]))
+        .filter(Boolean);
+    const envListArg = rawArgs.find((a) => a.startsWith("--envs="));
+    const envList = envListArg
+        ? envListArg
+              .split("=")[1]
+              .split(",")
+              .map(normalizeVariantName)
+              .filter(Boolean)
+        : [];
+
+    let variants = [];
+    if (runAll) variants = [...KNOWN_VARIANTS];
+    else if (envList.length) variants = envList;
+    else if (cliVariants.length) variants = cliVariants;
+    else if (flagFamily || flagCre)
+        variants = [
+            ...(flagCre ? ["cre"] : []),
+            ...(flagFamily ? ["family"] : []),
+        ];
+    else variants = [fallbackVariant()];
+
+    variants = [...new Set(variants.map(normalizeVariantName).filter(Boolean))];
+    const invalid = variants.filter((v) => !KNOWN_VARIANTS.includes(v));
+    if (invalid.length) {
+        throw new Error(
+            `? Variantes no soportadas: ${invalid.join(
+                ", "
+            )}. Usa solo: ${KNOWN_VARIANTS.join(", ")}`
+        );
+    }
+
+    return variants.length ? variants : [DEFAULT_VARIANT];
+}
+
+function parseCliArgs(rawArgs) {
+    const argFecha = rawArgs.find((x) => x.startsWith("--fecha="));
+    const argRango = rawArgs.find((x) => x.startsWith("--rango="));
+    const autoWeek = rawArgs.includes("--week");
+    const multiMail = rawArgs.includes("--multi-mail");
+    const silent = rawArgs.includes("--silent");
+    const noUpdate = rawArgs.includes("--no-update");
+
+    const modes = [argFecha, argRango, autoWeek].filter(Boolean).length;
+    if (modes > 1) {
+        throw new Error(
+            "? No combines --week con --fecha ni con --rango. Usa solo una modalidad."
+        );
+    }
+    if (modes === 0) {
+        throw new Error(
+            "? Usa --fecha=YYYY-MM-DD (lunes) \n    o --rango=YYYY-MM-DD,YYYY-MM-DD \n    o --week (semana actual) \n    y --multi-mail \n      --silent \n      --no-update \n      --envs=cre,family"
+        );
+    }
+
+    let semanas = [];
+    if (autoWeek) {
+        const hoy = fechaISO(new Date());
+        const lunes = mondayOf(hoy);
+        console.log(
+            `?? --week detectado: ejecutando la semana que inicia el lunes ${lunes} (hoy: ${hoy})`
+        );
+        semanas = [lunes];
+    } else if (argRango) {
+        const rangoPart = argRango.split("=")[1] || "";
+        const [ini, fin] = rangoPart.split(",");
+        if (!ini || !fin) {
+            throw new Error(
+                "? Formato de --rango invalido. Usa --rango=YYYY-MM-DD,YYYY-MM-DD"
+            );
+        }
+        semanas = enumerateMondaysInRange(ini, fin);
+    } else {
+        const fl = argFecha.split("=")[1];
+        semanas = [mondayOf(fl)];
+    }
+
+    return {
+        semanas,
+        multiMail,
+        silent,
+        noUpdate,
+        variants: parseVariantsArg(rawArgs),
+    };
+}
+
 // ================== MAIN (semana o rango) ==================
 import { pathToFileURL } from "url";
-import { CLIENT_RENEG_LIMIT } from "tls";
 const __isMain = (() => {
     try {
         return import.meta.url === pathToFileURL(process.argv[1] || "").href;
@@ -930,65 +1054,16 @@ const __isMain = (() => {
 
 if (__isMain)
     (async () => {
-        const rawArgs = process.argv.slice(2);
-        const argFecha = rawArgs.find((x) => x.startsWith("--fecha="));
-        const argRango = rawArgs.find((x) => x.startsWith("--rango="));
-        const autoWeek = rawArgs.includes("--week");
-        const multiMail = rawArgs.includes("--multi-mail");
-        const silent = rawArgs.includes("--silent");
-        const noUpdate = rawArgs.includes("--no-update");
-        const runAll = rawArgs.some((a) => a === "--all" || a === "--both");
-        const flagFamily = rawArgs.includes("--family");
-        const flagCre = rawArgs.includes("--cre");
-        const cliVariants = rawArgs
-            .filter((a) => a.startsWith("--variant="))
-            .map((a) => a.split("=")[1])
-            .filter(Boolean);
-        const variants = runAll
-            ? ["cre", "family"]
-            : cliVariants.length
-                ? cliVariants
-                : flagFamily || flagCre
-                    ? [
-                        ...(flagCre ? ["cre"] : []),
-                        ...(flagFamily ? ["family"] : []),
-                    ]
-                    : [fallbackVariant()];
+        let cli;
+        try {
+            cli = parseCliArgs(process.argv.slice(2));
+        } catch (err) {
+            console.error(err.message || err);
+            process.exitCode = 1;
+            return;
+        }
 
-        async function runOnce() {
-            if (autoWeek && (argFecha || argRango)) {
-                throw new Error(
-                    "? No combines --week con --fecha ni con --rango. Usa solo una modalidad."
-                );
-            }
-            if (!argFecha && !argRango && !autoWeek) {
-                throw new Error(
-                    "? Usa --fecha=YYYY-MM-DD (lunes) \n    o --rango=YYYY-MM-DD,YYYY-MM-DD \n    o --week (semana actual) \n    y --multi-mail \n      --silent \n      --no-update"
-                );
-            }
-
-            let semanas = [];
-            if (autoWeek) {
-                const hoy = fechaISO(new Date());
-                const lunes = mondayOf(hoy);
-                console.log(
-                    `?? --week detectado: ejecutando la semana que inicia el lunes ${lunes} (hoy: ${hoy})`
-                );
-                semanas = [lunes];
-            } else if (argRango) {
-                const rangoPart = argRango.split("=")[1] || "";
-                const [ini, fin] = rangoPart.split(",");
-                if (!ini || !fin) {
-                    throw new Error(
-                        "? Formato de --rango inválido. Usa --rango=YYYY-MM-DD,YYYY-MM-DD"
-                    );
-                }
-                semanas = enumerateMondaysInRange(ini, fin);
-            } else {
-                const fl = argFecha.split("=")[1];
-                semanas = [mondayOf(fl)];
-            }
-
+        const runOnce = async ({ semanas, multiMail, silent, noUpdate }) => {
             const resultados = [];
             let adjuntosAcumulados = [];
             let totalAcumulado = 0;
@@ -1000,20 +1075,21 @@ if (__isMain)
                 if (multiMail && !silent) {
                     let recipients = await getRecipients();
                     if (MODO_DEV && (!recipients || recipients.length === 0)) {
-                        const devTo = (process.env.EMAIL_DEV_TO || "").trim();
+                        const devTo = (process.env.EMAIL_DEV_TO || '').trim();
                         recipients = devTo ? [devTo] : [MAIL_CONFIG.from];
                         console.log(
-                            "MODO_DEV=true: enviando SOLO a",
-                            recipients.join(",")
+                            'MODO_DEV=true: enviando SOLO a',
+                            recipients.join(',')
                         );
                     }
                     await enviarCorreoResumen({
                         subject: MAIL_CONFIG.subject,
                         html: `
-          <h2>Comprobación de los resultados</h2>
-          <p>A fecha: ${new Date().toLocaleString("es-ES")}</p>
-          <pre style="font-family: monospace; white-space: pre-wrap;">${r.resumenFinal
-                            }</pre>
+          <h2>Comprobaci�n de los resultados</h2>
+          <p>A fecha: ${new Date().toLocaleString('es-ES')}</p>
+          <pre style="font-family: monospace; white-space: pre-wrap;">${
+              r.resumenFinal
+          }</pre>
         `,
                         adjuntos: r.adjuntosFinal,
                         to: recipients,
@@ -1037,9 +1113,11 @@ if (__isMain)
                     .join("\n\n" + "?".repeat(35) + "\n\n");
 
                 const html =
-                    `<h2>Verificación de resultados (rango)</h2>` +
-                    `<p>A fecha: ${new Date().toLocaleString("es-ES")}</p>` +
-                    `<pre style="font-family: monospace; white-space: pre-wrap;">${cuerpo}\n\n` +
+                    `<h2>Verificaci�n de resultados (rango)</h2>` +
+                    `<p>A fecha: ${new Date().toLocaleString('es-ES')}</p>` +
+                    `<pre style="font-family: monospace; white-space: pre-wrap;">${cuerpo}
+
+` +
                     `?? TOTAL GANADO EN EL RANGO: ${fmtEu(totalAcumulado)}</pre>`;
 
                 let recipients = await getRecipients();
@@ -1047,11 +1125,11 @@ if (__isMain)
                     process.env.MODO_DESARROLLO &&
                     (!recipients || recipients.length === 0)
                 ) {
-                    const devTo = (process.env.EMAIL_DEV_TO || "").trim();
+                    const devTo = (process.env.EMAIL_DEV_TO || '').trim();
                     recipients = devTo ? [devTo] : [MAIL_CONFIG.from];
                     console.log(
-                        "MOD_DESARROLLO=true: enviando SOLO a",
-                        recipients.join(",")
+                        'MOD_DESARROLLO=true: enviando SOLO a',
+                        recipients.join(',')
                     );
                 }
                 await enviarCorreoResumen({
@@ -1061,27 +1139,30 @@ if (__isMain)
                     to: recipients,
                 });
             }
-        }
+        };
 
-        for (const variant of variants) {
+        for (const variant of cli.variants) {
             try {
-                console.log(`\n================= verify-week (${variant}) =================`);
-                if (pool && typeof pool.end === "function") {
+                console.log(`
+================= verify-week (${variant}) =================`);
+                if (pool && typeof pool.end === 'function') {
                     try {
                         await pool.end();
-                    } catch { }
+                    } catch {}
                     pool = null;
                 }
                 initEnvForVariant(variant);
-                await runOnce();
+                await runOnce(cli);
             } catch (err) {
                 console.error(
                     `? Error en verify-week (${variant}):`,
                     err.stack || err.message
                 );
             } finally {
-                if (pool && typeof pool.end === "function") {
-                    try { await pool.end(); } catch { }
+                if (pool && typeof pool.end === 'function') {
+                    try {
+                        await pool.end();
+                    } catch {}
                 }
             }
         }

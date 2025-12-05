@@ -1,20 +1,14 @@
 // ecosystem.config.js
 module.exports = {
-    apps: [
-         {
+  apps: [
+    {
       name: 'app-cre',
       script: './server.js',
       watch: ['server.js'], //, 'src', 'views', 'public'],
       ignore_watch: [
-        'node_modules', 
+        'node_modules',
         'logs',
-        'data', 
-        'scr/uploads',
-        'data/historico-cre/**',
-        'data/historico-family/**',
-        'src/procesadosQR/**',
-        'data/json/**',
-        'src/scans/**',
+        'data',
         '*.log',
         '*.tmp'],
       cwd: './', // raíz del proyecto
@@ -30,19 +24,14 @@ module.exports = {
         APP_VARIANT: 'cre'
       }
     },
-      {
+    {
       name: 'app-family',
       script: './server.js',
       watch: ['server.js'],  // 'src', 'views', 'public'],
       ignore_watch: [
-        'node_modules', 
-        'logs', 
-        'uploads',
-        'data/historico-cre/**',
-        'data/historico-family/**',
-        'src/procesadosQR/**',
-        'data/json/**',
-        'src/scans/**',
+        'node_modules',
+        'logs',
+        'data',
         '*.log',
         '*.tmp'],
       cwd: './',
@@ -58,5 +47,15 @@ module.exports = {
         APP_VARIANT: 'family'
       }
     },
-    ],
+    {
+      name: "update-today",
+      script: "update-today.js",
+      args: "--all",
+      cwd: './',
+      cron_restart: "30 22 * * *", // todos los disa  a las 22:30
+      autorestart: false,
+      
+    },
+
+  ],
 };
