@@ -32,13 +32,13 @@ module.exports = {
       autorestart: false
     }, */
    {  name: "verify-week",
-      script: "xc.js",
+      script: "verify-week.js",
       args: "--week --all",
       cwd: './',
       time: true,
       error_file: "./logs/verify-week-errores.log",
       out_file:   "./logs/verify-week-out.log",
-      cron_restart: "*/5 * * * *", // a "40 22 * * 7" // las 10:45 los domingos
+      cron_restart: "18 19 * * *", // a "40 22 * * 7" // las 10:45 los domingos
       autorestart: false
     },
     

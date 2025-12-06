@@ -143,9 +143,9 @@ function buildMailConfig(env) {
     return {
         from: env.EMAIL_FROM,
         to: env.EMAIL_TO,
-        subject: `${subjectPrefix} Verificaci�n semanal de resultados`,
+        subject: `${subjectPrefix} Verificación semanal de resultados`,
         subjectRange: (ini, fin) =>
-            `${subjectPrefix} Verificaci�n de resultados (${ini} -> ${fin})`,
+            `${subjectPrefix} Verificación de resultados (${ini} -> ${fin})`,
         smtp: {
             host: env.EMAIL_HOST,
             port: Number(env.EMAIL_PORT || 465),
@@ -185,19 +185,19 @@ function ensurePool() {
 }
 
 const PUBLISH_HINT = {
-    euromillones: "normalmente tras la medianoche del d�a siguiente",
-    primitiva: "normalmente tras la medianoche del d�a siguiente",
-    gordo: "normalmente se publican el lunes por la ma�ana",
+    euromillones: "normalmente tras la medianoche del día siguiente",
+    primitiva: "normalmente tras la medianoche del día siguiente",
+    gordo: "normalmente se publican el lunes por la mañana",
 };
 
 const WEEKDAY_ES = [
     "domingo",
     "lunes",
     "martes",
-    "mi�rcoles",
+    "miércoles",
     "jueves",
     "viernes",
-    "s�bado",
+    "sábado",
 ];
 
 // ================== FECHAS ==================
@@ -259,7 +259,7 @@ function cabeceraEurom(s) {
     const elM = (s.elMillon || "").toString().trim();
     const sorteo = sorteoNumeroNNN(s.sorteo);
     const fecha = (s.fecha || "").toString().slice(0, 10);
-    const extra = elM ? ` � El Millon: ${elM}` : "";
+    const extra = elM ? ` · El Millon: ${elM}` : "";
     return `Sorteo ${sorteo} (${fecha}): ${nums} + ${est}${extra}`;
 }
 
@@ -273,7 +273,7 @@ function cabeceraPrimi(s) {
     const rein = (s.reintegro || "").toString();
     const sorteo = sorteoNumeroNNN(s.sorteo);
     const fecha = (s.fecha || "").toString().slice(0, 10);
-    return `Sorteo ${sorteo} (${fecha}): ${nums} � C:${comp} � R:${rein}`;
+    return `Sorteo ${sorteo} (${fecha}): ${nums} · C:${comp} · R:${rein}`;
 }
 
 function cabeceraGordo(s) {
@@ -285,7 +285,7 @@ function cabeceraGordo(s) {
     const clave = (s.numeroClave || s.clave || "").toString();
     const sorteo = sorteoNumeroNNN(s.sorteo);
     const fecha = (s.fecha || "").toString().slice(0, 10);
-    return `Sorteo ${sorteo} (${fecha}): ${nums} � Clave:${clave}`;
+    return `Sorteo ${sorteo} (${fecha}): ${nums} · Clave:${clave}`;
 }
 
 // ================== DB HELPERS ==================
@@ -341,7 +341,7 @@ async function existePremiosPorFecha(conn, tipoApuesta, fechaISO) {
         [tipoApuesta, nnn, fechaStr]
     );
     if ((p[0]?.n || 0) > 0) return true;
-    // Fallback: si no hay fecha asociada en premios_sorteos, comprobar por sorteo �nicamente (acepta registros antiguos "YYYY/NNN")
+    // Fallback: si no hay fecha asociada en premios_sorteos, comprobar por sorteo únicamente (acepta registros antiguos "YYYY/NNN")
     const r = await conn.query(
         `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND (sorteo=? OR sorteo LIKE ?)`,
         [tipoApuesta, nnn, `%/${nnn}`]
@@ -359,15 +359,15 @@ async function sorteoTieneCategorias(conn, tipo, sorteoNNN) {
 // ================== SAFE SCRAPE (marca pendientes) ==================
 async function safeScrape({ label, tipo, fecha, fn, pendientes }) {
     try {
-        console.log(`   < ${label} ${fecha}`);
+        console.log(`   🌐 ${label} ${fecha}`);
         const res = await fn();
         if (Array.isArray(res)) {
             if (res.length > 0)
-                console.log(`       OK (${res.length} elemento(s))`);
-            else console.log(`      9 Sin datos publicados a�n`);
+                console.log(`      ✅ OK (${res.length} elemento(s))`);
+            else console.log(`      ℹ️ Sin datos publicados aún`);
         } else if (typeof res === "boolean") {
-            if (res) console.log(`       Guardado en BD`);
-            else console.log(`      9 No disponible todav�a (sin guardar)`);
+            if (res) console.log(`      ✅ Guardado en BD`);
+            else console.log(`      ℹ️ No disponible todavía (sin guardar)`);
         }
     } catch (err) {
         const status = err?.response?.status;
@@ -379,11 +379,11 @@ async function safeScrape({ label, tipo, fecha, fn, pendientes }) {
             status === 500
         ) {
             pendientes.push({ tipo, fecha, label, status, url });
-            console.warn(`   � Pendiente: ${label} ${fecha} (HTTP ${status})`);
+            console.warn(`   ⚠️ Pendiente: ${label} ${fecha} (HTTP ${status})`);
             return;
         }
         console.warn(
-            `   � Error no fatal en ${label} ${fecha}:`,
+            `   ⚠️ Error no fatal en ${label} ${fecha}:`,
             status || err.message
         );
     }
@@ -393,7 +393,7 @@ async function safeScrape({ label, tipo, fecha, fn, pendientes }) {
 async function ensureDataForWeek(conn, fechaLunes, { verbose = true } = {}) {
     const fechas = {
         euromillones: [addDays(fechaLunes, 1), addDays(fechaLunes, 4)], // mar, vie
-        primitiva: [fechaLunes, addDays(fechaLunes, 3), addDays(fechaLunes, 5)], // lun, jue, s�b
+        primitiva: [fechaLunes, addDays(fechaLunes, 3), addDays(fechaLunes, 5)], // lun, jue, sáb
         gordo: [addDays(fechaLunes, 6)], // dom
     };
 
@@ -401,8 +401,7 @@ async function ensureDataForWeek(conn, fechaLunes, { verbose = true } = {}) {
 
     if (verbose) {
         console.log(
-            `=
- Comprobando datos de la semana ${fechaLunes} � ${addDays(
+            `🔍 Comprobando datos de la semana ${fechaLunes} → ${addDays(
                 fechaLunes,
                 6
             )}...`
@@ -520,7 +519,7 @@ async function ensureDataForWeek(conn, fechaLunes, { verbose = true } = {}) {
         }
     }
 
-    if (verbose) console.log(" Datos de la semana actualizados si faltaban.");
+    if (verbose) console.log("✅ Datos de la semana actualizados si faltaban.");
     return pendientes;
 }
 
@@ -542,8 +541,8 @@ async function procesarEurom(conn, fechaLunes, fechaDomingo) {
     let totalImporte = 0;
 
     if (resultados.length) {
-        resumen += `=� Resultados de euromillones (${fechaLunes}):\n`;
-        resumen += `=� ${resultados.length} sorteos esta semana\n`;
+        resumen += `💰 Resultados de euromillones (${fechaLunes}):\n`;
+        resumen += `📅 ${resultados.length} sorteos esta semana\n`;
         for (const s of resultados) resumen += cabeceraEurom(s) + "\n";
     }
 
@@ -567,10 +566,10 @@ async function procesarEurom(conn, fechaLunes, fechaDomingo) {
             if (!premio) continue;
 
             const boletoId = b.identificadorBoleto.slice(-5);
-            const header = `<� Boleto ${boletoId}`;
-            let detalle = `${cmp.aciertosNumeros} n�meros y ${cmp.aciertosEstrellas} estrellas`;
-            if (premio.categoria) detalle += ` � Categor�a ${premio.categoria}`;
-            detalle += ` � ${fmtEu(premio.premio)}`;
+            const header = `🎯 Boleto ${boletoId}`;
+            let detalle = `${cmp.aciertosNumeros} números y ${cmp.aciertosEstrellas} estrellas`;
+            if (premio.categoria) detalle += ` → Categoría ${premio.categoria}`;
+            detalle += ` → ${fmtEu(premio.premio)}`;
 
             lineas.push({ boletoId, texto: header });
             lineas.push({ boletoId, texto: "   " + detalle });
@@ -599,9 +598,9 @@ async function procesarEurom(conn, fechaLunes, fechaDomingo) {
     }
 
     if (!resultados.length) {
-        resumen += `9 No hay sorteos en euromillones con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
+        resumen += `ℹ️ No hay sorteos en euromillones con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
     } else if (!lineas.length) {
-        resumen += ` Sin aciertos en euromillones esta semana.\n`;
+        resumen += `✔️ Sin aciertos en euromillones esta semana.\n`;
     } else {
         lineas.sort((a, b) => a.boletoId.localeCompare(b.boletoId));
         resumen += "\n" + lineas.map((x) => x.texto).join("\n") + "\n";
@@ -630,8 +629,8 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
         if (ok) publicados.push(s);
     }
     if (publicados.length) {
-        resumen += `=� Resultados de primitiva (${fechaLunes}):\n`;
-        resumen += `=� ${publicados.length} sorteo${
+        resumen += `💰 Resultados de primitiva (${fechaLunes}):\n`;
+        resumen += `📅 ${publicados.length} sorteo${
             publicados.length > 1 ? "s" : ""
         } esta semana\n`;
         for (const s of publicados) resumen += cabeceraPrimi(s) + "\n";
@@ -660,19 +659,19 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
             if (!premio) continue;
 
             const boletoId = b.identificadorBoleto.slice(-5);
-            const header = `<� Boleto ${boletoId}`;
+            const header = `🎯 Boleto ${boletoId}`;
 
             let detalle = "";
             if (premio.aciertos === "R") detalle = `Reintegro acertado`;
             else if (premio.aciertos === "5+C")
-                detalle = `5 n�meros + complementario`;
+                detalle = `5 números + complementario`;
             else if (premio.aciertos === "6+R")
-                detalle = `6 n�meros + reintegro`;
+                detalle = `6 números + reintegro`;
             else if (/^\d$/.test(premio.aciertos))
-                detalle = `${premio.aciertos} n�meros`;
+                detalle = `${premio.aciertos} números`;
             else detalle = `Aciertos ${premio.aciertos}`;
-            if (premio.categoria) detalle += ` � Categor�a ${premio.categoria}`;
-            detalle += ` � ${fmtEu(premio.premio)}`;
+            if (premio.categoria) detalle += ` → Categoría ${premio.categoria}`;
+            detalle += ` → ${fmtEu(premio.premio)}`;
 
             lineas.push({ boletoId, texto: header });
             lineas.push({ boletoId, texto: "   " + detalle });
@@ -701,9 +700,9 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
     }
 
     if (!resultados.length) {
-        resumen += `9 No hay sorteos en primitiva con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
+        resumen += `ℹ️ No hay sorteos en primitiva con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
     } else if (!lineas.length) {
-        resumen += ` Sin aciertos en primitiva esta semana.\n`;
+        resumen += `✔️ Sin aciertos en primitiva esta semana.\n`;
     } else {
         lineas.sort((a, b) => a.boletoId.localeCompare(b.boletoId));
         resumen += "\n" + lineas.map((x) => x.texto).join("\n") + "\n";
@@ -726,8 +725,8 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
     let totalImporte = 0;
 
     if (resultados.length) {
-        resumen += `=� Resultados de gordo (${fechaLunes}):\n`;
-        resumen += `=� ${resultados.length} sorteo${
+        resumen += `💰 Resultados de gordo (${fechaLunes}):\n`;
+        resumen += `📅 ${resultados.length} sorteo${
             resultados.length > 1 ? "s" : ""
         } esta semana\n`;
         for (const s of resultados) resumen += cabeceraGordo(s) + "\n";
@@ -753,16 +752,16 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
             if (!premio) continue;
 
             const boletoId = b.identificadorBoleto.slice(-5);
-            const header = `<� Boleto ${boletoId}`;
+            const header = `🎯 Boleto ${boletoId}`;
 
             let detalle = "";
             if (premio.aciertos.endsWith("+C"))
                 detalle = `${premio.aciertos.replace(
                     "+C",
                     ""
-                )} n�meros + clave`;
+                )} números + clave`;
             else if (/^\d$/.test(premio.aciertos))
-                detalle = `${premio.aciertos} n�meros`;
+                detalle = `${premio.aciertos} números`;
             else detalle = `Aciertos ${premio.aciertos}`;
 
             const catAmount =
@@ -770,17 +769,17 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
                     ? fmtEu(premio.premio_categoria)
                     : fmtEu(premio.premio);
             if (premio.categoria)
-                detalle += ` � Categor�a ${premio.categoria} (${catAmount})`;
-            else detalle += ` � ${catAmount}`;
+                detalle += ` → Categoría ${premio.categoria} (${catAmount})`;
+            else detalle += ` → ${catAmount}`;
             if (
                 premio.incluyeReintegro &&
                 typeof premio.reintegro === "number"
             ) {
                 detalle += ` + Reintegro (${fmtEu(
                     premio.reintegro
-                )}) � Total ${fmtEu(premio.premio)}`;
+                )}) → Total ${fmtEu(premio.premio)}`;
             } else {
-                detalle += ` � ${fmtEu(premio.premio)}`;
+                detalle += ` → ${fmtEu(premio.premio)}`;
             }
 
             lineas.push({ boletoId, texto: header });
@@ -810,9 +809,9 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
     }
 
     if (!resultados.length) {
-        resumen += `9 No hay sorteos en gordo con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
+        resumen += `ℹ️ No hay sorteos en gordo con fecha entre ${fechaLunes} y ${fechaDomingo}.`;
     } else if (!lineas.length) {
-        resumen += ` Sin aciertos en gordo esta semana.\n`;
+        resumen += `✔️ Sin aciertos en gordo esta semana.\n`;
     } else {
         lineas.sort((a, b) => a.boletoId.localeCompare(b.boletoId));
         resumen += "\n" + lineas.map((x) => x.texto).join("\n") + "\n";
@@ -834,14 +833,14 @@ async function enviarCorreoResumen({ subject, html, adjuntos = [], to }) {
             attachments: adjuntos,
         });
         console.log(
-            "=� Correo enviado a",
+            "📧 Correo enviado a",
             toList.length ? toList.length : MAIL_CONFIG.to ? 1 : 0,
             "destinatario(s) con",
             adjuntos.length,
             "imagen(es)."
         );
     } catch (err) {
-        console.error("L Error enviando correo:", err.message);
+        console.error("❌ Error enviando correo:", err.message);
     }
 }
 
@@ -871,8 +870,8 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
     let totalImporte = 0;
 
     try {
-        console.log(`=' DEBUG: autoUpdate = ${autoUpdate}`);
-        console.log(`<� Semana ${fechaLunes} � ${fechaDomingo}`);
+        console.log(`🔧 DEBUG: autoUpdate = ${autoUpdate}`);
+        console.log(`🏁 Semana ${fechaLunes} → ${fechaDomingo}`);
 
         const pendientes = autoUpdate
             ? await ensureDataForWeek(conn, fechaLunes, { verbose: true })
@@ -886,27 +885,27 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
         totalImporte = e.totalImporte + p.totalImporte + g.totalImporte;
 
         resumenFinal =
-            `=� Verificaci�n de la semana (lunes: ${fechaLunes}):\n\n` +
+            `📆 Verificación de la semana (lunes: ${fechaLunes}):\n\n` +
             partes.filter(Boolean).join("\n\n") +
-            `\n\n=� Resumen de la semana:\n` +
+            `\n\n📊 Resumen de la semana:\n` +
             `- Euromillones: ${e.premiados} boleto${
                 e.premiados !== 1 ? "s" : ""
-            } premiado${e.premiados !== 1 ? "s" : ""} � ${fmtEu(
+            } premiado${e.premiados !== 1 ? "s" : ""} → ${fmtEu(
                 e.totalImporte
             )}\n` +
             `- Primitiva: ${p.premiados} boleto${
                 p.premiados !== 1 ? "s" : ""
-            } premiado${p.premiados !== 1 ? "s" : ""} � ${fmtEu(
+            } premiado${p.premiados !== 1 ? "s" : ""} → ${fmtEu(
                 p.totalImporte
             )}\n` +
             `- Gordo: ${g.premiados} boleto${
                 g.premiados !== 1 ? "s" : ""
-            } premiado${g.premiados !== 1 ? "s" : ""} � ${fmtEu(
+            } premiado${g.premiados !== 1 ? "s" : ""} → ${fmtEu(
                 g.totalImporte
             )}\n\n` +
-            `=� TOTAL GANADO ESTA SEMANA: ${fmtEu(totalImporte)}\n`;
+            `💵 TOTAL GANADO ESTA SEMANA: ${fmtEu(totalImporte)}\n`;
 
-        // Bloque de pendientes (agrupado y con d�a de la semana)
+        // Bloque de pendientes (agrupado y con día de la semana)
         if (pendientes.length > 0) {
             const porTipo = pendientes.reduce((acc, p) => {
                 (acc[p.tipo] ||= []).push(p.fecha);
@@ -915,16 +914,16 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
             const lineasPend = Object.entries(porTipo)
                 .map(([tipo, fechas]) => {
                     const hint =
-                        PUBLISH_HINT[tipo] || "pendiente de publicaci�n";
+                        PUBLISH_HINT[tipo] || "pendiente de publicación";
                     const lista = [...new Set(fechas)]
                         .sort()
                         .map((f) => `${WEEKDAY_ES[weekday(f)]} ${f}`)
                         .join(", ");
-                    return `- ${tipo}: ${lista} � ${hint}`;
+                    return `- ${tipo}: ${lista} → ${hint}`;
                 })
                 .join("\n");
 
-            resumenFinal += `\n� Sorteos pendientes de publicaci�n:\n${lineasPend}\n`;
+            resumenFinal += `\n⚠️ Sorteos pendientes de publicación:\n${lineasPend}\n`;
         }
 
         // Adjuntos de-dup
@@ -937,9 +936,9 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
             }
         );
 
-        console.log(`=� Log guardado en: ${LOG_FILE}`);
+        console.log(`📁 Log guardado en: ${LOG_FILE}`);
     } catch (err) {
-        console.error("L Error verificando semana:", err.stack || err.message);
+        console.error("❌ Error verificando semana:", err.stack || err.message);
     } finally {
         conn.release();
         logStream.end();
@@ -1085,7 +1084,7 @@ if (__isMain)
                     await enviarCorreoResumen({
                         subject: MAIL_CONFIG.subject,
                         html: `
-          <h2>Comprobaci�n de los resultados</h2>
+          <h2>Comprobaci¢n de los resultados</h2>
           <p>A fecha: ${new Date().toLocaleString('es-ES')}</p>
           <pre style="font-family: monospace; white-space: pre-wrap;">${
               r.resumenFinal
@@ -1113,7 +1112,7 @@ if (__isMain)
                     .join("\n\n" + "?".repeat(35) + "\n\n");
 
                 const html =
-                    `<h2>Verificaci�n de resultados (rango)</h2>` +
+                    `<h2>Verificaci¢n de resultados (rango)</h2>` +
                     `<p>A fecha: ${new Date().toLocaleString('es-ES')}</p>` +
                     `<pre style="font-family: monospace; white-space: pre-wrap;">${cuerpo}
 

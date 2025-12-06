@@ -21,7 +21,7 @@ import path from "path";
 import fs from "fs";
 import { fechaISO, weekday } from "./src/helpers/fechas.js";
 
-// ?? scrapers (los añadimos en la entrega 4/6)
+// 🔗 scrapers (los añadimos en la entrega 4/6)
 import {
     scrapeResultadosEuromillonesByFecha,
     scrapePremiosEuromillonesByFecha,
@@ -178,7 +178,7 @@ async function runUpdateForVariant(variant) {
 
         if (!planes.length) {
             console.log(
-                "?? No hay sorteos que actualizar hoy según el calendario."
+                "ℹ️ No hay sorteos que actualizar hoy según el calendario."
             );
             return;
         }
@@ -192,7 +192,7 @@ async function runUpdateForVariant(variant) {
             if (tipo === "gordo") tablaResultados = "r_gordo";
 
             console.log(
-                `\n?? [${label}] ${tipo.toUpperCase()} -> fecha ${fecha}`
+                `\n🔎 [${label}] ${tipo.toUpperCase()} -> fecha ${fecha}`
             );
 
             // Verificación de hora mínima de publicación (22:00 del día analizado)
@@ -212,9 +212,9 @@ async function runUpdateForVariant(variant) {
                 fecha
             );
             if (tieneRes) {
-                console.log("   ?? Resultados ya existentes en BD.");
+                console.log("   ✔️ Resultados ya existentes en BD.");
             } else {
-                console.log("   ?? Descargando resultados del día...");
+                console.log("   ⤵️ Descargando resultados del día...");
                 if (tipo === "euromillones") {
                     await scrapeResultadosEuromillonesByFecha(fecha);
                 } else if (tipo === "primitiva") {
@@ -225,8 +225,8 @@ async function runUpdateForVariant(variant) {
                 const ok = await existeResultado(conn, tablaResultados, fecha);
                 console.log(
                     ok
-                        ? "   ? Resultados guardados."
-                        : "   ? No se guardaron resultados."
+                        ? "   ✅ Resultados guardados."
+                        : "   ❌ No se guardaron resultados."
                 );
             }
 
@@ -239,9 +239,9 @@ async function runUpdateForVariant(variant) {
             if (tieneResAhora) {
                 const tienePrem = await existePremios(conn, tipo, fecha);
                 if (tienePrem) {
-                    console.log("   ?? Premios ya existentes en BD.");
+                    console.log("   ✔️ Premios ya existentes en BD.");
                 } else {
-                    console.log("   ?? Descargando tabla de premios...");
+                    console.log("   ⤵️ Descargando tabla de premios...");
                     if (tipo === "euromillones") {
                         await scrapePremiosEuromillonesByFecha(fecha);
                     } else if (tipo === "primitiva") {
@@ -252,18 +252,18 @@ async function runUpdateForVariant(variant) {
                     const okPrem = await existePremios(conn, tipo, fecha);
                     console.log(
                         okPrem
-                            ? "   ? Premios guardados."
-                            : "   ? No se guardaron premios (quizá aún no publicados)."
+                            ? "   ✅ Premios guardados."
+                            : "   ❌ No se guardaron premios (quizá aún no publicados)."
                     );
                 }
             } else {
                 console.log(
-                    "   ?? Saltando premios: no hay resultados en BD para esta fecha."
+                    "   ⚠️ Saltando premios: no hay resultados en BD para esta fecha."
                 );
             }
         }
 
-        console.log("\n?? Actualización diaria finalizada.");
+        console.log("\n✅ Actualización diaria finalizada.");
     } finally {
         try {
             conn.release();
@@ -277,7 +277,7 @@ async function runUpdateForVariant(variant) {
     const runAll = process.argv.some((a) => a === "--all" || a === "--both");
     if (!runAll) {
         console.log(
-            "?? Los parámetros son --all, --both --cre o --family ");
+            "ℹ️ Los parámetros son --all, --both --cre o --family ");
             process.exit(1);
     } 
     

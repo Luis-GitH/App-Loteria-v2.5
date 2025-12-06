@@ -52,9 +52,20 @@ module.exports = {
       script: "update-today.js",
       args: "--all",
       cwd: './',
+      error_file: "./logs/update-today-errores.log",
       cron_restart: "30 22 * * *", // todos los disa  a las 22:30
       autorestart: false,
       
+    },
+     {  
+      name: "verify-week",
+      script: "verify-week.js",
+      args: "--week --all",
+      cwd: './',
+      time: true,
+      error_file: "./logs/verify-week-errores.log",
+      cron_restart: "40 22 * * 7", // a "40 22 * * 7" // las 10:45 los domingos
+      autorestart: false
     },
 
   ],
