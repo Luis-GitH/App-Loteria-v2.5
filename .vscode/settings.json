@@ -35,5 +35,6 @@
             "database": "boletos_loteria",
             "username": "root"
         }
-    ]
+    ],
+    "chatgpt.openOnStartup": false
 }

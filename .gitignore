@@ -2,10 +2,8 @@ node_modules
 .env
 .env_cre
 .env_family
-boletitosscan
 src/procesadosQR
 src/uploads
 src/tmp
-src/
-scans
+src/scans
 *.log

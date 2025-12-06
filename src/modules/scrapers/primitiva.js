@@ -12,16 +12,30 @@ const to2d = (v) => {
   return Number.isFinite(n) ? String(n).padStart(2, "0") : "";
 };
 
+const DIAS_VALIDOS_PRIMITIVA = new Set([1, 4, 6]); // lunes, jueves, sábado
+
 // Ajuste de cierre de aÃ±o: en el histÃ³rico del nuevo aÃ±o pueden aparecer
-// sorteos de finales de diciembre cuyo aÃ±o real es el anterior.
+// sorteos de finales de diciembre cuyo aÃ±o real es el anterior. Evita restar
+// el aÃ±o si la fecha calculada ya cuadra con un dÃ­a de sorteo.
 function convertirFechaAjuste(fechaTexto, anio) {
   const m = (fechaTexto || "").trim().toLowerCase().replace("ï¿½","a").match(/^(\d{1,2})-([a-z]{3,})$/i);
   if (!m) return "";
   const dia = m[1].padStart(2, "0");
   const mesTxt = m[2];
   const mes = MAP_MESES[mesTxt] || "01";
-  const year = (mes === "12") ? (anio - 1) : anio;
-  return `${year}-${mes}-${dia}`;
+
+  if (mes !== "12") return `${anio}-${mes}-${dia}`;
+
+  const fechaAnio = new Date(Number(anio), Number(mes) - 1, Number(dia));
+  const dowAnio = fechaAnio.getDay();
+  if (DIAS_VALIDOS_PRIMITIVA.has(dowAnio)) return `${anio}-${mes}-${dia}`;
+
+  const fechaPrev = new Date(Number(anio) - 1, Number(mes) - 1, Number(dia));
+  const dowPrev = fechaPrev.getDay();
+  if (DIAS_VALIDOS_PRIMITIVA.has(dowPrev)) return `${Number(anio) - 1}-${mes}-${dia}`;
+
+  // Si ninguno cuadra, conserva el aÃ±o original para no inventar fechas.
+  return `${anio}-${mes}-${dia}`;
 }
 
 function convertirFecha(fechaTexto, anio) {

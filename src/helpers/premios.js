@@ -17,22 +17,26 @@ export function cmpEuromillones(boleto, resultado) {
 }
 
 export function cmpPrimitiva(boleto, resultado) {
-    const numerosB = dividirCadena(boleto.combinacion);
+    const to2d = (v) => {
+        const digits = (v ?? "").toString().trim().replace(/\D+/g, "");
+        if (!digits) return "";
+        const n = Number(digits);
+        if (!Number.isFinite(n)) return "";
+        return String(n).padStart(Math.max(2, String(n).length), "0");
+    };
+
+    const numerosB = dividirCadena(boleto.combinacion).map(to2d).filter(Boolean);
     const numerosS = (resultado.numeros || "")
         .split(",")
-        .map((x) => x.trim())
+        .map((x) => to2d(x))
         .filter(Boolean);
     const aciertosNumeros = numerosB.filter((n) => numerosS.includes(n)).length;
-    const aciertoComplementario = numerosB.includes(
-        (resultado.complementario || "").trim()
-    )
-        ? 1
-        : 0;
-    const aciertoReintegro =
-        (boleto.reintegro || "").toString().trim() ===
-        (resultado.reintegro || "").toString().trim()
-            ? 1
-            : 0;
+    const complementario = to2d(resultado.complementario);
+    const aciertoComplementario =
+        complementario && numerosB.includes(complementario) ? 1 : 0;
+    const reinB = to2d(boleto.reintegro);
+    const reinS = to2d(resultado.reintegro);
+    const aciertoReintegro = reinB && reinS && reinB === reinS ? 1 : 0;
     return { aciertosNumeros, aciertoComplementario, aciertoReintegro };
 }
 

@@ -1102,7 +1102,7 @@ app.post('/boletos/nuevo', requireAuth, requireRole('admin'), upload.single('fot
 
     await guardarBoletoEnDB(parsed);
     const weekISO = isoWeekFromMonday(baseMonday);
-    req.session.flash = { type: 'info', msg: 'Boleto aÃ±adido correctamente' };
+    req.session.flash = { type: 'info', msg: 'Boleto añadido correctamente' };
     return res.redirect(`/tickets/boletos/${tipo}/${encodeURIComponent(parsed.identificador)}?week=${weekISO}`);
   } catch (err) {
     if (!req.session.flash) {
