@@ -287,7 +287,7 @@ async function runVariant(variant) {
   try {
     await truncateTables(conn);
 
-    console.log('?? Scrape RESULTADOS...');
+    console.log(':mag: Scrape RESULTADOS...');
     let [eu, pr, go] = await Promise.all([
       scrapeResultadosEuromillonesByFecha(ANIO),
       scrapeResultadosPrimitivaByFecha(ANIO),
@@ -302,17 +302,17 @@ async function runVariant(variant) {
     saveJSON(path.join(DATA_DIR, 'resultados-primitiva-' + ANIO + '.json'), pr);
     saveJSON(path.join(DATA_DIR, 'resultados-gordo-' + ANIO + '.json'), go);
 
-    console.log('?? Insertando RESULTADOS en BD...');
+    console.log('⬇️ Insertando RESULTADOS en BD...');
     await insertEuromillones(conn, eu);
     await insertPrimitiva(conn, pr);
     await insertGordo(conn, go);
 
-    console.log('?? Scrape PREMIOS (todas las fechas del año)...');
+    console.log('⬇️ Scrape PREMIOS (todas las fechas del año)...');
     await precargarPremiosEuromillones(conn, eu);
     await precargarPremiosPrimitiva(conn, pr);
     await precargarPremiosGordo(conn, go);
 
-    console.log('\n?? RESET + RESULTADOS + PREMIOS (ano completo) cargados. Listo.');
+    console.log('\nℹ️ RESET + RESULTADOS + PREMIOS (ano completo) cargados. Listo.');
   } catch (e) {
     console.error('? Error reset-all:', e.stack || e.message);
   } finally {

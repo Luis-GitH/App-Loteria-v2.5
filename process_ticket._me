@@ -23,14 +23,14 @@ Automatización completa del flujo de escaneo, detección, lectura de QR y almac
 ## 🚀 Características principales
 
 | Etapa | Descripción |
-|-------|-------------------------------------------------------------------------------------|
-| 🖨️ **Escaneo (WIA)** | Captura boletos desde escáner compatible WIA (Windows)               |
-| 🧠 **Procesamiento con OpenCV.js** | Detección y recorte automático de boletos individuales |
-| 🔍 **Lectura QR (jsQR)** | Decodificación del código QR y análisis estructurado             |
-| 🧾 **Generación de JSON** | Crea archivos JSON normalizados con todos los datos del boleto  |
-| 💾 **Base de datos SQLite** | Inserción automática en tres tablas según tipo de juego       |
-| 🗂️ **Archivado histórico** | Mueve boletos y JSON procesados a `/data/historico`             |
-| 🧩 **Modo modular** | Cada etapa puede ejecutarse de forma independiente                    |
+|-------|--------------------------------------------------------------------------------------|
+| 🖨️ **Escaneo (WIA)** | Captura boletos desde escáner compatible WIA (Windows)                |
+| 🧠 **Procesamiento con OpenCV.js** | Detección y recorte automático de boletos individuales  |
+| 🔍 **Lectura QR (jsQR)** | Decodificación del código QR y análisis estructurado              |
+| 🧾 **Generación de JSON** | Crea archivos JSON normalizados con todos los datos del boleto   |
+| 💾 **Base de datos SQLite** | Inserción automática en tres tablas según tipo de juego        |
+| 🗂️ **Archivado histórico** | Mueve boletos y JSON procesados a `/data/historico/cre o /family|
+| 🧩 **Modo modular** | Cada etapa puede ejecutarse de forma independiente                     |
 
 ---
 
@@ -55,7 +55,6 @@ AppBoletosLoteria/
 ├── historico/ ← Archivos archivados (imagen + JSON)
 ├── debug/ ← Capturas visuales del proceso
 └── temp/ ← Archivos temporales de escaneo
-
 
 ---
 

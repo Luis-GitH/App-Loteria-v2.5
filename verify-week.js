@@ -87,7 +87,15 @@ const APP_VARIANT =
 const LOG_DIR = path.join(ROOT, "logs");
 const ENV_BASE = path.join(ROOT, ".env");
 const HISTORICO_DIR = path.join(ROOT, "data", `historico-${APP_VARIANT}`);
-const HISTORICO_DIRS = [HISTORICO_DIR];
+const HISTORICO_DIRS = Array.from(
+    new Set([
+        HISTORICO_DIR,
+        ...KNOWN_VARIANTS.map((v) =>
+            path.join(ROOT, "data", `historico-${v}`)
+        ),
+        path.join(ROOT, "data", "historico"),
+    ])
+);
 
 function readEnvFile(filePath) {
     try {
@@ -208,6 +216,13 @@ function toFsImagePath(p) {
     if (!p) return null;
     const s = p.toString();
     if (/^https?:/i.test(s)) return null;
+    // Web path expuesto tipo /historico-family/xxxx.jpg
+    if (/^\/historico[^/]*\//i.test(s)) {
+        const rel = s.replace(/^\//, "");
+        const candidate = path.join(ROOT, "data", rel);
+        if (fs.existsSync(candidate)) return candidate;
+        return path.join(ROOT, rel);
+    }
     if (s.startsWith("/historico/")) {
         const rel = s.replace(/^\/historico\//, "");
         for (const dir of HISTORICO_DIRS) {
@@ -243,6 +258,9 @@ function esPremioConImporte(premio) {
         typeof premio.premio === "number" &&
         premio.premio > 0
     );
+}
+function esPremio(premio) {
+    return premio && !premio.pendiente;
 }
 
 function cabeceraEurom(s) {
@@ -574,16 +592,17 @@ async function procesarEurom(conn, fechaLunes, fechaDomingo) {
             lineas.push({ boletoId, texto: header });
             lineas.push({ boletoId, texto: "   " + detalle });
 
+            const premioValido = esPremio(premio);
             const tieneImporte = esPremioConImporte(premio);
-            if (tieneImporte) {
+            if (premioValido) {
                 premiados += 1;
-                totalImporte += premio.premio;
+                if (tieneImporte) totalImporte += premio.premio;
             }
 
             const imgPath = (boleto.imagen || "").toString();
             const fsPath = toFsImagePath(imgPath);
             if (
-                tieneImporte &&
+                premioValido &&
                 fsPath &&
                 fs.existsSync(fsPath) &&
                 !adjPaths.has(fsPath)
@@ -676,16 +695,17 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
             lineas.push({ boletoId, texto: header });
             lineas.push({ boletoId, texto: "   " + detalle });
 
+            const premioValido = esPremio(premio);
             const tieneImporte = esPremioConImporte(premio);
-            if (tieneImporte) {
+            if (premioValido) {
                 premiados += 1;
-                totalImporte += premio.premio;
+                if (tieneImporte) totalImporte += premio.premio;
             }
 
             const imgPath = (boleto.imagen || "").toString();
             const fsPath = toFsImagePath(imgPath);
             if (
-                tieneImporte &&
+                premioValido &&
                 fsPath &&
                 fs.existsSync(fsPath) &&
                 !adjPaths.has(fsPath)
@@ -785,16 +805,17 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
             lineas.push({ boletoId, texto: header });
             lineas.push({ boletoId, texto: "   " + detalle });
 
+            const premioValido = esPremio(premio);
             const tieneImporte = esPremioConImporte(premio);
-            if (tieneImporte) {
+            if (premioValido) {
                 premiados += 1;
-                totalImporte += premio.premio;
+                if (tieneImporte) totalImporte += premio.premio;
             }
 
             const imgPath = (boleto.imagen || "").toString();
             const fsPath = toFsImagePath(imgPath);
             if (
-                tieneImporte &&
+                premioValido &&
                 fsPath &&
                 fs.existsSync(fsPath) &&
                 !adjPaths.has(fsPath)
@@ -1015,7 +1036,7 @@ function parseCliArgs(rawArgs) {
         const hoy = fechaISO(new Date());
         const lunes = mondayOf(hoy);
         console.log(
-            `?? --week detectado: ejecutando la semana que inicia el lunes ${lunes} (hoy: ${hoy})`
+            ` ℹ️ --week detectado: ejecutando la semana que inicia el lunes ${lunes} (hoy: ${hoy})`
         );
         semanas = [lunes];
     } else if (argRango) {
@@ -1117,7 +1138,7 @@ if (__isMain)
                     `<pre style="font-family: monospace; white-space: pre-wrap;">${cuerpo}
 
 ` +
-                    `?? TOTAL GANADO EN EL RANGO: ${fmtEu(totalAcumulado)}</pre>`;
+                    `💰 TOTAL GANADO EN EL RANGO: ${fmtEu(totalAcumulado)}</pre>`;
 
                 let recipients = await getRecipients();
                 if (

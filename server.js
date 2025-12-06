@@ -75,7 +75,13 @@ process.on('uncaughtException', (err) => {
 });
 const HISTORICO_DIRNAME = `historico-${APP_VARIANT}`;
 const HISTORICO_DIR = path.join(__root, 'data', HISTORICO_DIRNAME).replace(/\\/g, '/');
-const HISTORICO_DIRS = [HISTORICO_DIR];
+const HISTORICO_DIRS = Array.from(
+  new Set([
+    HISTORICO_DIR,
+    ...['cre', 'family'].map((v) => path.join(__root, 'data', `historico-${v}`)),
+    path.join(__root, 'data', 'historico'),
+  ])
+);
 const upload = multer({ dest: path.join(__root, 'scr', 'uploads') });
 // Trust proxy to capture real IPs when behind reverse proxies (e.g., Caddy)
 app.set('trust proxy', true);
@@ -1095,7 +1101,7 @@ app.post('/boletos/nuevo', requireAuth, requireRole('admin'), upload.single('fot
     finalImagePath = path.join(HISTORICO_DIR, imageName);
     await fs.rename(tempPath, finalImagePath);
     tempPath = null;
-    parsed.imagen = `/historico/${imageName}`;
+    parsed.imagen = imageName;
     const jsonName = `${baseName}.json`;
     finalJsonPath = path.join(HISTORICO_DIR, jsonName);
     await fs.writeFile(finalJsonPath, JSON.stringify(parsed, null, 2), 'utf8');
@@ -1242,8 +1248,9 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
       const str = n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       return `${str} \u20ac`;
     });
+    const esPremio = (premio) => premio && !premio.pendiente;
     const esPremioConImporte = (premio) => (
-      premio && !premio.pendiente && typeof premio.premio === 'number' && premio.premio > 0
+      esPremio(premio) && typeof premio.premio === 'number' && premio.premio > 0
     );
 
     // Buscar premios por tipo
@@ -1285,14 +1292,17 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
           detalle += ` Â· ${fmt(premio.premio)}`;
           lineas.push(`Boleto ${boletoId}`);
           lineas.push(`   ${detalle}`);
+          const premioValido = esPremio(premio);
           const tieneImporte = esPremioConImporte(premio);
-          if (tieneImporte) {
+          if (premioValido) {
             premiadosEu += 1;
-            importeEu += premio.premio;
-            totalImporte += premio.premio;
+            if (tieneImporte) {
+              importeEu += premio.premio;
+              totalImporte += premio.premio;
+            }
           }
           const imgUrl = toWebImagen(boleto.imagen);
-          if (tieneImporte && imgUrl && !adjPaths.has(imgUrl)) { adjPaths.add(imgUrl); adjuntos.push(imgUrl); }
+          if (premioValido && imgUrl && !adjPaths.has(imgUrl)) { adjPaths.add(imgUrl); adjuntos.push(imgUrl); }
         }
       }
       if (!lineas.length) resumen += `Sin aciertos en euromillones esta semana.\n`;
@@ -1328,14 +1338,17 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
           detalle += ` Â· ${fmt(premio.premio)}`;
           lineas.push(`Boleto ${boletoId}`);
           lineas.push(`   ${detalle}`);
+          const premioValido = esPremio(premio);
           const tieneImporte = esPremioConImporte(premio);
-          if (tieneImporte) {
+          if (premioValido) {
             premiadosPr += 1;
-            importePr += premio.premio;
-            totalImporte += premio.premio;
+            if (tieneImporte) {
+              importePr += premio.premio;
+              totalImporte += premio.premio;
+            }
           }
           const imgUrl = toWebImagen(boleto.imagen);
-          if (tieneImporte && imgUrl && !adjPaths.has(imgUrl)) { adjPaths.add(imgUrl); adjuntos.push(imgUrl); }
+          if (premioValido && imgUrl && !adjPaths.has(imgUrl)) { adjPaths.add(imgUrl); adjuntos.push(imgUrl); }
         }
       }
       if (!lineas.length) resumen += `Sin aciertos en primitiva esta semana.\n`;
@@ -1372,14 +1385,17 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
           detalle += ` Â· ${fmt(premio.premio)}`;
           lineas.push(`Boleto ${boletoId}`);
           lineas.push(`   ${detalle}`);
+          const premioValido = esPremio(premio);
           const tieneImporte = esPremioConImporte(premio);
-          if (tieneImporte) {
+          if (premioValido) {
             premiadosGo += 1;
-            importeGo += premio.premio;
-            totalImporte += premio.premio;
+            if (tieneImporte) {
+              importeGo += premio.premio;
+              totalImporte += premio.premio;
+            }
           }
           const imgUrl = toWebImagen(boleto.imagen);
-          if (tieneImporte && imgUrl && !adjPaths.has(imgUrl)) { adjPaths.add(imgUrl); adjuntos.push(imgUrl); }
+          if (premioValido && imgUrl && !adjPaths.has(imgUrl)) { adjPaths.add(imgUrl); adjuntos.push(imgUrl); }
         }
       }
       if (!lineas.length) resumen += `Sin aciertos en gordo esta semana.\n`;
