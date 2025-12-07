@@ -1707,6 +1707,7 @@ app.get('/admin', requireAuth, requireRole('admin'), async (req, res) => {
     const [{ total: totalUsersRaw } = {}] = await conn.query(`SELECT COUNT(*) AS total FROM users`);
       const [{ total: totalLoginsRaw } = {}] = await conn.query(`SELECT COUNT(*) AS total FROM logins`);
       const [{ total: totalAttemptsRaw } = {}] = await conn.query(`SELECT COUNT(*) AS total FROM intentosAcceso`);
+      const currentMonday = mondayOf(todayISO());
       // El driver puede devolver BigInt; convertir a Number para evitar el sufijo `n` en la vista
       const totalUsers = Number(totalUsersRaw ?? 0);
       const totalLogins = Number(totalLoginsRaw ?? 0);
@@ -1718,6 +1719,7 @@ app.get('/admin', requireAuth, requireRole('admin'), async (req, res) => {
         logins: totalLogins || 0,
         intentos: totalAttempts || 0,
       },
+      defaultWeekMonday: currentMonday,
     });
   } finally {
     conn.release();
@@ -1855,6 +1857,66 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
     req.session.flash = { type: 'danger', msg: 'Error enviando imÃ¡genes: ' + (err.message || err) };
     return res.redirect('/admin');
   }
+});
+
+// Registrar o actualizar el movimiento de premios de una semana
+app.post('/admin/premios-semana', requireAuth, requireRole('admin'), async (req, res) => {
+  const semanaParam = req.body?.week || req.body?.lunes || req.body?.semana;
+  const lunes = mondayFromParam(semanaParam);
+  if (!lunes) {
+    req.session.flash = { type: 'error', msg: 'Indica el lunes de la semana a procesar.' };
+    return res.redirect('/admin');
+  }
+
+  const fmt = res.locals.fmtEUR || ((v) => {
+    const n = Number(v || 0);
+    return `${n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} \u20ac`;
+  });
+
+  try {
+    const { totalImporte } = await vwProcesarSemana(lunes, { autoUpdate: false });
+    const total = Number(totalImporte ?? 0);
+    if (!Number.isFinite(total)) {
+      req.session.flash = { type: 'error', msg: 'No se pudo calcular el importe de premios para esa semana.' };
+      return res.redirect('/admin');
+    }
+
+    const conn = await pool.getConnection();
+    const concepto = 'Premios';
+    const tipo = 'ingreso';
+    let action = 'creado';
+    try {
+      const [existing] = await conn.query(
+        `SELECT id, comentarios FROM movimientos WHERE fecha = ? AND concepto = ? LIMIT 1`,
+        [lunes, concepto]
+      );
+      if (existing) {
+        await conn.query(
+          `UPDATE movimientos SET importe = ?, tipo = ?, concepto = ? WHERE id = ?`,
+          [total, tipo, concepto, existing.id]
+        );
+        action = 'actualizado';
+      } else {
+        const comentarios = `Premios semana ${lunes}`;
+        await conn.query(
+          `INSERT INTO movimientos (fecha, concepto, importe, tipo, comentarios) VALUES (?,?,?,?,?)`,
+          [lunes, concepto, total, tipo, comentarios]
+        );
+      }
+    } finally {
+      conn.release();
+    }
+
+    req.session.flash = {
+      type: 'info',
+      msg: `Movimiento de premios ${action} (${lunes}): ${fmt(total)}`,
+    };
+  } catch (err) {
+    console.error('Error registrando premios semana:', err);
+    req.session.flash = { type: 'error', msg: 'No se pudo registrar el movimiento de premios: ' + (err.message || err) };
+  }
+
+  return res.redirect('/admin');
 });
 
 app.get('/admin/accesos', requireAuth, requireRole('admin'), async (req, res) => {

@@ -40,6 +40,17 @@
         <a class="btn btn-primary" href="/admin/escanear">Abrir esc&aacute;ner</a>
       </div>
     </div>
+    <div class="col-md-3">
+      <div class="card h-80 p-4">
+        <h3>Registrar premios</h3>
+        <p class="text-muted mb-2">Calcula el total de premios de la semana y lo guarda como ingreso.</p>
+        <form method="POST" action="/admin/premios-semana" onsubmit="return confirm('Registrar el total de premios de esa semana en movimientos?');">
+          <label class="form-label small mb-1" for="week-input">Lunes de la semana</label>
+          <input id="week-input" type="date" name="week" class="form-control" value="<%= defaultWeekMonday || '' %>" required>
+          <button type="submit" class="btn btn-success mt-2">Calcular y guardar</button>
+        </form>
+      </div>
+    </div>
       <div class="col-md-3">
         <div class="card h-80 p-4">
           <h3>Envío de boletos</h3>
