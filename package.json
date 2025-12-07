@@ -1,7 +1,7 @@
 {
   "name": "appboletosloteria",
   "type": "module",
-  "version": "1.0.0",
+  "version": "2.5.0",
   "description": "",
   "main": "process_ticket.v1nOld.js",
   "scripts": {
