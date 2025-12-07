@@ -12,7 +12,7 @@ globalThis.HTMLCanvasElement = createCanvas(1, 1).constructor;
 globalThis.HTMLImageElement = Image;
 globalThis.ImageData = ImageData;
 
-import cv from "opencv.js";
+import cv from "@techstark/opencv-js";
 import { execFile } from "child_process";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import fse from "fs-extra";
