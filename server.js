@@ -235,6 +235,12 @@ const RESULT_META = {
   },
 };
 
+const APUESTA_META = {
+  primitiva: { table: 'primitiva', coste: 1 },
+  euromillones: { table: 'euromillones', coste: 2.5 },
+  gordo: { table: 'gordo', coste: 1.5 },
+};
+
 async function obtenerResultadoPorTipo(conn, tipo, sorteoNNN, fechaISO) {
   const meta = RESULT_META[tipo];
   if (!meta) return null;
@@ -1599,6 +1605,60 @@ function parseImporteStr(v) {
   return Number.isFinite(n) ? n : 0;
 }
 
+function extractNumSorteos(codigo) {
+  if (!codigo) return null;
+  const m = codigo.toString().match(/:(\d+)/);
+  if (!m) return null;
+  const n = Number(m[1]);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function normalizePositiveInt(value, fallback = 1) {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
+async function calcularCosteBoletosSemana(lunes) {
+  const conn = await pool.getConnection();
+  try {
+    let total = 0;
+    for (const [tipo, meta] of Object.entries(APUESTA_META)) {
+      const rows = await conn.query(
+        `SELECT sorteoCodigo, semanas FROM ${meta.table} WHERE fechaLunes = ?`,
+        [lunes]
+      );
+      let sorteos = 0;
+      for (const r of rows) {
+        const numSorteos = extractNumSorteos(r.sorteoCodigo) ?? normalizePositiveInt(r.semanas, 1);
+        sorteos += numSorteos;
+      }
+      total += sorteos * meta.coste;
+    }
+    return total;
+  } finally {
+    conn.release();
+  }
+}
+
+async function upsertMovimiento(conn, { fecha, concepto, importe, tipo, comentarios }) {
+  const [existing] = await conn.query(
+    `SELECT id FROM movimientos WHERE fecha = ? AND concepto = ? LIMIT 1`,
+    [fecha, concepto]
+  );
+  if (existing) {
+    await conn.query(
+      `UPDATE movimientos SET importe = ?, tipo = ?, concepto = ?, comentarios = ? WHERE id = ?`,
+      [importe, tipo, concepto, comentarios || null, existing.id]
+    );
+    return 'actualizado';
+  }
+  await conn.query(
+    `INSERT INTO movimientos (fecha, concepto, importe, tipo, comentarios) VALUES (?,?,?,?,?)`,
+    [fecha, concepto, importe, tipo, comentarios || null]
+  );
+  return 'creado';
+}
+
 function formatDateForInput(value) {
   if (!value) return '';
   if (value instanceof Date) {
@@ -1874,46 +1934,59 @@ app.post('/admin/premios-semana', requireAuth, requireRole('admin'), async (req,
   });
 
   try {
-    const { totalImporte } = await vwProcesarSemana(lunes, { autoUpdate: false });
-    const total = Number(totalImporte ?? 0);
-    if (!Number.isFinite(total)) {
+    const [costeTotal, premios] = await Promise.all([
+      calcularCosteBoletosSemana(lunes),
+      vwProcesarSemana(lunes, { autoUpdate: false }),
+    ]);
+    const totalPremios = Number(premios?.totalImporte ?? 0);
+    if (!Number.isFinite(totalPremios)) {
       req.session.flash = { type: 'error', msg: 'No se pudo calcular el importe de premios para esa semana.' };
+      return res.redirect('/admin');
+    }
+    const totalCoste = Number(costeTotal ?? 0);
+    if (!Number.isFinite(totalCoste)) {
+      req.session.flash = { type: 'error', msg: 'No se pudo calcular el coste de boletos para esa semana.' };
       return res.redirect('/admin');
     }
 
     const conn = await pool.getConnection();
-    const concepto = 'Premios';
-    const tipo = 'ingreso';
-    let action = 'creado';
     try {
-      const [existing] = await conn.query(
-        `SELECT id, comentarios FROM movimientos WHERE fecha = ? AND concepto = ? LIMIT 1`,
-        [lunes, concepto]
-      );
-      if (existing) {
-        await conn.query(
-          `UPDATE movimientos SET importe = ?, tipo = ?, concepto = ? WHERE id = ?`,
-          [total, tipo, concepto, existing.id]
-        );
-        action = 'actualizado';
-      } else {
-        const comentarios = `Premios semana ${lunes}`;
-        await conn.query(
-          `INSERT INTO movimientos (fecha, concepto, importe, tipo, comentarios) VALUES (?,?,?,?,?)`,
-          [lunes, concepto, total, tipo, comentarios]
-        );
+      await conn.beginTransaction();
+      const accionCoste = await upsertMovimiento(conn, {
+        fecha: lunes,
+        concepto: 'Compra boletos',
+        importe: -Math.abs(totalCoste),
+        tipo: 'gasto',
+        comentarios: `Coste boletos semana ${lunes}`,
+      });
+      let accionPremios = null;
+      if (totalPremios > 0) {
+        accionPremios = await upsertMovimiento(conn, {
+          fecha: lunes,
+          concepto: 'Premios',
+          importe: totalPremios,
+          tipo: 'ingreso',
+          comentarios: `Premios semana ${lunes}`,
+        });
       }
+      await conn.commit();
+
+      const premioMsg = accionPremios
+        ? `Premios ${accionPremios} ${fmt(totalPremios)}`
+        : 'Sin premios registrados esta semana';
+      req.session.flash = {
+        type: 'info',
+        msg: `Movimientos (${lunes}): Coste ${accionCoste} ${fmt(-Math.abs(totalCoste))}. ${premioMsg}.`,
+      };
+    } catch (dbErr) {
+      try { await conn.rollback(); } catch {}
+      throw dbErr;
     } finally {
       conn.release();
     }
-
-    req.session.flash = {
-      type: 'info',
-      msg: `Movimiento de premios ${action} (${lunes}): ${fmt(total)}`,
-    };
   } catch (err) {
     console.error('Error registrando premios semana:', err);
-    req.session.flash = { type: 'error', msg: 'No se pudo registrar el movimiento de premios: ' + (err.message || err) };
+    req.session.flash = { type: 'error', msg: 'No se pudo registrar los movimientos de la semana: ' + (err.message || err) };
   }
 
   return res.redirect('/admin');
