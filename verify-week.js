@@ -17,6 +17,7 @@ const specificEnvPath =
 if (specificEnvPath) {
   dotenv.config({ path: specificEnvPath, override: true });
 }
+var envioEmailToUsers=false;
 import {
     fechaISO,
     addDays,
@@ -25,9 +26,6 @@ import {
     enumerateMondaysInRange,
 } from "./src/helpers/fechas.js";
 import {
-   // dividirCadena,
-   // parseNumberOrNull,
-   // formatEuroText,
     sorteoNumeroNNN,
 } from "./src/helpers/funciones.js";
 import {
@@ -307,14 +305,19 @@ function cabeceraGordo(s) {
 }
 
 // ================== DB HELPERS ==================
-async function getRecipients(target) {
+async function getRecipients(envioEmailToUsers) {
+    console.log("🚀 ~ getRecipients ~ envioEmailToUsers viene de users :", envioEmailToUsers)
     ensurePool();
     const conn = await pool.getConnection();
     try {
-        const t = process.env.MODO_DESARROLLO;
-
-        let sql = `SELECT email FROM users WHERE email IS NOT NULL AND email <> ''`;
-        if (t == 1) sql += ` AND tipo='admin'`;
+        
+        let sql = `SELECT email FROM users WHERE email IS NOT NULL `;
+        if (envioEmailToUsers) {
+            sql += `AND tipo='user'`
+         }else{
+            sql += `AND tipo IN ('prueba','admin')`
+        }  ;
+        console.log("🚀 ~ getRecipients ~ sql:", sql)
 
         const rows = await conn.query(sql);
         const set = new Set();
@@ -1018,7 +1021,8 @@ function parseCliArgs(rawArgs) {
     const multiMail = rawArgs.includes("--multi-mail");
     const silent = rawArgs.includes("--silent");
     const noUpdate = rawArgs.includes("--no-update");
-
+    envioEmailToUsers=rawArgs.includes("--users");
+    
     const modes = [argFecha, argRango, autoWeek].filter(Boolean).length;
     if (modes > 1) {
         throw new Error(
@@ -1093,7 +1097,7 @@ if (__isMain)
                 resultados.push(r);
                 totalAcumulado += r.totalImporte;
                 if (multiMail && !silent) {
-                    let recipients = await getRecipients();
+                    let recipients = await getRecipients(envioEmailToUsers);
                     if (MODO_DEV && (!recipients || recipients.length === 0)) {
                         const devTo = (process.env.EMAIL_DEV_TO || '').trim();
                         recipients = devTo ? [devTo] : [MAIL_CONFIG.from];
@@ -1133,24 +1137,19 @@ if (__isMain)
                     .join("\n\n" + "?".repeat(35) + "\n\n");
 
                 const html =
-                    `<h2>Verificaci¢n de resultados (rango)</h2>` +
+                    `<h2>Verificación de resultados (rango)</h2>` +
                     `<p>A fecha: ${new Date().toLocaleString('es-ES')}</p>` +
                     `<pre style="font-family: monospace; white-space: pre-wrap;">${cuerpo}
 
 ` +
-                    `💰 TOTAL GANADO EN EL RANGO: ${fmtEu(totalAcumulado)}</pre>`;
+                    `💰 TOTAL GANADO EN EL RANGO: ${fmtEu(totalAcumulado)}
 
-                let recipients = await getRecipients();
-                if (
-                    process.env.MODO_DESARROLLO &&
-                    (!recipients || recipients.length === 0)
-                ) {
+ 🌐 Recuerda que cualquier consulta o detalle en https://clubre.visiona.pro </pre>`
+
+                let recipients = await getRecipients(envioEmailToUsers);
+                if (!recipients || recipients.length === 0) {
                     const devTo = (process.env.EMAIL_DEV_TO || '').trim();
                     recipients = devTo ? [devTo] : [MAIL_CONFIG.from];
-                    console.log(
-                        'MOD_DESARROLLO=true: enviando SOLO a',
-                        recipients.join(',')
-                    );
                 }
                 await enviarCorreoResumen({
                     subject: MAIL_CONFIG.subjectRange(ini, fin),

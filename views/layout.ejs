@@ -16,26 +16,26 @@
 </head>
 <body>
   <header class="app-header">
-    <img src="<%= headerBanner %>" alt="Cabecera" class="header-banner" />
-    <div class="brand">
+    <img src="<%= headerBanner %>" alt="Cabecera" class="header-banner" style="max-height: 90px; width: auto;" />
+   <!--  <div class="brand">
       <img src="/public/img/logo1.jpg" height="100" width="100" alt="Logo"  />
       <%= brandName %>
-    </div>
-    <nav class="topnav">
-      <% if (user) { %>
-        <a href="/">Inicio</a>
-        <a href="/tickets">Boletos semana</a>
-        <a href="/movimientos">Estado de cuentas</a>
-        <a href="/perfil">Mi perfil</a>
-        <% if (user.tipo === 'admin') { %>
-          <a href="/admin">Mantenimiento</a>
-        <% } %>
-        <form method="post" action="/logout" style="display:inline"><button class="linklike">Salir (<%= user.nombre %>)</button></form>
-      <% } else { %>
-        <a href="/login">Acceder</a>
-      <% } %>
-    </nav>
+    </div> -->
   </header>
+  <nav class="topnav">
+    <% if (user) { %>
+      <a href="/">Inicio</a>
+      <a href="/tickets">Boletos semana</a>
+      <a href="/movimientos">Estado de cuentas</a>
+      <a href="/perfil">Mi perfil</a>
+      <% if (user.tipo === 'admin') { %>
+        <a href="/admin">Mantenimiento</a>
+      <% } %>
+      <form method="post" action="/logout" style="display:inline"><button class="linklike">Salir (<%= user.nombre %>)</button></form>
+    <% } else { %>
+      <a href="/login">Acceder</a>
+    <% } %>
+  </nav>
 
   <% if (flash) { %>
     <div class="flash <%= flash.type %>"><%= flash.msg %></div>

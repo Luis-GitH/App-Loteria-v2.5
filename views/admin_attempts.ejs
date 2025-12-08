@@ -17,6 +17,7 @@
             <th>Contrase&ntilde;a ingresada</th>
             <th>IP</th>
             <th>User-Agent</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -27,6 +28,11 @@
               <td><%= intento.password_intento ? intento.password_intento.slice(0, 6) + '...' : '' %></td>
               <td><%= intento.ip || '' %></td>
               <td style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= intento.user_agent || '' %></td>
+              <td>
+                <form method="post" action="/admin/intentos/<%= intento.id %>/delete" onsubmit="return confirm('¿Eliminar este intento?');">
+                  <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
+                </form>
+              </td>
             </tr>
           <% }) %>
         </tbody>

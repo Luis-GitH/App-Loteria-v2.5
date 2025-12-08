@@ -17,6 +17,7 @@
             <th>Email</th>
             <th>IP</th>
             <th>User-Agent</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -27,6 +28,11 @@
               <td><%= login.email || '' %></td>
               <td><%= login.ip || '' %></td>
               <td style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= login.user_agent || '' %></td>
+              <td>
+                <form method="post" action="/admin/accesos/<%= login.id %>/delete" onsubmit="return confirm('¿Eliminar este acceso?');">
+                  <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
+                </form>
+              </td>
             </tr>
           <% }) %>
         </tbody>

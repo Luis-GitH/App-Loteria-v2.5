@@ -1,0 +1,35 @@
+{
+  "identificador": "1294501021067109010317414159026897",
+  "tipo": "primitiva",
+  "sorteoCodigo": "14708DIC25:3",
+  "sorteos": [
+    {
+      "sorteo": 147,
+      "fecha": "2025-12-08",
+      "dia": "lunes",
+      "lunesSemana": "2025-12-08"
+    },
+    {
+      "sorteo": 148,
+      "fecha": "2025-12-11",
+      "dia": "jueves",
+      "lunesSemana": "2025-12-08"
+    },
+    {
+      "sorteo": 149,
+      "fecha": "2025-12-13",
+      "dia": "sábado",
+      "lunesSemana": "2025-12-08"
+    }
+  ],
+  "fechaLunes": "2025-12-08",
+  "combinacion": "081418213037",
+  "estrellas": "",
+  "reintegro": "2",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2025-12-08_primitiva_26897.jpg"
+}

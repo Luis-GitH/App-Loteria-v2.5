@@ -58,6 +58,8 @@ const app = express();
 
 //  ***********************************
 
+const USER_TYPES = ['user', 'admin', 'prueba'];
+
 //chequeo de variables de entorno obligatorias
 console.log('Comprobando variables de entorno obligatorias...');
 console.log('APP_VARIANT:', APP_VARIANT);
@@ -82,7 +84,7 @@ const HISTORICO_DIRS = Array.from(
     path.join(__root, 'data', 'historico'),
   ])
 );
-const upload = multer({ dest: path.join(__root, 'scr', 'uploads') });
+const upload = multer({ dest: path.join(__root, 'src', 'uploads') });
 // Trust proxy to capture real IPs when behind reverse proxies (e.g., Caddy)
 app.set('trust proxy', true);
 
@@ -433,12 +435,18 @@ async function ensureUsersTable() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         nombre VARCHAR(50) NOT NULL UNIQUE,
         email VARCHAR(120) NOT NULL,
-        tipo ENUM('user','admin') NOT NULL DEFAULT 'user',
+        tipo ENUM('user','admin','prueba') NOT NULL DEFAULT 'user',
         clave VARCHAR(64) NULL,
         password_hash VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+    // Ampliar ENUM si ya existe la tabla
+    try {
+      await conn.query(`ALTER TABLE users MODIFY COLUMN tipo ENUM('user','admin','prueba') NOT NULL DEFAULT 'user'`);
+    } catch (e) {
+      // ignorar si ya está actualizado
+    }
 
     // Seed admin if none exists
     const rows = await conn.query(`SELECT COUNT(*) as n FROM users`);
@@ -1832,9 +1840,7 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
     const conn2 = await pool.getConnection();
     let recipients = [];
     try {
-      let sql = `SELECT email FROM users WHERE email IS NOT NULL AND email <> '' `
-      if (process.env.MODO_DESARROLLO == '1') sql += ` AND tipo = 'admin' `  
-      const rows2 = await conn2.query(sql); // `SELECT email FROM users WHERE email IS NOT NULL AND email <> '' AND tipo='admin'`);
+      const rows2 = await conn2.query(`SELECT email FROM users WHERE email IS NOT NULL AND email <> '' AND tipo = 'user'`);
       for (const row of rows2) {
         const e = (row.email || '').toString().trim();
         if (e) recipients.push(e);
@@ -2008,6 +2014,20 @@ app.get('/admin/accesos', requireAuth, requireRole('admin'), async (req, res) =>
   }
 });
 
+app.post('/admin/accesos/:id/delete', requireAuth, requireRole('admin'), async (req, res) => {
+  const id = Number(req.params.id);
+  const conn = await pool.getConnection();
+  try {
+    await conn.query(`DELETE FROM logins WHERE id=?`, [id]);
+    req.session.flash = { type: 'info', msg: 'Acceso eliminado' };
+  } catch (e) {
+    req.session.flash = { type: 'error', msg: 'No se pudo eliminar el acceso: ' + (e.message || e) };
+  } finally {
+    conn.release();
+  }
+  res.redirect('/admin/accesos');
+});
+
 // AuditorÃ­a: listar envÃ­os de boletos
 app.get('/admin/envios-boletos', requireAuth, requireRole('admin'), async (req, res) => {
   const conn = await pool.getConnection();
@@ -2065,6 +2085,20 @@ app.get('/admin/intentos', requireAuth, requireRole('admin'), async (req, res) =
   }
 });
 
+app.post('/admin/intentos/:id/delete', requireAuth, requireRole('admin'), async (req, res) => {
+  const id = Number(req.params.id);
+  const conn = await pool.getConnection();
+  try {
+    await conn.query(`DELETE FROM intentosAcceso WHERE id=?`, [id]);
+    req.session.flash = { type: 'info', msg: 'Intento eliminado' };
+  } catch (e) {
+    req.session.flash = { type: 'error', msg: 'No se pudo eliminar el intento: ' + (e.message || e) };
+  } finally {
+    conn.release();
+  }
+  res.redirect('/admin/intentos');
+});
+
 app.get('/admin/escanear', requireAuth, (req, res) => {
   res.render('admin_scan', { layout: 'layout' });
 });
@@ -2114,7 +2148,7 @@ app.get('/admin/users/new', requireAuth, requireRole('admin'), (req, res) => {
 
 app.post('/admin/users/new', requireAuth, requireRole('admin'), async (req, res) => {
   const { nombre, email, tipo, password } = req.body;
-  if (!nombre || !email || !password || !['user','admin'].includes(tipo)) {
+  if (!nombre || !email || !password || !USER_TYPES.includes(tipo)) {
     req.session.flash = { type: 'error', msg: 'Datos incompletos' };
     return res.redirect('/admin/users/new');
   }
@@ -2149,7 +2183,7 @@ app.get('/admin/users/:id/edit', requireAuth, requireRole('admin'), async (req, 
 app.post('/admin/users/:id/edit', requireAuth, requireRole('admin'), async (req, res) => {
   const { nombre, email, tipo, password } = req.body;
   const id = Number(req.params.id);
-  if (!nombre || !email || !['user','admin'].includes(tipo)) {
+  if (!nombre || !email || !USER_TYPES.includes(tipo)) {
     req.session.flash = { type: 'error', msg: 'Datos incompletos' };
     return res.redirect(`/admin/users/${id}/edit`);
   }

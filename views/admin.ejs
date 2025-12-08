@@ -8,42 +8,42 @@
   <h2>Mantenimiento (admin)</h2>
   <p>Desde aqu&iacute; puedes saltar a los listados detallados para administrar usuarios, revisar accesos y vigilar intentos fallidos.</p>
 
-  <div class="row g-4 mt-3">
-    <div class="col-md-3">
-      <div class="card h-60 p-4">
+  <div class="row g-3 mt-3">
+    <div class="col-6 col-sm-6 col-md-3 col-lg-2">
+      <div class="card h-40 p-4">
         <h3>Usuarios</h3>
-        <p class="text-muted mb-2">Altas, bajas y modificaciones de cuentas.</p>
-        <p >Usuarios: <%= totalUsers %></p>
         <a class="btn btn-primary" href="/admin/users">Ir a mantenimiento</a>
+        <!-- <p class="text-muted mb-2">Altas, bajas y modificaciones de cuentas.</p> -->
+        <p >Usuarios: <%= totalUsers %></p>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card h-60 p-4">
+    <div class="col-6 col-sm-6 col-md-3 col-lg-2">
+      <div class="card h-40 p-4">
         <h3>Accesos</h3>
-        <p class="text-muted mb-2">Últimos 100 inicios de sesión registrados.</p>
-        <p >Nº inicios: <%= totalLogins %></p>
         <a class="btn btn-primary" href="/admin/accesos">Ver listado</a>
+        <!-- <p class="text-muted mb-2">Últimos 100 inicios de sesión registrados.</p> -->
+        <p >Nº inicios: <%= totalLogins %></p>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-sm-6 col-md-3 col-lg-2">
       <div class="card h-60 p-4">
         <h3>Intentos</h3>
-        <p class="text-muted mb-2">Intentos fallidos recientes para auditar.</p>
-        <p >Nº Intentos: <%= totalAttempts %></p>
         <a class="btn btn-primary" href="/admin/intentos">Ver listado</a>
+        <!-- <p class="text-muted mb-2">Intentos fallidos recientes para auditar.</p> -->
+        <p >Nº Intentos: <%= totalAttempts %></p>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-sm-6 col-md-3 col-lg-2">
       <div class="card h-60 p-4">
         <h3>Escanear boleto</h3>
-        <p class="text-muted mb-2">Utiliza la cámara del dispositivo para leer el QR y mostrar los premios.</p>
+        <p class="text-muted mb-2">Escanea el QR y mostrar los premios.</p>
         <a class="btn btn-primary" href="/admin/escanear">Abrir esc&aacute;ner</a>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-sm-6 col-md-3 col-lg-2">
       <div class="card h-80 p-4">
         <h3>Registrar premios</h3>
-        <p class="text-muted mb-2">Calcula el total de premios de la semana y lo guarda como ingreso.</p>
+        <p class="text-muted mb-2">Calcula gastos y premios de la semana.</p>
         <form method="POST" action="/admin/premios-semana" onsubmit="return confirm('Registrar el total de premios de esa semana en movimientos?');">
           <label class="form-label small mb-1" for="week-input">Lunes de la semana</label>
           <input id="week-input" type="date" name="week" class="form-control" value="<%= defaultWeekMonday || '' %>" required>
@@ -51,19 +51,19 @@
         </form>
       </div>
     </div>
-      <div class="col-md-3">
+      <div class="col-6 col-sm-6 col-md-3 col-lg-2">
         <div class="card h-80 p-4">
           <h3>Envío de boletos</h3>
-          <p class="text-muted mb-2">Enviar por correo a administradores las imágenes de los boletos de la semana actual.</p>
+          <p class="text-muted mb-2">Enviar por correo de los boletos.</p>
           <form method="POST" action="/admin/send-week-tickets" onsubmit="return confirm('Enviar boletos de la semana actual por correo a administradores?');">
             <button type="submit" class="btn btn-warning">Enviar boletos</button>
           </form>
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-6 col-sm-6 col-md-3 col-lg-2">
         <div class="card h-80 p-4">
           <h3>Histórico envíos</h3>
-          <p class="text-muted mb-2">Ver el historial de envíos de boletos y descargar imágenes adjuntas.</p>
+          <!-- <p class="text-muted mb-2">Ver el historial de envíos de boletos y descargar imágenes adjuntas.</p> -->
           <a class="btn btn-secondary" href="/admin/envios-boletos">Ver envíos</a>
         </div>
       </div>
