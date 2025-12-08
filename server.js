@@ -42,7 +42,7 @@ import ejsLayouts from 'express-ejs-layouts';
 import mariadb from 'mariadb';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
-import xlsx from 'xlsx';
+import ExcelJS from 'exceljs';
 import nodemailer from 'nodemailer';
 import { procesarSemana as vwProcesarSemana } from './verify-week.js';
 import { ensureAppTimezone, todayISO, fechaISO, parseISODateLocal, mondayOf, addDays } from './src/helpers/fechas.js';
@@ -217,6 +217,26 @@ function splitCombination(value) {
     return chunks.filter(Boolean).map((segment) => segment.padStart(2, '0'));
   }
   return [str];
+}
+
+async function loadMovimientos(conn, opts = {}) {
+  const { descending = true } = opts;
+  let rows = [];
+  try {
+    rows = await conn.query(`SELECT * FROM movimientos ORDER BY fecha ASC, id ASC`);
+  } catch (e1) {
+    try {
+      rows = await conn.query(`SELECT * FROM movimiento ORDER BY fecha ASC, id ASC`);
+    } catch (e2) {
+      rows = [];
+    }
+  }
+  let saldo = 0;
+  const enriched = rows.map((r) => {
+    saldo += Number(r.importe || 0);
+    return { ...r, saldo };
+  });
+  return descending ? enriched.reverse() : enriched;
 }
 
 const RESULT_META = {
@@ -1474,23 +1494,48 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
 app.get('/movimientos', requireAuth, async (req, res) => {
   const conn = await pool.getConnection();
   try {
-    let rows = [];
-    try {
-      rows = await conn.query(`SELECT * FROM movimientos ORDER BY fecha ASC, id ASC`);
-    } catch (e1) {
-      try {
-        rows = await conn.query(`SELECT * FROM movimiento ORDER BY fecha ASC, id ASC`);
-      } catch (e2) {
-        rows = [];
-      }
-    }
-    // Calcular saldo acumulado
-    let saldo = 0;
-    const withSaldo = rows.map(r => {
-      saldo += Number(r.importe || 0);
-      return { ...r, saldo };
-    }).reverse(); // mostrar mÃ¡s recientes primero
-    res.render('movimientos', { layout: 'layout', movimientos: withSaldo });
+    const movimientos = await loadMovimientos(conn, { descending: true }); // mostrar mÃ¡s recientes primero
+    res.render('movimientos', { layout: 'layout', movimientos });
+  } finally {
+    conn.release();
+  }
+});
+
+app.get('/movimientos/export', requireAuth, async (req, res) => {
+  const conn = await pool.getConnection();
+  try {
+    const movimientos = await loadMovimientos(conn, { descending: false });
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Movimientos');
+    sheet.columns = [
+      { header: 'Fecha', key: 'fecha', width: 12 },
+      { header: 'Concepto', key: 'concepto', width: 30 },
+      { header: 'Importe', key: 'importe', width: 12 },
+      { header: 'Tipo', key: 'tipo', width: 12 },
+      { header: 'Comentarios', key: 'comentarios', width: 30 },
+      { header: 'Saldo', key: 'saldo', width: 12 },
+    ];
+    sheet.getRow(1).font = { bold: true };
+    movimientos.forEach((m) => {
+      sheet.addRow({
+        fecha: m.fecha || '',
+        concepto: m.concepto || m.descripcion || '',
+        importe: Number(m.importe || 0),
+        tipo: m.tipo || '',
+        comentarios: m.comentarios || '',
+        saldo: Number(m.saldo || 0),
+      });
+    });
+    sheet.getColumn('importe').numFmt = '#,##0.00';
+    sheet.getColumn('saldo').numFmt = '#,##0.00';
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="movimientos.xlsx"');
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (e) {
+    console.error('Export movimientos error:', e);
+    req.session.flash = { type: 'error', msg: 'No se pudo exportar: ' + e.message };
+    res.redirect('/movimientos');
   } finally {
     conn.release();
   }
@@ -1510,6 +1555,7 @@ function parseExcelDate(v) {
     const d = new Date(epoch.getTime() + v * 86400000);
     return fechaISO(d);
   }
+  if (v instanceof Date) return fechaISO(v);
   const s = String(v).trim();
   // try ISO or dd/mm/yyyy
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
@@ -1522,6 +1568,50 @@ function parseExcelDate(v) {
   }
   const d = new Date(s);
   return isNaN(d.getTime()) ? null : fechaISO(d);
+}
+
+function sanitizeHeaderKey(value) {
+  const key = (value ?? '').toString().trim();
+  if (!key) return null;
+  const lowered = key.toLowerCase();
+  if (lowered === '__proto__' || lowered === 'prototype' || lowered === 'constructor') return null;
+  return key;
+}
+
+function normalizeExcelCell(cell) {
+  if (!cell) return '';
+  const raw = cell.result ?? cell.text ?? cell.value;
+  if (raw instanceof Date) return raw;
+  if (raw && typeof raw === 'object') {
+    if (typeof raw.text === 'string') return raw.text;
+    if (Array.isArray(raw.richText)) return raw.richText.map((part) => part.text).join('');
+  }
+  return typeof raw === 'undefined' || raw === null ? '' : raw;
+}
+
+async function readExcelRows(filePath) {
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile(filePath);
+  const sheet = workbook.worksheets[0];
+  if (!sheet) throw new Error('El Excel no contiene hojas');
+
+  const headers = [];
+  sheet.getRow(1).eachCell({ includeEmpty: false }, (cell, colNumber) => {
+    const header = sanitizeHeaderKey(cell.text || cell.value);
+    if (header) headers[colNumber] = header;
+  });
+
+  const rows = [];
+  sheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+    if (rowNumber === 1) return;
+    const entry = {};
+    headers.forEach((header, colNumber) => {
+      if (!header) return;
+      entry[header] = normalizeExcelCell(row.getCell(colNumber));
+    });
+    if (Object.keys(entry).length) rows.push(entry);
+  });
+  return rows;
 }
 
 function inferTipo(concepto, importe) {
@@ -1540,10 +1630,7 @@ app.post('/movimientos/import', requireAuth, requireRole('admin'), upload.single
   }
   const conn = await pool.getConnection();
   try {
-    const wb = xlsx.readFile(file.path);
-    const sheetName = wb.SheetNames[0];
-    const sheet = wb.Sheets[sheetName];
-    const rows = xlsx.utils.sheet_to_json(sheet, { defval: '' });
+    const rows = await readExcelRows(file.path);
     let inserted = 0;
     for (const r of rows) {
       const fecha = parseExcelDate(r.Fecha ?? r.fecha ?? r.date);

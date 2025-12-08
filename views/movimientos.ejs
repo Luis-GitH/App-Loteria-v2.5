@@ -3,12 +3,13 @@
   <% if (!movimientos || movimientos.length === 0) { %>
     <p>No hay movimientos para mostrar.</p>
   <% } else { %>
-    <% if (user && user.tipo === 'admin') { %>
-      <p>
+    <p>
+      <% if (user && user.tipo === 'admin') { %>
         <a class="btn" href="/movimientos/new">Nuevo movimiento</a>
         <a class="btn" href="/movimientos/import" style="background:#666">Importar desde Excel</a>
-      </p>
-    <% } %>
+      <% } %>
+      <a class="btn" href="/movimientos/export" style="background:#2c7">Exportar a Excel</a>
+    </p>
     <table id="movs" class="table table-striped table-bordered">
       <thead>
         <tr>
