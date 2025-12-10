@@ -20,16 +20,16 @@
   </header>
   <nav class="topnav">
     <% if (user) { %>
-      <a href="/">Inicio</a>
-      <a href="/tickets">Boletos semana</a>
-      <a href="/movimientos">Estado de cuentas</a>
-      <a href="/perfil">Mi perfil</a>
+      <a class="btn" href="/">Inicio</a>
+      <a class="btn" href="/tickets">Boletos semana</a>
+      <a class="btn" href="/movimientos">Estado de cuentas</a>
+      <a class="btn" href="/perfil">Mi perfil</a>
       <% if (user.tipo === 'admin') { %>
-        <a href="/admin">Mantenimiento</a>
+        <a class="btn" href="/admin">Mantenimiento</a>
       <% } %>
-      <form method="post" action="/logout" style="display:inline"><button class="linklike">Salir (<%= user.nombre %>)</button></form>
+      <form method="post" action="/logout" style="display:inline"><button class="btn">Salir (<%= user.nombre %>)</button></form>
     <% } else { %>
-      <a href="/login">Acceder</a>
+      <a class="btn" href="/login">Acceder</a>
     <% } %>
   </nav>
 

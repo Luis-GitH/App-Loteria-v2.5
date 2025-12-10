@@ -29,7 +29,7 @@
             <td class="text-right" data-order="<%= Number(m.saldo||0) %>"><%= typeof m.saldo !== 'undefined' ? fmtEUR(m.saldo) : '' %></td>
             <% if (user && user.tipo === 'admin') { %>
               <td>
-                <a class="btn" href="/movimientos/<%= m.id %>/edit">Editar</a>
+                <a class="btn" href="/movimientos/<%= m.id %>/edit" style="background:rgb(114, 79, 4)">Editar</a>
               </td>
             <% } %>
           </tr>
