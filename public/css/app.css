@@ -14,8 +14,7 @@ body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
 .topnav { color: #ccc !important; background-color: rgb(15, 9, 100); display:flex; align-items:center; gap:.75rem; padding:.5rem 1rem; justify-content:flex-start }
 .brand-svg { width: 360px; height: 120px; }
 .brand-img { width: 120px; height: 120px; margin-left: -160px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.1)); }
-.topnav a, .topnav .linklike { margin-right: .75rem; text-decoration: none; color: var(--fg); }
-.linklike { background:none; border:none; cursor:pointer; font: inherit; color: var(--fg) }
+.topnav a, .topnav .linklike { margin-right: .75rem; text-decoration: none; color: white; }
 .btn { display:inline-block; padding:.5rem .75rem; background:var(--primary); color:#fff; border-radius:6px; text-decoration:none }
 .card { background:#fff; border:1px solid #e8e8e8; border-radius:8px; padding:.5rem; }
 .menu { list-style:none; padding:0; display:flex; gap:1rem }
