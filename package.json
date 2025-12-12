@@ -17,7 +17,8 @@
     "verify:primi": "node scripts/verify-ticket.mjs --tipo=primitiva",
     "verify:eurom": "node scripts/verify-ticket.mjs --tipo=euromillones",
     "gordo:fetch:day": "node scripts/fetch-gordo-day.mjs",
-    "migrate:images": "node scripts/migrate-image-paths.js"
+    "migrate:images": "node scripts/migrate-image-paths.js",
+    "dns:update": "node scripts/update-dns.mjs"
   },
   "keywords": [],
   "author": "",
