@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import mariadb from "mariadb";
 import nodemailer from "nodemailer";
+import { createLogger } from "./src/helpers/logger.js";
 const ROOT_CONSOLE = { log: console.log, error: console.error };
 dotenv.config({ path: ".env", override: false });
 const specificEnvPath =
@@ -169,10 +170,6 @@ let pool = null;
 let MAIL_CONFIG = null;
 let MODO_DEV = false;
 let summaryLogger = ROOT_CONSOLE.log;
-function appendToLogFile(...args) {
-    if (!fs.existsSync(LOG_DIR)) fs.mkdirSync(LOG_DIR, { recursive: true });
-    fs.appendFileSync(LOG_FILE, args.join(" ") + "\n");
-}
 function initEnvForVariant(variant) {
     const env = buildEnvForVariant(variant);
     Object.assign(process.env, env);
@@ -318,7 +315,7 @@ async function getRecipients(envioEmailToUsers) {
     try {
         let sql = `SELECT email FROM users WHERE email IS NOT NULL `;
         if (envioEmailToUsers) {
-            sql += `AND tipo='user'`
+            sql += `AND tipo='admin'`
          }else{
             sql += `AND tipo IN ('admin')`
         }  ;
@@ -878,17 +875,23 @@ async function enviarCorreoResumen({ subject, html, adjuntos = [], to }) {
 }
 
 // ================== PROCESO SEMANA ==================
-export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
+export async function procesarSemana(
+    fechaLunes,
+    { autoUpdate = true, logger = null } = {}
+) {
     ensurePool();
     const fechaDomingo = addDays(fechaLunes, 6);
     const conn = await pool.getConnection();
-
-    // Log por semana
-    if (!fs.existsSync(LOG_DIR)) fs.mkdirSync(LOG_DIR, { recursive: true });
-    appendToLogFile(
-        `\n==== ${new Date().toISOString()} | Semana ${fechaLunes} ====`
-    );
-    summaryLogger = ROOT_CONSOLE.log;
+    if (logger?.header) {
+        logger.header(
+            `\n==== ${new Date().toISOString()} | Semana ${fechaLunes} ====`
+        );
+    } else {
+        ROOT_CONSOLE.log(
+            `\n==== ${new Date().toISOString()} | Semana ${fechaLunes} ====`
+        );
+    }
+    summaryLogger = logger?.log || ROOT_CONSOLE.log;
 
     let resumenFinal = "";
     let adjuntosFinal = [];
@@ -1133,26 +1136,36 @@ const __isMain = (() => {
     }
 })();
 
-if (__isMain)
-    (async () => {
-        let cli;
-        const rawArgs = resolveRawArgs();
+export async function runVerifyWeek(rawArgsInput = null) {
+    let cli;
+    const logger = createLogger(LOG_FILE);
+    const restoreConsole = logger.hookConsole();
+    summaryLogger = logger.log;
+    try {
+        logger.header(
+            `▶️ verify-week boot | cwd=${process.cwd()} | ROOT=${ROOT} | argv=${JSON.stringify(process.argv.slice(2))} | envArgs=${JSON.stringify(resolveArgsFromEnv())}`
+        );
+
+        const rawArgs = rawArgsInput ?? resolveRawArgs();
         if (!rawArgs.length || !validateRequiredArgs(rawArgs)) {
-            appendToLogFile(
-                "[ERROR parseArgs]",
-                "Argumentos obligatorios ausentes. Consulta la ayuda."
+            logger.error(
+                "[ERROR parseArgs] Argumentos obligatorios ausentes. Consulta la ayuda."
             );
-            summaryLogger("❌ No se pudieron interpretar los argumentos (faltan obligatorios)");
+            summaryLogger(
+                "❌ No se pudieron interpretar los argumentos (faltan obligatorios)"
+            );
             process.exitCode = 1;
             return;
         }
+
         const argsToUse = rawArgs;
         try {
             cli = parseCliArgs(argsToUse);
         } catch (err) {
-            console.error(err.message || err);
-            appendToLogFile("[ERROR parseArgs]", err.message || err);
-            summaryLogger(`❌ No se pudieron interpretar los argumentos: ${err.message || err}`);
+            logger.error("[ERROR parseArgs]", err.message || err);
+            summaryLogger(
+                `❌ No se pudieron interpretar los argumentos: ${err.message || err}`
+            );
             process.exitCode = 1;
             return;
         }
@@ -1160,9 +1173,7 @@ if (__isMain)
         summaryLogger(
             `▶️ verify-week: args usados → ${argsToUse.join(" ") || "(ninguno)"}`
         );
-        appendToLogFile(
-            `[SUMMARY] Args usados: ${argsToUse.join(" ") || "(ninguno)"}`
-        );
+        logger.log(`[ARGS] ${argsToUse.join(" ") || "(ninguno)"}`);
 
         const runOnce = async ({ semanas, multiMail, silent, noUpdate }) => {
             const resultados = [];
@@ -1170,7 +1181,10 @@ if (__isMain)
             let totalAcumulado = 0;
 
             for (const sem of semanas) {
-                const r = await procesarSemana(sem, { autoUpdate: !noUpdate });
+                const r = await procesarSemana(sem, {
+                    autoUpdate: !noUpdate,
+                    logger,
+                });
                 resultados.push(r);
                 totalAcumulado += r.totalImporte;
                 if (multiMail && !silent) {
@@ -1261,4 +1275,11 @@ if (__isMain)
                 }
             }
         }
-    })();
+    } finally {
+        await restoreConsole();
+    }
+}
+
+if (__isMain) {
+    runVerifyWeek();
+}

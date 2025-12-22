@@ -58,9 +58,8 @@ module.exports = {
       
     },
      {  
-      name: "verify-week",
-      script: "verify-week.js",
-      args: "--week --family --users",
+      name: "verify-week-fixed",
+      script: "verify-week-fixed.js",
       cwd: './',
       error_file: "./logs/verify-week-errores.log",
       out_file: "./logs/verify-week-out.log",
