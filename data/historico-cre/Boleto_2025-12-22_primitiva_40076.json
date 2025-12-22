@@ -1,0 +1,35 @@
+{
+  "identificador": "1295901020424680900941031030240076",
+  "tipo": "primitiva",
+  "sorteoCodigo": "15322DIC25:3",
+  "sorteos": [
+    {
+      "sorteo": 153,
+      "fecha": "2025-12-22",
+      "dia": "lunes",
+      "lunesSemana": "2025-12-22"
+    },
+    {
+      "sorteo": 154,
+      "fecha": "2025-12-25",
+      "dia": "jueves",
+      "lunesSemana": "2025-12-22"
+    },
+    {
+      "sorteo": 155,
+      "fecha": "2025-12-27",
+      "dia": "sábado",
+      "lunesSemana": "2025-12-22"
+    }
+  ],
+  "fechaLunes": "2025-12-22",
+  "combinacion": "081126333436",
+  "estrellas": "",
+  "reintegro": "4",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2025-12-22_primitiva_40076.jpg"
+}

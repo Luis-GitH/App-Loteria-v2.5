@@ -60,11 +60,12 @@ module.exports = {
      {  
       name: "verify-week",
       script: "verify-week.js",
-      args: "--week --all --users",
+      args: "--week --family --users",
       cwd: './',
-      time: true,
       error_file: "./logs/verify-week-errores.log",
-      cron_restart: "45 22 * * 7", // a "40 22 * * 7" // las 10:45 los domingos
+      out_file: "./logs/verify-week-out.log",
+      time: true,
+      cron_restart: "45 22 * * 7", // las 10:45 los domingos
       autorestart: false
     },
 

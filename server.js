@@ -1919,15 +1919,18 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
     }
 
     if (attachments.length === 0) {
-      req.session.flash = { type: 'warning', msg: `No se encontraron imÃ¡genes .png para la semana ${lunes}.` };
+      req.session.flash = { type: 'warning', msg: `No se encontraron imágenes .png para la semana ${lunes}.` };
       return res.redirect('/admin');
     }
 
     // Obtener destinatarios administradores
     const conn2 = await pool.getConnection();
     let recipients = [];
+    const stipo = "'admin'";
     try {
-      const rows2 = await conn2.query(`SELECT email FROM users WHERE email IS NOT NULL AND email <> '' AND tipo = 'user'`);
+      const rows2 = await conn2.query(`SELECT email FROM users WHERE email IS NOT NULL AND email <> '' AND tipo = ${stipo}`)
+      console.log("🚀 Server 1932 ~ rows2:", rows2)
+     
       for (const row of rows2) {
         const e = (row.email || '').toString().trim();
         if (e) recipients.push(e);
@@ -1945,6 +1948,21 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
       return res.redirect('/admin');
     }
 
+    // Saldo actual del club
+    let saldoActual = 0;
+    try {
+      const connSaldo = await pool.getConnection();
+      try {
+        const [rowSaldo] = await connSaldo.query(`SELECT COALESCE(SUM(importe),0) AS saldo FROM movimientos`);
+        saldoActual = Number(rowSaldo?.saldo || 0);
+      } finally {
+        connSaldo.release();
+      }
+    } catch (e) {
+      console.error('No se pudo calcular el saldo actual:', e.message);
+    }
+    const saldoFmt = `${saldoActual.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+
     const smtp = {
       host: process.env.EMAIL_HOST,
       port: Number(process.env.EMAIL_PORT || 465),
@@ -1956,9 +1974,10 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
     };
 
     const html = `
-      <h2>Imágenes de los boletos de esta semana ${lunes}</h2>
+      <h2>Imágenes de los boletos que jugamos de esta semana ${lunes}</h2>
       <p>Enviado: ${new Date().toLocaleString('es-ES')}</p>
       <p>Adjuntas ${attachments.length} imagen(es).</p>
+      <p>Información del saldo actual del club: <strong>${saldoFmt}</strong></p>
       <ul>${attachments.map(a => `<li>${a.filename}</li>`).join('')}</ul>
     `;
 
@@ -1971,7 +1990,7 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
       attachments,
     });
 
-    // Registrar envÃ­o en BD (auditorÃ­a)
+    // Registrar enví­o en BD (auditoría)
     try {
       const conn3 = await pool.getConnection();
       try {
@@ -1984,7 +2003,7 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
         conn3.release();
       }
     } catch (e) {
-      console.error('No se pudo registrar envÃ­o en BD:', e.message);
+      console.error('No se pudo registrar envío en BD:', e.message);
     }
 
     req.session.flash = { type: 'info', msg: `Correo enviado a ${recipients.length} destinatario(s) con ${attachments.length} imagen(es).` };
@@ -2007,7 +2026,7 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
       console.error('No se pudo registrar envÃ­o (error) en BD:', e.message);
     }
 
-    req.session.flash = { type: 'danger', msg: 'Error enviando imÃ¡genes: ' + (err.message || err) };
+    req.session.flash = { type: 'danger', msg: 'Error enviando imágenes: ' + (err.message || err) };
     return res.redirect('/admin');
   }
 });

@@ -1,0 +1,35 @@
+{
+  "identificador": "1295201020520201512425441741308037",
+  "tipo": "primitiva",
+  "sorteoCodigo": "15015DIC25:3",
+  "sorteos": [
+    {
+      "sorteo": 150,
+      "fecha": "2025-12-15",
+      "dia": "lunes",
+      "lunesSemana": "2025-12-15"
+    },
+    {
+      "sorteo": 151,
+      "fecha": "2025-12-18",
+      "dia": "jueves",
+      "lunesSemana": "2025-12-15"
+    },
+    {
+      "sorteo": 152,
+      "fecha": "2025-12-20",
+      "dia": "sábado",
+      "lunesSemana": "2025-12-15"
+    }
+  ],
+  "fechaLunes": "2025-12-15",
+  "combinacion": "010317283146",
+  "estrellas": "",
+  "reintegro": "6",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2025-12-15_primitiva_08037.jpg"
+}

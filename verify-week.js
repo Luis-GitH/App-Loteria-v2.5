@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import mariadb from "mariadb";
 import nodemailer from "nodemailer";
+const ROOT_CONSOLE = { log: console.log, error: console.error };
 dotenv.config({ path: ".env", override: false });
 const specificEnvPath =
   process.env.ENV_FILE ||
@@ -83,6 +84,7 @@ const APP_VARIANT =
     pickVariant(resolvePm2Variant()) ||
     DEFAULT_VARIANT;
 const LOG_DIR = path.join(ROOT, "logs");
+const LOG_FILE = path.join(LOG_DIR, "verify-week.log");
 const ENV_BASE = path.join(ROOT, ".env");
 const HISTORICO_DIR = path.join(ROOT, "data", `historico-${APP_VARIANT}`);
 const HISTORICO_DIRS = Array.from(
@@ -166,6 +168,11 @@ function buildMailConfig(env) {
 let pool = null;
 let MAIL_CONFIG = null;
 let MODO_DEV = false;
+let summaryLogger = ROOT_CONSOLE.log;
+function appendToLogFile(...args) {
+    if (!fs.existsSync(LOG_DIR)) fs.mkdirSync(LOG_DIR, { recursive: true });
+    fs.appendFileSync(LOG_FILE, args.join(" ") + "\n");
+}
 function initEnvForVariant(variant) {
     const env = buildEnvForVariant(variant);
     Object.assign(process.env, env);
@@ -306,18 +313,15 @@ function cabeceraGordo(s) {
 
 // ================== DB HELPERS ==================
 async function getRecipients(envioEmailToUsers) {
-    console.log("🚀 ~ getRecipients ~ envioEmailToUsers viene de users :", envioEmailToUsers)
     ensurePool();
     const conn = await pool.getConnection();
     try {
-        
         let sql = `SELECT email FROM users WHERE email IS NOT NULL `;
         if (envioEmailToUsers) {
             sql += `AND tipo='user'`
          }else{
-            sql += `AND tipo IN ('prueba','admin')`
+            sql += `AND tipo IN ('admin')`
         }  ;
-        console.log("🚀 ~ getRecipients ~ sql:", sql)
 
         const rows = await conn.query(sql);
         const set = new Set();
@@ -856,15 +860,20 @@ async function enviarCorreoResumen({ subject, html, adjuntos = [], to }) {
             html,
             attachments: adjuntos,
         });
+        const count = toList.length ? toList.length : MAIL_CONFIG.to ? 1 : 0;
         console.log(
             "📧 Correo enviado a",
-            toList.length ? toList.length : MAIL_CONFIG.to ? 1 : 0,
+            count,
             "destinatario(s) con",
             adjuntos.length,
             "imagen(es)."
         );
+        summaryLogger(
+            `📧 Envío completado → ${count} destinatario(s). Adjuntos: ${adjuntos.length}`
+        );
     } catch (err) {
         console.error("❌ Error enviando correo:", err.message);
+        summaryLogger(`❌ Error enviando correo: ${err.message}`);
     }
 }
 
@@ -876,18 +885,10 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
 
     // Log por semana
     if (!fs.existsSync(LOG_DIR)) fs.mkdirSync(LOG_DIR, { recursive: true });
-    const LOG_FILE = path.join(LOG_DIR, `verify_${fechaLunes}.log`);
-    const logStream = fs.createWriteStream(LOG_FILE, { flags: "a" });
-    const originalLog = console.log;
-    const originalError = console.error;
-    console.log = (...args) => {
-        originalLog(...args);
-        logStream.write(args.join(" ") + "\n");
-    };
-    console.error = (...args) => {
-        originalError(...args);
-        logStream.write("[ERROR] " + args.join(" ") + "\n");
-    };
+    appendToLogFile(
+        `\n==== ${new Date().toISOString()} | Semana ${fechaLunes} ====`
+    );
+    summaryLogger = ROOT_CONSOLE.log;
 
     let resumenFinal = "";
     let adjuntosFinal = [];
@@ -965,9 +966,6 @@ export async function procesarSemana(fechaLunes, { autoUpdate = true } = {}) {
         console.error("❌ Error verificando semana:", err.stack || err.message);
     } finally {
         conn.release();
-        logStream.end();
-        console.log = originalLog;
-        console.error = originalError;
     }
 
     return { fechaLunes, resumenFinal, adjuntosFinal, totalImporte };
@@ -1014,6 +1012,68 @@ function parseVariantsArg(rawArgs) {
     return variants.length ? variants : [DEFAULT_VARIANT];
 }
 
+function resolveArgsFromEnv() {
+    const envArgs =
+        process.env.PM2_ARGS ||
+        process.env.VERIFY_WEEK_ARGS ||
+        process.env.VERIFY_WEEK_CLI ||
+        "";
+    return envArgs
+        .split(/\s+/)
+        .map((a) => a.trim())
+        .filter(Boolean);
+}
+
+function resolveRawArgs() {
+    const cliArgs = process.argv.slice(2).filter(Boolean);
+    if (cliArgs.length) return cliArgs;
+    const envArgs = resolveArgsFromEnv();
+    if (envArgs.length) return envArgs;
+    return [];
+}
+
+function printArgsHelp() {
+    console.log([
+        "Uso:",
+        "  node verify-week.js --week --all [--users]",
+        "  node verify-week.js --fecha=YYYY-MM-DD --cre [--users]",
+        "  node verify-week.js --rango=YYYY-MM-DD,YYYY-MM-DD --family [--users]",
+        "",
+        "Opcionales:",
+        "  --users         Envia correos a usuarios (por defecto solo admins)",
+        "  --multi-mail    Un correo por semana",
+        "  --silent        No enviar correos",
+        "  --no-update     No forzar scrapers si falta algun sorteo",
+        "  --envs=cre,family / --variant=<v> / --both",
+    ].join("\n"));
+}
+
+function validateRequiredArgs(rawArgs) {
+    const hasMode =
+        rawArgs.includes("--week") ||
+        rawArgs.some((x) => x.startsWith("--fecha=")) ||
+        rawArgs.some((x) => x.startsWith("--rango="));
+    const hasVariant =
+        rawArgs.some((a) =>
+            ["--all", "--both", "--cre", "--family"].includes(a)
+        ) ||
+        rawArgs.some(
+            (a) => a.startsWith("--variant=") || a.startsWith("--envs=")
+        );
+
+    if (hasMode && hasVariant) return true;
+
+    const missing = [];
+    if (!hasMode)
+        missing.push("uno de --week, --fecha=YYYY-MM-DD o --rango=YYYY-MM-DD,YYYY-MM-DD");
+    if (!hasVariant)
+        missing.push("una variante: --all, --cre, --family o --variant=<nombre>");
+
+    console.error(`? Faltan argumentos obligatorios: ${missing.join(" y ")}.`);
+    printArgsHelp();
+    return false;
+}
+
 function parseCliArgs(rawArgs) {
     const argFecha = rawArgs.find((x) => x.startsWith("--fecha="));
     const argRango = rawArgs.find((x) => x.startsWith("--rango="));
@@ -1039,9 +1099,6 @@ function parseCliArgs(rawArgs) {
     if (autoWeek) {
         const hoy = fechaISO(new Date());
         const lunes = mondayOf(hoy);
-        console.log(
-            ` ℹ️ --week detectado: ejecutando la semana que inicia el lunes ${lunes} (hoy: ${hoy})`
-        );
         semanas = [lunes];
     } else if (argRango) {
         const rangoPart = argRango.split("=")[1] || "";
@@ -1079,13 +1136,33 @@ const __isMain = (() => {
 if (__isMain)
     (async () => {
         let cli;
-        try {
-            cli = parseCliArgs(process.argv.slice(2));
-        } catch (err) {
-            console.error(err.message || err);
+        const rawArgs = resolveRawArgs();
+        if (!rawArgs.length || !validateRequiredArgs(rawArgs)) {
+            appendToLogFile(
+                "[ERROR parseArgs]",
+                "Argumentos obligatorios ausentes. Consulta la ayuda."
+            );
+            summaryLogger("❌ No se pudieron interpretar los argumentos (faltan obligatorios)");
             process.exitCode = 1;
             return;
         }
+        const argsToUse = rawArgs;
+        try {
+            cli = parseCliArgs(argsToUse);
+        } catch (err) {
+            console.error(err.message || err);
+            appendToLogFile("[ERROR parseArgs]", err.message || err);
+            summaryLogger(`❌ No se pudieron interpretar los argumentos: ${err.message || err}`);
+            process.exitCode = 1;
+            return;
+        }
+
+        summaryLogger(
+            `▶️ verify-week: args usados → ${argsToUse.join(" ") || "(ninguno)"}`
+        );
+        appendToLogFile(
+            `[SUMMARY] Args usados: ${argsToUse.join(" ") || "(ninguno)"}`
+        );
 
         const runOnce = async ({ semanas, multiMail, silent, noUpdate }) => {
             const resultados = [];
@@ -1162,8 +1239,7 @@ if (__isMain)
 
         for (const variant of cli.variants) {
             try {
-                console.log(`
-================= verify-week (${variant}) =================`);
+                summaryLogger(`Ejecutando verify-week para variante: ${variant}`);
                 if (pool && typeof pool.end === 'function') {
                     try {
                         await pool.end();
