@@ -9,17 +9,17 @@ import { createLogger } from "./src/helpers/logger.js";
 const ROOT_CONSOLE = { log: console.log, error: console.error };
 dotenv.config({ path: ".env", override: false });
 const specificEnvPath =
-  process.env.ENV_FILE ||
-  (process.env.APP_VARIANT ? `.env_${process.env.APP_VARIANT}` : null) ||
-  (process.env.PM2_APP_NAME === "app-cre"
-    ? ".env_cre"
-    : process.env.PM2_APP_NAME === "app-family"
-      ? ".env_family"
-      : null);
+    process.env.ENV_FILE ||
+    (process.env.APP_VARIANT ? `.env_${process.env.APP_VARIANT}` : null) ||
+    (process.env.PM2_APP_NAME === "app-cre"
+        ? ".env_cre"
+        : process.env.PM2_APP_NAME === "app-family"
+            ? ".env_family"
+            : null);
 if (specificEnvPath) {
-  dotenv.config({ path: specificEnvPath, override: true });
+    dotenv.config({ path: specificEnvPath, override: true });
 }
-var envioEmailToUsers=false;
+var envioEmailToUsers = false;
 import {
     fechaISO,
     addDays,
@@ -117,13 +117,13 @@ function buildEnvForVariant(variant) {
     const variantFile =
         normalizedVariant && normalizedVariant !== "default"
             ? path.join(
-                  ROOT,
-                  VARIANT_ENV_MAP[normalizedVariant] ||
-                      `.env_${normalizedVariant}`
-              )
+                ROOT,
+                VARIANT_ENV_MAP[normalizedVariant] ||
+                `.env_${normalizedVariant}`
+            )
             : process.env.ENV_FILE
-            ? path.join(ROOT, process.env.ENV_FILE)
-            : null;
+                ? path.join(ROOT, process.env.ENV_FILE)
+                : null;
     const variantEnv = variantFile ? readEnvFile(variantFile) : {};
     return {
         ...base,
@@ -316,9 +316,9 @@ async function getRecipients(envioEmailToUsers) {
         let sql = `SELECT email FROM users WHERE email IS NOT NULL `;
         if (envioEmailToUsers) {
             sql += `AND tipo='admin'`
-         }else{
+        } else {
             sql += `AND tipo IN ('admin')`
-        }  ;
+        };
 
         const rows = await conn.query(sql);
         const set = new Set();
@@ -653,9 +653,8 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
     }
     if (publicados.length) {
         resumen += `💰 Resultados de primitiva (${fechaLunes}):\n`;
-        resumen += `📅 ${publicados.length} sorteo${
-            publicados.length > 1 ? "s" : ""
-        } esta semana\n`;
+        resumen += `📅 ${publicados.length} sorteo${publicados.length > 1 ? "s" : ""
+            } esta semana\n`;
         for (const s of publicados) resumen += cabeceraPrimi(s) + "\n";
     }
 
@@ -750,9 +749,8 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
 
     if (resultados.length) {
         resumen += `💰 Resultados de gordo (${fechaLunes}):\n`;
-        resumen += `📅 ${resultados.length} sorteo${
-            resultados.length > 1 ? "s" : ""
-        } esta semana\n`;
+        resumen += `📅 ${resultados.length} sorteo${resultados.length > 1 ? "s" : ""
+            } esta semana\n`;
         for (const s of resultados) resumen += cabeceraGordo(s) + "\n";
     }
 
@@ -916,18 +914,15 @@ export async function procesarSemana(
             `📆 Verificación de la semana (lunes: ${fechaLunes}):\n\n` +
             partes.filter(Boolean).join("\n\n") +
             `\n\n📊 Resumen de la semana:\n` +
-            `- Euromillones: ${e.premiados} boleto${
-                e.premiados !== 1 ? "s" : ""
+            `- Euromillones: ${e.premiados} boleto${e.premiados !== 1 ? "s" : ""
             } premiado${e.premiados !== 1 ? "s" : ""} → ${fmtEu(
                 e.totalImporte
             )}\n` +
-            `- Primitiva: ${p.premiados} boleto${
-                p.premiados !== 1 ? "s" : ""
+            `- Primitiva: ${p.premiados} boleto${p.premiados !== 1 ? "s" : ""
             } premiado${p.premiados !== 1 ? "s" : ""} → ${fmtEu(
                 p.totalImporte
             )}\n` +
-            `- Gordo: ${g.premiados} boleto${
-                g.premiados !== 1 ? "s" : ""
+            `- Gordo: ${g.premiados} boleto${g.premiados !== 1 ? "s" : ""
             } premiado${g.premiados !== 1 ? "s" : ""} → ${fmtEu(
                 g.totalImporte
             )}\n\n` +
@@ -985,10 +980,10 @@ function parseVariantsArg(rawArgs) {
     const envListArg = rawArgs.find((a) => a.startsWith("--envs="));
     const envList = envListArg
         ? envListArg
-              .split("=")[1]
-              .split(",")
-              .map(normalizeVariantName)
-              .filter(Boolean)
+            .split("=")[1]
+            .split(",")
+            .map(normalizeVariantName)
+            .filter(Boolean)
         : [];
 
     let variants = [];
@@ -1084,8 +1079,8 @@ function parseCliArgs(rawArgs) {
     const multiMail = rawArgs.includes("--multi-mail");
     const silent = rawArgs.includes("--silent");
     const noUpdate = rawArgs.includes("--no-update");
-    envioEmailToUsers=rawArgs.includes("--users");
-    
+    envioEmailToUsers = rawArgs.includes("--users");
+
     const modes = [argFecha, argRango, autoWeek].filter(Boolean).length;
     if (modes > 1) {
         throw new Error(
@@ -1202,9 +1197,8 @@ export async function runVerifyWeek(rawArgsInput = null) {
                         html: `
           <h2>Comprobaci¢n de los resultados</h2>
           <p>A fecha: ${new Date().toLocaleString('es-ES')}</p>
-          <pre style="font-family: monospace; white-space: pre-wrap;">${
-              r.resumenFinal
-          }</pre>
+          <pre style="font-family: monospace; white-space: pre-wrap;">${r.resumenFinal
+                            }</pre>
         `,
                         adjuntos: r.adjuntosFinal,
                         to: recipients,
@@ -1257,7 +1251,7 @@ export async function runVerifyWeek(rawArgsInput = null) {
                 if (pool && typeof pool.end === 'function') {
                     try {
                         await pool.end();
-                    } catch {}
+                    } catch { }
                     pool = null;
                 }
                 initEnvForVariant(variant);
@@ -1271,7 +1265,7 @@ export async function runVerifyWeek(rawArgsInput = null) {
                 if (pool && typeof pool.end === 'function') {
                     try {
                         await pool.end();
-                    } catch {}
+                    } catch { }
                 }
             }
         }
@@ -1281,5 +1275,8 @@ export async function runVerifyWeek(rawArgsInput = null) {
 }
 
 if (__isMain) {
-    runVerifyWeek();
+    runVerifyWeek(); // cargado desde otro script
+} else {
+    // valiamos que venga con argumentos
+    if (process.argv.length === 0) { console.log('no se han pasado argumentos\n usar --help para ayuda '); }
 }
