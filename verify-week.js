@@ -315,7 +315,7 @@ async function getRecipients(envioEmailToUsers) {
     try {
         let sql = `SELECT email FROM users WHERE email IS NOT NULL `;
         if (envioEmailToUsers) {
-            sql += `AND tipo='admin'`
+            sql += `AND tipo='user'`
         } else {
             sql += `AND tipo IN ('admin')`
         };
