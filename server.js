@@ -963,7 +963,7 @@ app.get('/tickets', requireAuth, async (req, res) => {
       const partes = [];
       if (aciertosNumeros) partes.push(`${aciertosNumeros} n\u00famero${aciertosNumeros > 1 ? 's' : ''}`);
       if (aciertoClave) partes.push('clave');
-      const aciertosClave = aciertoClave && aciertosNumeros < 1 ? 'R' : `${aciertosNumeros}${aciertoClave ? '+C' : ''}`;
+      const aciertosClave = aciertoClave && aciertosNumeros < 2 ? 'R' : `${aciertosNumeros}${aciertoClave ? '+C' : ''}`;
       return {
         detalle: partes.join(' + '),
         resumen: aciertosClave,
