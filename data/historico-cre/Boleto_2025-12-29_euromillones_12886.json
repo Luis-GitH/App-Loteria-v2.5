@@ -1,0 +1,29 @@
+{
+  "identificador": "1296607020736543597743518040512886",
+  "tipo": "euromillones",
+  "sorteoCodigo": "10430DIC25:2",
+  "sorteos": [
+    {
+      "sorteo": 104,
+      "fecha": "2025-12-30",
+      "dia": "martes",
+      "lunesSemana": "2025-12-29"
+    },
+    {
+      "sorteo": 105,
+      "fecha": "2026-01-02",
+      "dia": "viernes",
+      "lunesSemana": "2025-12-29"
+    }
+  ],
+  "fechaLunes": "2025-12-29",
+  "combinacion": "0720353638",
+  "estrellas": "0811",
+  "reintegro": "",
+  "clave": "",
+  "millon": "WRM47095",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2025-12-29_euromillones_12886.jpg"
+}

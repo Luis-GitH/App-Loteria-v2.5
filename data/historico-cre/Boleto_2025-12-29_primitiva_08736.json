@@ -1,0 +1,35 @@
+{
+  "identificador": "1296601020903569728201284866108736",
+  "tipo": "primitiva",
+  "sorteoCodigo": "15629DIC25:3",
+  "sorteos": [
+    {
+      "sorteo": 156,
+      "fecha": "2025-12-29",
+      "dia": "lunes",
+      "lunesSemana": "2025-12-29"
+    },
+    {
+      "sorteo": 157,
+      "fecha": "2026-01-01",
+      "dia": "jueves",
+      "lunesSemana": "2025-12-29"
+    },
+    {
+      "sorteo": 158,
+      "fecha": "2026-01-03",
+      "dia": "sábado",
+      "lunesSemana": "2025-12-29"
+    }
+  ],
+  "fechaLunes": "2025-12-29",
+  "combinacion": "131418263743",
+  "estrellas": "",
+  "reintegro": "8",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2025-12-29_primitiva_08736.jpg"
+}

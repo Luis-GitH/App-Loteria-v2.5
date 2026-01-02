@@ -276,7 +276,7 @@ export async function scrapeResultadosPrimitivaByFecha(input) {
     await conn.query(
       `INSERT INTO r_primitiva (semana, sorteo, fecha, numeros, complementario, reintegro)
        VALUES (?, ?, ?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE numeros=VALUES(numeros), complementario=VALUES(complementario), reintegro=VALUES(reintegro)`,
+       ON DUPLICATE KEY UPDATE semana=VALUES(semana), fecha=VALUES(fecha), numeros=VALUES(numeros), complementario=VALUES(complementario), reintegro=VALUES(reintegro)`,
       [r.semana || '', r.sorteo || '', r.fecha, (r.numeros || []).join(','), r.complementario || '', r.reintegro || '']
     );
     return true;
@@ -411,7 +411,7 @@ export async function scrapePremiosPrimitivaByFecha(fechaISO) {
       await conn.query(
         `INSERT INTO premios_sorteos (tipoApuesta, sorteo, fecha, categoria, aciertos, premio, premio_text)
          VALUES ('primitiva', ?, ?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE premio=VALUES(premio), premio_text=VALUES(premio_text), categoria=VALUES(categoria)`,
+         ON DUPLICATE KEY UPDATE fecha=VALUES(fecha), categoria=VALUES(categoria), aciertos=VALUES(aciertos), premio=VALUES(premio), premio_text=VALUES(premio_text)`,
         [sorteoNNN, fechaISO, p.categoria, p.aciertos, Number(p.premio||0), p.premio_text||'']
       );
     }

@@ -166,6 +166,29 @@ export default async function inicializaDB() {
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         `);
 
+        // Ajustar índices para permitir mismo nº de sorteo en diferentes años
+        try {
+            await conn.query(`ALTER TABLE r_primitiva DROP INDEX sorteo`);
+        } catch (e) { }
+        try {
+            await conn.query(`ALTER TABLE r_primitiva DROP INDEX u1`);
+        } catch (e) { }
+        try {
+            await conn.query(`ALTER TABLE r_primitiva ADD UNIQUE KEY u1 (sorteo, fecha)`);
+        } catch (e) {
+            console.warn("No se pudo asegurar índice r_primitiva(sorteo, fecha):", e.message);
+        }
+
+        // Premios: clave única incluye la fecha para no machacar años previos
+        try {
+            await conn.query(`ALTER TABLE premios_sorteos DROP INDEX u1`);
+        } catch (e) { }
+        try {
+            await conn.query(`ALTER TABLE premios_sorteos ADD UNIQUE KEY u1 (tipoApuesta, sorteo, fecha, categoria)`);
+        } catch (e) {
+            console.warn("No se pudo asegurar índice premios_sorteos(tipoApuesta, sorteo, fecha, categoria):", e.message);
+        }
+
         console.log(
             `✅ DataBase: ${process.env.DB_DATABASE}, Tablas: 'Boletos y resultados preparados.`
         );

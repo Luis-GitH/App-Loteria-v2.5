@@ -1923,10 +1923,10 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
       return res.redirect('/admin');
     }
 
-    // Obtener destinatarios administradores
+    // Obtener destinatarios para el envio
     const conn2 = await pool.getConnection();
     let recipients = [];
-    const stipo = "'admin'";
+    const stipo = "'user'";
     try {
       const rows2 = await conn2.query(`SELECT email FROM users WHERE email IS NOT NULL AND email <> '' AND tipo = ${stipo}`)
       console.log("🚀 Server 1932 ~ rows2:", rows2)
@@ -1962,6 +1962,7 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
       console.error('No se pudo calcular el saldo actual:', e.message);
     }
     const saldoFmt = `${saldoActual.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+    const saldoStyle = saldoActual < 0 ? 'color:#c0392b;' : '';
 
     const smtp = {
       host: process.env.EMAIL_HOST,
@@ -1977,7 +1978,7 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
       <h2>Imágenes de los boletos que jugamos de esta semana ${lunes}</h2>
       <p>Enviado: ${new Date().toLocaleString('es-ES')}</p>
       <p>Adjuntas ${attachments.length} imagen(es).</p>
-      <p>Información del saldo actual del club: <strong>${saldoFmt}</strong></p>
+      <p><strong>Información del saldo actual del club:</strong> <strong style="${saldoStyle}">${saldoFmt}</strong></p>
       <ul>${attachments.map(a => `<li>${a.filename}</li>`).join('')}</ul>
     `;
 
