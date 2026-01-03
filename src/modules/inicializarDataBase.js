@@ -179,6 +179,24 @@ export default async function inicializaDB() {
             console.warn("No se pudo asegurar índice r_primitiva(sorteo, fecha):", e.message);
         }
 
+        // Ajustar índices para euromillones y gordo (evitar colisiones al cambiar de año)
+        try {
+            await conn.query(`ALTER TABLE r_euromillones DROP INDEX sorteo`);
+        } catch (e) { }
+        try {
+            await conn.query(`ALTER TABLE r_euromillones ADD UNIQUE KEY u1 (sorteo, fecha)`);
+        } catch (e) {
+            console.warn("No se pudo asegurar índice r_euromillones(sorteo, fecha):", e.message);
+        }
+        try {
+            await conn.query(`ALTER TABLE r_gordo DROP INDEX sorteo`);
+        } catch (e) { }
+        try {
+            await conn.query(`ALTER TABLE r_gordo ADD UNIQUE KEY u1 (sorteo, fecha)`);
+        } catch (e) {
+            console.warn("No se pudo asegurar índice r_gordo(sorteo, fecha):", e.message);
+        }
+
         // Premios: clave única incluye la fecha para no machacar años previos
         try {
             await conn.query(`ALTER TABLE premios_sorteos DROP INDEX u1`);

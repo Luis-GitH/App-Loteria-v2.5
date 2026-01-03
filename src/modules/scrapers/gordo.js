@@ -198,7 +198,7 @@ export async function getResultadoGordo(fechaISO) {
       await conn.query(
         `INSERT INTO r_gordo (semana, sorteo, fecha, numeros, numeroClave)
          VALUES (?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE numeros=VALUES(numeros), numeroClave=VALUES(numeroClave)`,
+         ON DUPLICATE KEY UPDATE semana=VALUES(semana), sorteo=VALUES(sorteo), fecha=VALUES(fecha), numeros=VALUES(numeros), numeroClave=VALUES(numeroClave)`,
         [r.semana || 0, r.sorteo || "", r.fecha, (r.numeros || []).join(","), r.numeroClave]
       );
     }

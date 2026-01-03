@@ -99,7 +99,7 @@ export async function scrapeResultadosEuromillonesByFecha(input) {
     await conn.query(
       `INSERT INTO r_euromillones (semana, sorteo, fecha, numeros, estrellas, elMillon)
        VALUES (?, ?, ?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE numeros=VALUES(numeros), estrellas=VALUES(estrellas), elMillon=VALUES(elMillon)`,
+       ON DUPLICATE KEY UPDATE semana=VALUES(semana), sorteo=VALUES(sorteo), fecha=VALUES(fecha), numeros=VALUES(numeros), estrellas=VALUES(estrellas), elMillon=VALUES(elMillon)`,
       [r.semana || "", r.sorteo || "", r.fecha, (r.numeros || []).join(","), (r.estrellas || []).join(","), r.elMillon || ""]
     );
     return true;
