@@ -4,7 +4,14 @@ import path from 'path';
 import dotenv from 'dotenv';
 import dns from 'node:dns/promises';
 
-dotenv.config();
+// Cargar variables desde .env_dns si existe en el directorio de trabajo,
+// si no, usar el comportamiento por defecto (p. ej. .env)
+const envPath = path.join(process.cwd(), '.env_dns');
+if (fs.existsSync(envPath)) {
+  dotenv.config({ path: envPath });
+} else {
+  dotenv.config();
+}
 
 // Resolver rutas relativo al directorio donde se ejecute el script.
 // Evita dependencias de __dirname en ESM.
