@@ -1,5 +1,6 @@
 node_modules
 .env
+.env_dns
 .env_cre
 .env_family
 src/procesadosQR

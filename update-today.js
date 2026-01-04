@@ -11,8 +11,15 @@
  *   - primitiva.js  : scrapeResultadosPrimitivaByFecha,   scrapePremiosPrimitivaByFecha
  *   - gordo.js      : scrapeResultadosGordoByFecha,       scrapePremiosGordoByFecha
  * 
-a revisar erorres aceptados por se avance. 402 etc se atrasa la fecha para todos los sorteos y ojo vigilar las horas despues de las 22.30 horas del dia se puede
-.para que 
+ * Se envia un correo si el importe del premio supera el umbral definido en PREMIO_ALERTA_UMBRAL (por defecto 100€).
+ *
+ * Uso:
+ *   node update-today.js [--all|--both|--cre|--family]
+ *     --all o --both : actualiza todas las variantes (.env_cre y .env_family)
+ *     --cre          : actualiza solo la variante 'cre' (.env_cre)
+ *     --family       : actualiza solo la variante 'family' (.env_family)
+ *     Si no se especifica nada, se actualiza la variante por defecto (APP_VARIANT o 'default')
+ *  
 */
 
 import dotenv from "dotenv";
@@ -20,6 +27,16 @@ import mariadb from "mariadb";
 import path from "path";
 import fs from "fs";
 import { fechaISO, weekday } from "./src/helpers/fechas.js";
+import nodemailer from "nodemailer";
+import { sorteoNumeroNNN } from "./src/helpers/funciones.js";
+import {
+    cmpEuromillones,
+    cmpPrimitiva,
+    cmpGordo,
+    buscarPremioEurom,
+    buscarPremioPrimitiva,
+    buscarPremioGordo,
+} from "./src/helpers/premios.js";
 
 // 🔗 scrapers (los añadimos en la entrega 4/6)
 import {
@@ -137,11 +154,186 @@ async function existePremios(conn, tipoApuesta, fechaISO) {
     return (p[0]?.n || 0) > 0;
 }
 
+// =============== premios + correo ===============
+var PREMIO_ALERTA_UMBRAL = 0.50; // euros
+const TABLA_RESULTADOS = {
+    euromillones: "r_euromillones",
+    primitiva: "r_primitiva",
+    gordo: "r_gordo",
+};
+const TABLA_BOLETOS = {
+    euromillones: "euromillones",
+    primitiva: "primitiva",
+    gordo: "gordo",
+};
+
+function formatEuro(num) {
+    const n = Number(num);
+    if (!Number.isFinite(n)) return `${num}`;
+    return (
+        n.toLocaleString("es-ES", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }) + " €"
+    );
+}
+function esPremioValido(premio) {
+    return premio && !premio.pendiente;
+}
+function esPremioConImporte(premio) {
+    return (
+        esPremioValido(premio) &&
+        typeof premio.premio === "number" &&
+        premio.premio > 0
+    );
+}
+async function sorteoTieneCategorias(conn, tipo, sorteoNNN) {
+    const r = await conn.query(
+        `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND (sorteo=? OR sorteo LIKE ?)`,
+        [tipo, sorteoNNN, `%/${sorteoNNN}`]
+    );
+    return (r[0]?.n || 0) > 0;
+}
+
+async function calcularPremiosPlan(conn, tipo, fechaISO) {
+    const tablaRes = TABLA_RESULTADOS[tipo];
+    const tablaBols = TABLA_BOLETOS[tipo];
+    if (!tablaRes || !tablaBols) return { totalImporte: 0, premiados: 0 };
+
+    const resultados = await conn.query(
+        `SELECT * FROM ${tablaRes} WHERE fecha = ?`,
+        [fechaISO]
+    );
+    if (!resultados.length) return { totalImporte: 0, premiados: 0 };
+
+    let totalImporte = 0;
+    let premiados = 0;
+
+    for (const res of resultados) {
+        const sorteoNNN = sorteoNumeroNNN(res.sorteo);
+        if (!sorteoNNN) continue;
+
+        const boletos = await conn.query(
+            `SELECT * FROM sorteos WHERE tipoApuesta=? AND sorteo=?`,
+            [tipo, Number(sorteoNNN)]
+        );
+        if (!boletos.length) continue;
+
+        for (const b of boletos) {
+            const [boleto] = await conn.query(
+                `SELECT * FROM ${tablaBols} WHERE identificador=?`,
+                [b.identificadorBoleto]
+            );
+            if (!boleto) continue;
+
+            let premio = null;
+            if (tipo === "euromillones") {
+                const cmp = cmpEuromillones(boleto, res);
+                premio = await buscarPremioEurom(conn, sorteoNNN, cmp);
+            } else if (tipo === "primitiva") {
+                const cmp = cmpPrimitiva(boleto, res);
+                premio = await buscarPremioPrimitiva(conn, sorteoNNN, cmp, {
+                    sorteoTieneCategorias: () =>
+                        sorteoTieneCategorias(conn, "primitiva", sorteoNNN),
+                });
+            } else if (tipo === "gordo") {
+                const cmp = cmpGordo(boleto, res);
+                premio = await buscarPremioGordo(conn, sorteoNNN, cmp);
+            }
+
+            if (esPremioValido(premio)) {
+                premiados += 1;
+                if (esPremioConImporte(premio)) {
+                    totalImporte += premio.premio;
+                }
+            }
+        }
+    }
+
+    return { totalImporte, premiados };
+}
+
+async function obtenerDestinatariosAdmins(conn) {
+    const rows = await conn.query(
+        `SELECT email FROM users WHERE tipo='admin' AND email IS NOT NULL AND email <> ''`
+    );
+    const set = new Set();
+    for (const r of rows) {
+        const e = (r.email || "").toString().trim();
+        if (e) set.add(e);
+    }
+    if (!set.size && process.env.EMAIL_DEV_TO) {
+        set.add(process.env.EMAIL_DEV_TO);
+    }
+    return Array.from(set.values());
+}
+
+function buildSmtpConfig(env) {
+    const port = Number(env.EMAIL_PORT || 465);
+    return {
+        host: env.EMAIL_HOST,
+        port,
+        secure: port === 465,
+        auth: {
+            user: env.EMAIL_USER,
+            pass: env.EMAIL_PASSWORD,
+        },
+    };
+}
+
+async function enviarAvisoPremios({
+    env,
+    recipients,
+    totalImporte,
+    desglose,
+    variant,
+}) {
+    if (!recipients || !recipients.length) {
+        console.warn("⚠️ Sin destinatarios admin para el aviso de premios.");
+        return;
+    }
+    if (!env.EMAIL_HOST || !env.EMAIL_USER || !env.EMAIL_PASSWORD) {
+        console.warn("⚠️ Configuración SMTP incompleta; no se envía aviso.");
+        return;
+    }
+
+    const transporter = nodemailer.createTransport(buildSmtpConfig(env));
+    const subject = `[update-today|${variant}] Premios detectados > ${PREMIO_ALERTA_UMBRAL}€`;
+    console.log("🚀 ~ update-today.js:302 ~ enviarAvisoPremios ~ PREMIO_ALERTA_UMBRAL:", PREMIO_ALERTA_UMBRAL)
+    const lista = desglose
+        .filter((d) => d.totalImporte > 0)
+        .map(
+            (d) =>
+                `<li>${d.tipo} (${d.fecha}): ${formatEuro(
+                    d.totalImporte
+                )}${d.premiados ? ` · boletos premiados: ${d.premiados}` : ""}</li>`
+        )
+        .join("") || "<li>Sin desglose disponible</li>";
+    const html = `
+        <h3>Premios detectados en update-today</h3>
+        <p>Variante: <strong>${variant}</strong></p>
+        <p>Total acumulado: <strong>${formatEuro(totalImporte)}</strong></p>
+        <ul>${lista}</ul>
+        <p>Fecha de proceso: ${new Date().toLocaleString("es-ES")}</p>
+    `;
+
+    await transporter.sendMail({
+        from: env.EMAIL_FROM || env.EMAIL_USER,
+        to: recipients.join(","),
+        subject,
+        html,
+    });
+    console.log(
+        `📧 Aviso de premios enviado a ${recipients.length} destinatario(s).`
+    );
+}
+
 // =============== main ===============
 async function runUpdateForVariant(variant) {
     const env = buildEnvForVariant(variant);
     Object.assign(process.env, env); // asegura que scrapers compartan el mismo env
-
+    PREMIO_ALERTA_UMBRAL=parseInt(process.env.PREMIO_ALERTA_UMBRAL);
+    console.log("🚀 ~ update-today.js:336 ~ runUpdateForVariant ~ PREMIO_ALERTA_UMBRAL:", PREMIO_ALERTA_UMBRAL)
     const pool = mariadb.createPool({
         host: env.DB_HOST,
         user: env.DB_USER,
@@ -155,11 +347,12 @@ async function runUpdateForVariant(variant) {
         const hoy = fechaISO(new Date());
         const dow = weekday(hoy); // 0..6
         console.log(
-            `Arrancamos Update-today [${label}] => ${hoy} día de la semana:(0 domingo) (dow=${dow})`
+            `Arrancamos Update-today [${label}] => ${hoy} día de la semana:(0 y 7 domingo) (dow=${dow})`
         );
 
         // Determinar qué juegos tocan hoy (y el lunes incluir el gordo de ayer)
         const planes = [];
+        const premiosAnalizados = [];
 
         // Euromillones: martes(2) y viernes(5)
         if (dow === 2 || dow === 5) {
@@ -261,6 +454,57 @@ async function runUpdateForVariant(variant) {
                     "   ⚠️ Saltando premios: no hay resultados en BD para esta fecha."
                 );
             }
+
+            // Calcular premios para este plan (solo análisis, sin efectos secundarios)
+            try {
+                const resumenPremios = await calcularPremiosPlan(
+                    conn,
+                    tipo,
+                    fecha
+                );
+                premiosAnalizados.push({
+                    tipo,
+                    fecha,
+                    ...resumenPremios,
+                });
+                console.log(
+                    `   💶 Premios detectados para ${tipo} (${fecha}): ${formatEuro(
+                        resumenPremios.totalImporte
+                    )} [${resumenPremios.premiados} boleto(s) con premio]`
+                );
+            } catch (e) {
+                console.warn(
+                    `   ⚠️ No se pudieron calcular premios de ${tipo} (${fecha}):`,
+                    e.message
+                );
+            }
+        }
+
+        const totalPremios = premiosAnalizados.reduce(
+            (acc, p) => acc + (p.totalImporte || 0),
+            0
+        );
+        console.log(
+            `\n💰 Total premios analizados en esta ejecución: ${formatEuro(
+                totalPremios
+            )}`
+        );
+        if (totalPremios > PREMIO_ALERTA_UMBRAL) {
+            try {
+                const destinatarios = await obtenerDestinatariosAdmins(conn);
+                await enviarAvisoPremios({
+                    env,
+                    recipients: destinatarios,
+                    totalImporte: totalPremios,
+                    desglose: premiosAnalizados,
+                    variant: label,
+                });
+            } catch (e) {
+                console.error(
+                    "❌ No se pudo enviar el aviso de premios:",
+                    e.message
+                );
+            }
         }
 
         console.log("\n✅ Actualización diaria finalizada.");
@@ -273,25 +517,42 @@ async function runUpdateForVariant(variant) {
 }
 
 (async () => {
-    const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
-    const runAll = process.argv.some((a) => a === "--all" || a === "--both");
-    if (!runAll) {
-        console.log(
-            "ℹ️ Los parámetros son --all, --both --cre o --family ");
-            process.exit(1);
-    } 
-    
-    const variants = runAll
-        ? ["cre", "family"]
-        : args.length
-        ? args
-        : [
-              process.env.APP_VARIANT ||
-                  (process.env.PM2_APP_NAME?.startsWith("app-")
-                      ? process.env.PM2_APP_NAME.slice(4)
-                      : process.env.PM2_APP_NAME) ||
-                  "default",
-          ];
+    const rawArgs = process.argv.slice(2).filter(Boolean);
+    const flagAll = rawArgs.some((a) => a === "--all" || a === "--both");
+    const flagCre = rawArgs.includes("--cre");
+    const flagFamily = rawArgs.includes("--family");
+    const variantsArg = rawArgs
+        .filter((a) => a.startsWith("--variant="))
+        .map((a) => a.split("=")[1])
+        .filter(Boolean);
+    const bareVariants = rawArgs
+        .filter((a) => !a.startsWith("--"))
+        .map((a) => a.trim())
+        .filter(Boolean);
+
+    let variants = [];
+    if (flagAll) variants = ["cre", "family"];
+    else if (variantsArg.length) variants = variantsArg;
+    else if (flagCre || flagFamily)
+        variants = [
+            ...(flagCre ? ["cre"] : []),
+            ...(flagFamily ? ["family"] : []),
+        ];
+    else if (bareVariants.length) variants = bareVariants;
+    else {
+        variants = [
+            process.env.APP_VARIANT ||
+                (process.env.PM2_APP_NAME?.startsWith("app-")
+                    ? process.env.PM2_APP_NAME.slice(4)
+                    : process.env.PM2_APP_NAME) ||
+                "default",
+        ];
+    }
+    variants = [...new Set(variants.map((v) => v.toLowerCase()))];
+    if (!variants.length) {
+        console.log("❌ No se pudo determinar variante. Usa --cre, --family o --all.");
+        process.exit(1);
+    }
 
     for (const variant of variants) {
         try {
