@@ -299,7 +299,6 @@ async function enviarAvisoPremios({
 
     const transporter = nodemailer.createTransport(buildSmtpConfig(env));
     const subject = `[update-today|${variant}] Premios detectados > ${PREMIO_ALERTA_UMBRAL}€`;
-    console.log("🚀 ~ update-today.js:302 ~ enviarAvisoPremios ~ PREMIO_ALERTA_UMBRAL:", PREMIO_ALERTA_UMBRAL)
     const lista = desglose
         .filter((d) => d.totalImporte > 0)
         .map(
@@ -333,7 +332,6 @@ async function runUpdateForVariant(variant) {
     const env = buildEnvForVariant(variant);
     Object.assign(process.env, env); // asegura que scrapers compartan el mismo env
     PREMIO_ALERTA_UMBRAL=parseInt(process.env.PREMIO_ALERTA_UMBRAL);
-    console.log("🚀 ~ update-today.js:336 ~ runUpdateForVariant ~ PREMIO_ALERTA_UMBRAL:", PREMIO_ALERTA_UMBRAL)
     const pool = mariadb.createPool({
         host: env.DB_HOST,
         user: env.DB_USER,
