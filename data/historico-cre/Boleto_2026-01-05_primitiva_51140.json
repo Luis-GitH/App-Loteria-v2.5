@@ -1,0 +1,35 @@
+{
+  "identificador": "1297301020479922911845408065951140",
+  "tipo": "primitiva",
+  "sorteoCodigo": "00305ENE26:3",
+  "sorteos": [
+    {
+      "sorteo": 3,
+      "fecha": "2026-01-05",
+      "dia": "lunes",
+      "lunesSemana": "2026-01-05"
+    },
+    {
+      "sorteo": 4,
+      "fecha": "2026-01-08",
+      "dia": "jueves",
+      "lunesSemana": "2026-01-05"
+    },
+    {
+      "sorteo": 5,
+      "fecha": "2026-01-10",
+      "dia": "sábado",
+      "lunesSemana": "2026-01-05"
+    }
+  ],
+  "fechaLunes": "2026-01-05",
+  "combinacion": "041415283141",
+  "estrellas": "",
+  "reintegro": "4",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-01-05_primitiva_51140.jpg"
+}

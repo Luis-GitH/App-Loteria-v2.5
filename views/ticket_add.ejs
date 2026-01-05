@@ -17,6 +17,7 @@
       <label class="form-label d-block">Lectura de QR</label>
       <p id="qrStatus" class="text-muted mb-2">Pendiente de escanear.</p>
       <div id="qr-reader" class="qr-reader"></div>
+      <div id="qr-reader-file" style="display:none;"></div>
       <button id="restartScan" type="button" class="btn mt-2" style="display:none;">Volver a escanear</button>
     </div>
 
@@ -38,6 +39,7 @@
     const submitBtn = document.getElementById('submitTicketBtn');
     const restartBtn = document.getElementById('restartScan');
     const readerId = 'qr-reader';
+    const fileReaderId = 'qr-reader-file';
 
     function updateSubmitState() {
       const hasPhoto = photoInput && photoInput.files && photoInput.files.length > 0;
@@ -55,6 +57,9 @@
           photoPreview.style.display = 'none';
           previewImg.removeAttribute('src');
         }
+        if (this.files && this.files[0]) {
+          readQRFromPhoto(this.files[0]);
+        }
         updateSubmitState();
       });
     }
@@ -65,7 +70,40 @@
     }
 
     const html5QrCode = new Html5Qrcode(readerId);
+    const fileQrCode = new Html5Qrcode(fileReaderId);
     let scannerRunning = false;
+
+    async function readQRFromPhoto(file) {
+      if (!file || !qrStatus) return null;
+      qrStatus.textContent = 'Leyendo QR de la foto...';
+      try {
+        let result = null;
+        if (fileQrCode.scanFileV2) {
+          const res = await fileQrCode.scanFileV2(file, false);
+          result = res?.decodedText || res;
+        } else if (fileQrCode.scanFile) {
+          result = await fileQrCode.scanFile(file, false);
+        }
+        if (result) {
+          applyQRResult(result, { from: 'photo' });
+          return result;
+        }
+      } catch (err) {
+        // fall through to camera
+      }
+      qrStatus.textContent = 'No se pudo leer el QR de la foto. Usa la cámara.';
+      if (!scannerRunning) startScanner();
+      return null;
+    }
+
+    function applyQRResult(text, opts = {}) {
+      if (!text) return;
+      qrField.value = text;
+      qrStatus.textContent = opts.from === 'photo' ? 'QR leído desde la foto.' : 'QR capturado correctamente.';
+      updateSubmitState();
+      restartBtn.style.display = 'inline-block';
+      html5QrCode.stop().then(() => { scannerRunning = false; }).catch(() => { scannerRunning = false; });
+    }
 
     function startScanner() {
       if (!qrStatus) return;
@@ -100,11 +138,7 @@
 
     function onScanSuccess(text) {
       if (!text) return;
-      qrField.value = text;
-      qrStatus.textContent = 'QR capturado correctamente.';
-      updateSubmitState();
-      restartBtn.style.display = 'inline-block';
-      html5QrCode.stop().then(() => { scannerRunning = false; }).catch(() => { scannerRunning = false; });
+      applyQRResult(text);
     }
 
     if (restartBtn) {
@@ -116,8 +150,6 @@
         restartBtn.style.display = 'none';
       });
     }
-
-    startScanner();
 
     window.addEventListener('beforeunload', () => {
       html5QrCode.stop().catch(() => {});

@@ -1,0 +1,23 @@
+{
+  "identificador": "1297304021200138294932309569064179",
+  "tipo": "gordo",
+  "sorteoCodigo": "00211ENE26:1",
+  "sorteos": [
+    {
+      "sorteo": 2,
+      "fecha": "2026-01-11",
+      "dia": "domingo",
+      "lunesSemana": "2026-01-05"
+    }
+  ],
+  "fechaLunes": "2026-01-05",
+  "combinacion": "0525323638",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "01",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-01-05_gordo_64179.jpg"
+}

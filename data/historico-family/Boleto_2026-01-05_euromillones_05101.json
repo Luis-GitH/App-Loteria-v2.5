@@ -1,0 +1,29 @@
+{
+  "identificador": "1297307020574339868528777004105101",
+  "tipo": "euromillones",
+  "sorteoCodigo": "00206ENE26:2",
+  "sorteos": [
+    {
+      "sorteo": 2,
+      "fecha": "2026-01-06",
+      "dia": "martes",
+      "lunesSemana": "2026-01-05"
+    },
+    {
+      "sorteo": 3,
+      "fecha": "2026-01-09",
+      "dia": "viernes",
+      "lunesSemana": "2026-01-05"
+    }
+  ],
+  "fechaLunes": "2026-01-05",
+  "combinacion": "1521284149",
+  "estrellas": "0111",
+  "reintegro": "",
+  "clave": "",
+  "millon": "WVS78720",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-01-05_euromillones_05101.jpg"
+}
