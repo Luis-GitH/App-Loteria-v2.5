@@ -55,9 +55,9 @@ module.exports = {
       error_file: "./logs/update-today-errores.log",
       cron_restart: "40 22 * * *", // todos los disa  a las 22:30
       autorestart: false,
-      
+
     },
-     {  
+    {
       name: "verify-week-fixed",
       script: "verify-week-fixed.js",
       cwd: './',
@@ -67,6 +67,16 @@ module.exports = {
       cron_restart: "45 22 * * 0", // las 22:45 los domingos
       autorestart: false
     },
+    {
+      name: "update-dns",
+      script: "scripts/update-dns.mjs",
+      cwd: './',
+      time:true,
+      out_file: "./logs/update-dns-out.log",
+      error_file: "./logs/update-dns-errores.log",
+      cron_restart: "*/15 * * * *", // cada 15 minutos
+      autorestart: false,
 
+    },
   ],
 };
