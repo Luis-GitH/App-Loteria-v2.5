@@ -79,7 +79,12 @@ async function writeCachedIp(ip) {
   await fs.ensureDir(path.dirname(cachePath));
   await fs.writeJson(
     cachePath,
-    { ip, updatedAt: new Date().toISOString() },
+    {
+      ip,
+      updatedAt: new Date()
+        .toLocaleString('sv-SE', { timeZone: 'Europe/Madrid', hour12: false })
+        .replace(/-/g, '/'),
+    },
     { spaces: 2 }
   );
 }
