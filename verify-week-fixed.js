@@ -4,7 +4,9 @@ import { runVerifyWeek } from "./verify-week.js";
 // Usa argumentos distintos según el día: lunes incluye --users, otros días no.
 const today = new Date();
 const isMonday = today.getDay() === 1; // 0 = domingo, 1 = lunes
-const FIXED_ARGS = isMonday
+const isSunday = today.getDay() === 0; // 0 = domingo
+
+const FIXED_ARGS = isSunday
     ? ["--week", "--all", "--users"]
     : ["--week", "--all"];
 

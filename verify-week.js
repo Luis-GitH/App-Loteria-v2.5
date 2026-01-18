@@ -1247,7 +1247,7 @@ export async function runVerifyWeek(rawArgsInput = null) {
 
         for (const variant of cli.variants) {
             try {
-                summaryLogger(`Ejecutando verify-week para variante: ${variant}`);
+                summaryLogger(`\n***************************************** \n Ejecutando verify-week para variante: ${variant}\n ***************************************** `);
                 if (pool && typeof pool.end === 'function') {
                     try {
                         await pool.end();

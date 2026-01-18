@@ -64,7 +64,7 @@ module.exports = {
       error_file: "./logs/verify-week-errores.log",
       out_file: "./logs/verify-week-out.log",
       time: true,
-      cron_restart: "45 22 * * 0", // las 22:45 los domingos
+      cron_restart: "45 22 * * *", // las 22:45 los domingos
       autorestart: false
     },
     {

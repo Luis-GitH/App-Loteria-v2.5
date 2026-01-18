@@ -1,0 +1,23 @@
+{
+  "identificador": "1298004021306371494623059600511324",
+  "tipo": "gordo",
+  "sorteoCodigo": "00318ENE26:1",
+  "sorteos": [
+    {
+      "sorteo": 3,
+      "fecha": "2026-01-18",
+      "dia": "domingo",
+      "lunesSemana": "2026-01-12"
+    }
+  ],
+  "fechaLunes": "2026-01-12",
+  "combinacion": "1718234449",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "01",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98595-1",
+  "joker": "",
+  "imagen": "Boleto_2026-01-12_gordo_11324.jpg"
+}

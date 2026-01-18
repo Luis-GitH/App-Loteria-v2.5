@@ -1,0 +1,29 @@
+{
+  "identificador": "1298007021317482062225729876901602",
+  "tipo": "euromillones",
+  "sorteoCodigo": "00413ENE26:2",
+  "sorteos": [
+    {
+      "sorteo": 4,
+      "fecha": "2026-01-13",
+      "dia": "martes",
+      "lunesSemana": "2026-01-12"
+    },
+    {
+      "sorteo": 5,
+      "fecha": "2026-01-16",
+      "dia": "viernes",
+      "lunesSemana": "2026-01-12"
+    }
+  ],
+  "fechaLunes": "2026-01-12",
+  "combinacion": "2932344147",
+  "estrellas": "0304",
+  "reintegro": "",
+  "clave": "",
+  "millon": "WZT84506",
+  "semanas": 1,
+  "terminal": "98595-1",
+  "joker": "",
+  "imagen": "Boleto_2026-01-12_euromillones_01602.jpg"
+}
