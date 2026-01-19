@@ -1,0 +1,29 @@
+{
+  "identificador": "1298707021336702707651145900918178",
+  "tipo": "euromillones",
+  "sorteoCodigo": "00620ENE26:2",
+  "sorteos": [
+    {
+      "sorteo": 6,
+      "fecha": "2026-01-20",
+      "dia": "martes",
+      "lunesSemana": "2026-01-19"
+    },
+    {
+      "sorteo": 7,
+      "fecha": "2026-01-23",
+      "dia": "viernes",
+      "lunesSemana": "2026-01-19"
+    }
+  ],
+  "fechaLunes": "2026-01-19",
+  "combinacion": "0613232448",
+  "estrellas": "0111",
+  "reintegro": "",
+  "clave": "",
+  "millon": "XFN27142",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-01-19_euromillones_18178.jpg"
+}

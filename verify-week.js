@@ -1144,7 +1144,7 @@ export async function runVerifyWeek(rawArgsInput = null) {
         const rawArgs = rawArgsInput ?? resolveRawArgs();
         if (!rawArgs.length || !validateRequiredArgs(rawArgs)) {
             logger.error(
-                "[ERROR parseArgs] Argumentos obligatorios ausentes. Consulta la ayuda."
+                "[ERROR parseArgs] Argumentos obligatorios ausentes. Consulta la ayuda( --help)."
             );
             summaryLogger(
                 "❌ No se pudieron interpretar los argumentos (faltan obligatorios)"

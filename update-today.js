@@ -10,15 +10,15 @@
  *   - euromillones.js: scrapeResultadosEuromillonesByFecha, scrapePremiosEuromillonesByFecha
  *   - primitiva.js  : scrapeResultadosPrimitivaByFecha,   scrapePremiosPrimitivaByFecha
  *   - gordo.js      : scrapeResultadosGordoByFecha,       scrapePremiosGordoByFecha
- * 
- * Se envia un correo si el importe del premio supera el umbral definido en PREMIO_ALERTA_UMBRAL (por defecto 100€).
+ *
  *
  * Uso:
- *   node update-today.js [--all|--both|--cre|--family]
+ *   node update-today.js [--all|--both|--cre|--family] [--text=YYYY-MM-DD]
  *     --all o --both : actualiza todas las variantes (.env_cre y .env_family)
  *     --cre          : actualiza solo la variante 'cre' (.env_cre)
  *     --family       : actualiza solo la variante 'family' (.env_family)
- *     Si no se especifica nada, se actualiza la variante por defecto (APP_VARIANT o 'default')
+ *     --text         : usar una fecha concreta (formato YYYY-MM-DD) en lugar del día actual
+ *     Si no se especifica nada, se mostrara esta ayuda
  *  
 */
 
@@ -27,7 +27,6 @@ import mariadb from "mariadb";
 import path from "path";
 import fs from "fs";
 import { fechaISO, weekday } from "./src/helpers/fechas.js";
-import nodemailer from "nodemailer";
 import { sorteoNumeroNNN } from "./src/helpers/funciones.js";
 import {
     cmpEuromillones,
@@ -154,8 +153,7 @@ async function existePremios(conn, tipoApuesta, fechaISO) {
     return (p[0]?.n || 0) > 0;
 }
 
-// =============== premios + correo ===============
-var PREMIO_ALERTA_UMBRAL = 0.50; // euros
+// =============== premios ===============
 const TABLA_RESULTADOS = {
     euromillones: "r_euromillones",
     primitiva: "r_primitiva",
@@ -177,6 +175,7 @@ function formatEuro(num) {
         }) + " €"
     );
 }
+
 function esPremioValido(premio) {
     return premio && !premio.pendiente;
 }
@@ -253,85 +252,10 @@ async function calcularPremiosPlan(conn, tipo, fechaISO) {
     return { totalImporte, premiados };
 }
 
-async function obtenerDestinatariosAdmins(conn) {
-    const rows = await conn.query(
-        `SELECT email FROM users WHERE tipo='admin' AND email IS NOT NULL AND email <> ''`
-    );
-    const set = new Set();
-    for (const r of rows) {
-        const e = (r.email || "").toString().trim();
-        if (e) set.add(e);
-    }
-    if (!set.size && process.env.EMAIL_DEV_TO) {
-        set.add(process.env.EMAIL_DEV_TO);
-    }
-    return Array.from(set.values());
-}
-
-function buildSmtpConfig(env) {
-    const port = Number(env.EMAIL_PORT || 465);
-    return {
-        host: env.EMAIL_HOST,
-        port,
-        secure: port === 465,
-        auth: {
-            user: env.EMAIL_USER,
-            pass: env.EMAIL_PASSWORD,
-        },
-    };
-}
-
-async function enviarAvisoPremios({
-    env,
-    recipients,
-    totalImporte,
-    desglose,
-    variant,
-}) {
-    if (!recipients || !recipients.length) {
-        console.warn("⚠️ Sin destinatarios admin para el aviso de premios.");
-        return;
-    }
-    if (!env.EMAIL_HOST || !env.EMAIL_USER || !env.EMAIL_PASSWORD) {
-        console.warn("⚠️ Configuración SMTP incompleta; no se envía aviso.");
-        return;
-    }
-
-    const transporter = nodemailer.createTransport(buildSmtpConfig(env));
-    const subject = `[update-today|${variant}] Premios detectados > ${PREMIO_ALERTA_UMBRAL}€`;
-    const lista = desglose
-        .filter((d) => d.totalImporte > 0)
-        .map(
-            (d) =>
-                `<li>${d.tipo} (${d.fecha}): ${formatEuro(
-                    d.totalImporte
-                )}${d.premiados ? ` · boletos premiados: ${d.premiados}` : ""}</li>`
-        )
-        .join("") || "<li>Sin desglose disponible</li>";
-    const html = `
-        <h3>Premios detectados en update-today</h3>
-        <p>Variante: <strong>${variant}</strong></p>
-        <p>Total acumulado: <strong>${formatEuro(totalImporte)}</strong></p>
-        <ul>${lista}</ul>
-        <p>Fecha de proceso: ${new Date().toLocaleString("es-ES")}</p>
-    `;
-
-    await transporter.sendMail({
-        from: env.EMAIL_FROM || env.EMAIL_USER,
-        to: recipients.join(","),
-        subject,
-        html,
-    });
-    console.log(
-        `📧 Aviso de premios enviado a ${recipients.length} destinatario(s).`
-    );
-}
-
 // =============== main ===============
 async function runUpdateForVariant(variant) {
     const env = buildEnvForVariant(variant);
     Object.assign(process.env, env); // asegura que scrapers compartan el mismo env
-    PREMIO_ALERTA_UMBRAL=parseInt(process.env.PREMIO_ALERTA_UMBRAL);
     const pool = mariadb.createPool({
         host: env.DB_HOST,
         user: env.DB_USER,
@@ -342,7 +266,7 @@ async function runUpdateForVariant(variant) {
     const conn = await pool.getConnection();
     const label = variant || "default";
     try {
-        const hoy = fechaISO(new Date());
+        const hoy = env.UPDATE_DATE || fechaISO(new Date());
         const dow = weekday(hoy); // 0..6
         console.log(
             `Arrancamos Update-today [${label}] => ${hoy} día de la semana:(0 y 7 domingo) (dow=${dow})`
@@ -487,23 +411,6 @@ async function runUpdateForVariant(variant) {
                 totalPremios
             )}`
         );
-        if (totalPremios > PREMIO_ALERTA_UMBRAL) {
-            try {
-                const destinatarios = await obtenerDestinatariosAdmins(conn);
-                await enviarAvisoPremios({
-                    env,
-                    recipients: destinatarios,
-                    totalImporte: totalPremios,
-                    desglose: premiosAnalizados,
-                    variant: label,
-                });
-            } catch (e) {
-                console.error(
-                    "❌ No se pudo enviar el aviso de premios:",
-                    e.message
-                );
-            }
-        }
 
         console.log("\n✅ Actualización diaria finalizada.");
     } finally {
@@ -515,10 +422,33 @@ async function runUpdateForVariant(variant) {
 }
 
 (async () => {
+    const printHelp = () => {
+        console.log(
+            [
+                "Uso:",
+                "  node update-today.js [--all|--both|--cre|--family] [--text=YYYY-MM-DD]",
+                "",
+                "Opciones:",
+                "  --all | --both  actualizar variantes cre y family",
+                "  --cre           actualizar solo la variante cre",
+                "  --family        actualizar solo la variante family",
+                "  --text=FECHA    usar una fecha concreta (YYYY-MM-DD)",
+                "  --help          mostrar esta ayuda",
+            ].join("\n")
+        );
+    };
     const rawArgs = process.argv.slice(2).filter(Boolean);
+    if (!rawArgs.length || rawArgs.includes("--help")) {
+        printHelp();
+        process.exit(0);
+    }
     const flagAll = rawArgs.some((a) => a === "--all" || a === "--both");
     const flagCre = rawArgs.includes("--cre");
     const flagFamily = rawArgs.includes("--family");
+    const textArg = rawArgs
+        .filter((a) => a.startsWith("--text="))
+        .map((a) => a.split("=")[1])
+        .filter(Boolean)[0];
     const variantsArg = rawArgs
         .filter((a) => a.startsWith("--variant="))
         .map((a) => a.split("=")[1])
@@ -527,6 +457,16 @@ async function runUpdateForVariant(variant) {
         .filter((a) => !a.startsWith("--"))
         .map((a) => a.trim())
         .filter(Boolean);
+
+    if (textArg) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(textArg)) {
+            console.log(
+                "❌ Formato de fecha invalido para --text. Usa YYYY-MM-DD."
+            );
+            process.exit(1);
+        }
+        process.env.UPDATE_DATE = textArg;
+    }
 
     let variants = [];
     if (flagAll) variants = ["cre", "family"];
@@ -537,18 +477,12 @@ async function runUpdateForVariant(variant) {
             ...(flagFamily ? ["family"] : []),
         ];
     else if (bareVariants.length) variants = bareVariants;
-    else {
-        variants = [
-            process.env.APP_VARIANT ||
-                (process.env.PM2_APP_NAME?.startsWith("app-")
-                    ? process.env.PM2_APP_NAME.slice(4)
-                    : process.env.PM2_APP_NAME) ||
-                "default",
-        ];
-    }
     variants = [...new Set(variants.map((v) => v.toLowerCase()))];
     if (!variants.length) {
-        console.log("❌ No se pudo determinar variante. Usa --cre, --family o --all.");
+        console.log(
+            "❌ No se pudo determinar variante. Usa --cre, --family o --all."
+        );
+        printHelp();
         process.exit(1);
     }
 

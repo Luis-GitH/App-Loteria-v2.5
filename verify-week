@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+import { runVerifyWeek } from "./verify-week.js";
+
+runVerifyWeek(process.argv.slice(2)).catch((err) => {
+    console.error("❌ verify-week error:", err?.stack || err);
+    process.exitCode = 1;
+});
