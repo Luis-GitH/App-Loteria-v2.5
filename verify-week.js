@@ -29,6 +29,8 @@ import {
 } from "./src/helpers/fechas.js";
 import {
     sorteoNumeroNNN,
+    sorteoKeyFromFecha,
+    yearFromFecha,
 } from "./src/helpers/funciones.js";
 import {
     cmpEuromillones,
@@ -357,24 +359,36 @@ async function existePremiosPorFecha(conn, tipoApuesta, fechaISO) {
     if (!rows.length) return false;
 
     const nnn = (rows[0].sorteo ?? "").toString().trim();
+    const sorteoKey = sorteoKeyFromFecha(nnn, fechaStr);
 
     const p = await conn.query(
         `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta = ? AND sorteo = ? AND fecha = ?`,
-        [tipoApuesta, nnn, fechaStr]
+        [tipoApuesta, sorteoKey || nnn, fechaStr]
     );
     if ((p[0]?.n || 0) > 0) return true;
     // Fallback: si no hay fecha asociada en premios_sorteos, comprobar por sorteo únicamente (acepta registros antiguos "YYYY/NNN")
-    const r = await conn.query(
-        `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND (sorteo=? OR sorteo LIKE ?)`,
-        [tipoApuesta, nnn, `%/${nnn}`]
-    );
+    const year = yearFromFecha(fechaStr);
+    const params = [tipoApuesta, nnn, `%/${nnn}`];
+    let sql =
+        `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND (sorteo=? OR sorteo LIKE ?)`;
+    if (year) {
+        sql += " AND YEAR(fecha)=?";
+        params.push(year);
+    }
+    const r = await conn.query(sql, params);
     return (r[0]?.n || 0) > 0;
 }
-async function sorteoTieneCategorias(conn, tipo, sorteoNNN) {
-    const r = await conn.query(
-        `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND (sorteo=? OR sorteo LIKE ?)`,
-        [tipo, sorteoNNN, `%/${sorteoNNN}`]
-    );
+async function sorteoTieneCategorias(conn, tipo, sorteoNNN, fechaISO) {
+    const sorteoKey = sorteoKeyFromFecha(sorteoNNN, fechaISO);
+    const year = yearFromFecha(fechaISO);
+    const params = [tipo, sorteoKey || sorteoNNN, `%/${sorteoNNN}`];
+    let sql =
+        `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND (sorteo=? OR sorteo LIKE ?)`;
+    if (year) {
+        sql += " AND YEAR(fecha)=?";
+        params.push(year);
+    }
+    const r = await conn.query(sql, params);
     return (r[0]?.n || 0) > 0;
 }
 
@@ -584,7 +598,7 @@ async function procesarEurom(conn, fechaLunes, fechaDomingo) {
             if (!boleto) continue;
 
             const cmp = cmpEuromillones(boleto, s);
-            const premio = await buscarPremioEurom(conn, sNNN, cmp);
+            const premio = await buscarPremioEurom(conn, sNNN, cmp, { fechaISO: s.fecha });
             if (!premio) continue;
 
             const boletoId = b.identificadorBoleto.slice(-5);
@@ -676,7 +690,8 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
             const cmp = cmpPrimitiva(boleto, s);
             const premio = await buscarPremioPrimitiva(conn, sNNN, cmp, {
                 sorteoTieneCategorias: () =>
-                    sorteoTieneCategorias(conn, "primitiva", sNNN),
+                    sorteoTieneCategorias(conn, "primitiva", sNNN, s.fecha),
+                fechaISO: s.fecha,
             });
             if (!premio) continue;
 
@@ -770,7 +785,7 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
             if (!boleto) continue;
 
             const cmp = cmpGordo(boleto, s);
-            const premio = await buscarPremioGordo(conn, sNNN, cmp);
+            const premio = await buscarPremioGordo(conn, sNNN, cmp, { fechaISO: s.fecha });
             if (!premio) continue;
 
             const boletoId = b.identificadorBoleto.slice(-5);

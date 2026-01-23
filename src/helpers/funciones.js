@@ -78,3 +78,22 @@ export function sorteoNumeroNNN(valor) {
     if (!s) return "";
     return /^\d{1,3}$/.test(s) ? s.padStart(3, "0") : s;
 }
+
+export function yearFromFecha(fecha) {
+    if (!fecha) return "";
+    if (fecha instanceof Date) {
+        const y = fecha.getFullYear();
+        return Number.isFinite(y) ? String(y) : "";
+    }
+    const s = fecha.toString();
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 4);
+    const d = new Date(s);
+    const y = d.getFullYear();
+    return Number.isFinite(y) ? String(y) : "";
+}
+
+export function sorteoKeyFromFecha(sorteoNNN, fecha) {
+    const year = yearFromFecha(fecha);
+    if (!sorteoNNN || !year) return "";
+    return `${year}/${sorteoNNN}`;
+}

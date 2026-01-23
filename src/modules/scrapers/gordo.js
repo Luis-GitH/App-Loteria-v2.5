@@ -263,13 +263,15 @@ async function persistPremiosGordo(premios, fechaISO, sorteoHint) {
       const rows = await conn.query("SELECT sorteo FROM r_gordo WHERE fecha = ? LIMIT 1", [fechaISO]);
       if (rows.length) sorteoNNN = normalizarSorteo(rows[0].sorteo);
     }
-    if (!sorteoNNN) return;
+    const year = (fechaISO || "").slice(0, 4);
+    const sorteoKey = year && sorteoNNN ? `${year}/${sorteoNNN}` : sorteoNNN;
+    if (!sorteoKey) return;
     for (const p of premios) {
       await conn.query(
         `INSERT INTO premios_sorteos (tipoApuesta, sorteo, fecha, categoria, aciertos, premio, premio_text)
          VALUES ('gordo', ?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE premio=VALUES(premio), premio_text=VALUES(premio_text), categoria=VALUES(categoria)`,
-        [sorteoNNN, fechaISO, p.categoria, p.aciertos || "", Number(p.premio || 0), p.premio_text || ""]
+        [sorteoKey, fechaISO, p.categoria, p.aciertos || "", Number(p.premio || 0), p.premio_text || ""]
       );
     }
   } finally {

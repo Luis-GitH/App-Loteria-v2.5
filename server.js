@@ -46,7 +46,7 @@ import ExcelJS from 'exceljs';
 import nodemailer from 'nodemailer';
 import { procesarSemana as vwProcesarSemana } from './verify-week.js';
 import { ensureAppTimezone, todayISO, fechaISO, parseISODateLocal, mondayOf, addDays } from './src/helpers/fechas.js';
-import { parseNumberOrNull, formatEuroText, sorteoNumeroNNN } from './src/helpers/funciones.js';
+import { parseNumberOrNull, formatEuroText, sorteoNumeroNNN, sorteoKeyFromFecha } from './src/helpers/funciones.js';
 import { cmpEuromillones, cmpPrimitiva, cmpGordo, buscarPremioPrimitiva, buscarPremioEurom, buscarPremioGordo } from './src/helpers/premios.js';
 import { parseTicketQR } from './src/modules/parse_ticket_qr.js';
 import { getBotesActuales } from './src/modules/botes.js';
@@ -290,7 +290,9 @@ async function evaluarBoletoContraResultados(conn, boleto) {
       continue;
     }
     const cmp = meta.compare(boleto, resultado);
-    const premio = await meta.prize(conn, sorteoNNN || sorteoNumeroNNN(resultado.sorteo), cmp);
+    const premio = await meta.prize(conn, sorteoNNN || sorteoNumeroNNN(resultado.sorteo), cmp, {
+      fechaISO: resultado.fecha,
+    });
     detalles.push({
       sorteo: sInfo,
       status: premio ? (premio.pendiente ? 'pendiente' : 'evaluado') : 'sin_premio',
@@ -996,20 +998,27 @@ app.get('/tickets', requireAuth, async (req, res) => {
     }
 
     const premioCache = new Map();
-    async function fetchPremio(tipo, sorteoKey, aciertosClave) {
+    async function fetchPremio(tipo, sorteoKey, aciertosClave, fechaISO) {
       if (!aciertosClave) return null;
-      const cacheKey = `${tipo}|${sorteoKey}|${aciertosClave}`;
+      const sorteoKeyWithYear = sorteoKeyFromFecha(sorteoKey, fechaISO) || sorteoKey;
+      const cacheKey = `${tipo}|${sorteoKeyWithYear}|${aciertosClave}`;
       if (premioCache.has(cacheKey)) return premioCache.get(cacheKey);
       let rows = await conn.query(
-        `SELECT categoria, premio, premio_text FROM premios_sorteos WHERE tipoApuesta=? AND sorteo=? AND aciertos=? LIMIT 1`,
-        [tipo, sorteoKey, aciertosClave]
+        `SELECT categoria, premio, premio_text FROM premios_sorteos
+         WHERE tipoApuesta=? AND sorteo=? AND aciertos=?
+         ORDER BY fecha DESC
+         LIMIT 1`,
+        [tipo, sorteoKeyWithYear, aciertosClave]
       );
       // Algunos scrapes antiguos de Primitiva guardaron sorteo como "YYYY/NNN".
       // Si no encontramos coincidencia exacta, probamos con la cola "/NNN" para no perder premios.
       if (!rows.length && tipo === 'primitiva' && sorteoKey) {
         const likeKey = `%/${sorteoKey}`;
         rows = await conn.query(
-          `SELECT categoria, premio, premio_text FROM premios_sorteos WHERE tipoApuesta=? AND sorteo LIKE ? AND aciertos=? ORDER BY fecha DESC LIMIT 1`,
+          `SELECT categoria, premio, premio_text FROM premios_sorteos
+           WHERE tipoApuesta=? AND sorteo LIKE ? AND aciertos=?
+           ORDER BY fecha DESC
+           LIMIT 1`,
           [tipo, likeKey, aciertosClave]
         );
       }
@@ -1025,7 +1034,7 @@ app.get('/tickets', requireAuth, async (req, res) => {
         info.incluyeReintegro = false;
         const requiereReintegro = tipo === 'gordo' && aciertosClave !== 'R' && /\+C$/.test(aciertosClave || '');
         if (requiereReintegro) {
-          const reinInfo = await fetchPremio(tipo, sorteoKey, 'R');
+          const reinInfo = await fetchPremio(tipo, sorteoKey, 'R', fechaISO);
           const reintegroValor = reinInfo ? reinInfo.premio_categoria ?? reinInfo.premio ?? null : null;
           const reintegroTexto =
             reinInfo?.premio_categoria_text ||
@@ -1049,7 +1058,7 @@ app.get('/tickets', requireAuth, async (req, res) => {
     }
     for (const tipo of ['euromillones', 'primitiva', 'gordo']) {
       for (const hit of hits[tipo]) {
-        const info = await fetchPremio(tipo, hit.sorteo, hit.aciertosClave);
+        const info = await fetchPremio(tipo, hit.sorteo, hit.aciertosClave, hit.fecha);
         if (info) {
           hit.categoria = info.categoria || null;
           hit.premio = Number.isFinite(info.premio) ? info.premio : parseNumberOrNull(info.premio);
@@ -1318,7 +1327,7 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
           const [boleto] = await conn.query(`SELECT * FROM euromillones WHERE identificador=?`, [b.identificadorBoleto]);
           if (!boleto) continue;
           const cmp = cmpEuromillones(boleto, s);
-          const premio = await buscarPremioEurom(conn, sNNN, cmp);
+          const premio = await buscarPremioEurom(conn, sNNN, cmp, { fechaISO: s.fecha });
           if (!premio) continue;
           const boletoId = b.identificadorBoleto.slice(-5);
           let detalle = `${cmp.aciertosNumeros} nÃºmeros y ${cmp.aciertosEstrellas} estrellas`;
@@ -1362,7 +1371,7 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
           const [boleto] = await conn.query(`SELECT * FROM primitiva WHERE identificador=?`, [b.identificadorBoleto]);
           if (!boleto) continue;
           const cmp = cmpPrimitiva(boleto, s);
-          const premio = await buscarPremioPrimitiva(conn, sNNN, cmp);
+          const premio = await buscarPremioPrimitiva(conn, sNNN, cmp, { fechaISO: s.fecha });
           if (!premio) continue;
           const boletoId = b.identificadorBoleto.slice(-5);
           let detalle = `${cmp.aciertosNumeros} nÃºmeros`;
@@ -1408,7 +1417,7 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
           const [boleto] = await conn.query(`SELECT * FROM gordo WHERE identificador=?`, [b.identificadorBoleto]);
           if (!boleto) continue;
           const cmp = cmpGordo(boleto, s);
-          const premio = await buscarPremioGordo(conn, sNNN, cmp);
+          const premio = await buscarPremioGordo(conn, sNNN, cmp, { fechaISO: s.fecha });
           if (!premio) continue;
           const boletoId = b.identificadorBoleto.slice(-5);
           let detalle = '';

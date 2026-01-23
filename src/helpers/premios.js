@@ -1,4 +1,10 @@
-import { dividirCadena, parseNumberOrNull, formatEuroText } from "./funciones.js";
+import {
+    dividirCadena,
+    parseNumberOrNull,
+    formatEuroText,
+    sorteoKeyFromFecha,
+    yearFromFecha,
+} from "./funciones.js";
 
 export function cmpEuromillones(boleto, resultado) {
     const numerosB = dividirCadena(boleto.combinacion);
@@ -79,14 +85,42 @@ const EUROMILLONES_CATEGORIAS = new Set([
     "0+2",
 ]);
 
-export async function buscarPremioEurom(conn, sorteoNNN, cmp) {
+export async function buscarPremioEurom(conn, sorteoNNN, cmp, { fechaISO } = {}) {
     if (cmp.aciertosNumeros === 0 && cmp.aciertosEstrellas === 0) return null;
     const aciertos = `${cmp.aciertosNumeros}+${cmp.aciertosEstrellas}`;
     if (!EUROMILLONES_CATEGORIAS.has(aciertos)) return null;
-    const rows = await conn.query(
-        `SELECT categoria, premio, premio_text FROM premios_sorteos WHERE tipoApuesta='euromillones' AND sorteo=? AND aciertos=? LIMIT 1`,
-        [sorteoNNN, aciertos]
-    );
+    const sorteoKey = sorteoKeyFromFecha(sorteoNNN, fechaISO);
+    const year = yearFromFecha(fechaISO);
+    let rows = [];
+    if (sorteoKey) {
+        rows = await conn.query(
+            `SELECT categoria, premio, premio_text FROM premios_sorteos
+             WHERE tipoApuesta='euromillones' AND sorteo=? AND aciertos=?
+             ORDER BY fecha DESC
+             LIMIT 1`,
+            [sorteoKey, aciertos]
+        );
+    }
+    if (!rows.length && sorteoNNN) {
+        if (year) {
+            rows = await conn.query(
+                `SELECT categoria, premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='euromillones' AND sorteo LIKE ? AND aciertos=? AND YEAR(fecha)=?
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [`%/${sorteoNNN}`, aciertos, year]
+            );
+        }
+        if (!rows.length) {
+            rows = await conn.query(
+                `SELECT categoria, premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='euromillones' AND sorteo=? AND aciertos=?
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [sorteoNNN, aciertos]
+            );
+        }
+    }
     if (!rows.length)
         return {
             aciertos,
@@ -109,7 +143,7 @@ export async function buscarPremioPrimitiva(
     conn,
     sorteoNNN,
     cmp,
-    { sorteoTieneCategorias } = {}
+    { sorteoTieneCategorias, fechaISO } = {}
 ) {
     let aciertos = "";
     if (cmp.aciertosNumeros === 6 && cmp.aciertoReintegro === 1)
@@ -123,16 +157,47 @@ export async function buscarPremioPrimitiva(
     else if (cmp.aciertoReintegro === 1) aciertos = "R";
     else return null;
 
-    let rows = await conn.query(
-        `SELECT categoria, premio, premio_text FROM premios_sorteos WHERE tipoApuesta='primitiva' AND sorteo=? AND aciertos=? LIMIT 1`,
-        [sorteoNNN, aciertos]
-    );
-    if (!rows.length && sorteoNNN) {
-        // Compatibilidad con registros antiguos almacenados como "YYYY/NNN"
+    const sorteoKey = sorteoKeyFromFecha(sorteoNNN, fechaISO);
+    const year = yearFromFecha(fechaISO);
+    let rows = [];
+    if (sorteoKey) {
         rows = await conn.query(
-            `SELECT categoria, premio, premio_text FROM premios_sorteos WHERE tipoApuesta='primitiva' AND sorteo LIKE ? AND aciertos=? ORDER BY fecha DESC LIMIT 1`,
-            [`%/${sorteoNNN}`, aciertos]
+            `SELECT categoria, premio, premio_text FROM premios_sorteos
+             WHERE tipoApuesta='primitiva' AND sorteo=? AND aciertos=?
+             ORDER BY fecha DESC
+             LIMIT 1`,
+            [sorteoKey, aciertos]
         );
+    }
+    if (!rows.length && sorteoNNN) {
+        if (year) {
+            rows = await conn.query(
+                `SELECT categoria, premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='primitiva' AND sorteo LIKE ? AND aciertos=? AND YEAR(fecha)=?
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [`%/${sorteoNNN}`, aciertos, year]
+            );
+        }
+        if (!rows.length) {
+            // Compatibilidad con registros antiguos almacenados como "YYYY/NNN"
+            rows = await conn.query(
+                `SELECT categoria, premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='primitiva' AND sorteo LIKE ? AND aciertos=?
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [`%/${sorteoNNN}`, aciertos]
+            );
+        }
+        if (!rows.length) {
+            rows = await conn.query(
+                `SELECT categoria, premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='primitiva' AND sorteo=? AND aciertos=?
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [sorteoNNN, aciertos]
+            );
+        }
     }
 
     if (!rows.length) {
@@ -168,16 +233,44 @@ export async function buscarPremioPrimitiva(
     };
 }
 
-export async function buscarPremioGordo(conn, sorteoNNN, cmp) {
+export async function buscarPremioGordo(conn, sorteoNNN, cmp, { fechaISO } = {}) {
     if (cmp.aciertosNumeros === 0 && cmp.aciertoClave === 0) return null;
     const aciertos =
         cmp.aciertoClave === 1 && cmp.aciertosNumeros < 2
             ? "R"
             : `${cmp.aciertosNumeros}${cmp.aciertoClave ? "+C" : ""}`;
-    const rows = await conn.query(
-        `SELECT categoria, premio, premio_text FROM premios_sorteos WHERE tipoApuesta='gordo' AND sorteo=? AND aciertos=? LIMIT 1`,
-        [sorteoNNN, aciertos]
-    );
+    const sorteoKey = sorteoKeyFromFecha(sorteoNNN, fechaISO);
+    const year = yearFromFecha(fechaISO);
+    let rows = [];
+    if (sorteoKey) {
+        rows = await conn.query(
+            `SELECT categoria, premio, premio_text FROM premios_sorteos
+             WHERE tipoApuesta='gordo' AND sorteo=? AND aciertos=?
+             ORDER BY fecha DESC
+             LIMIT 1`,
+            [sorteoKey, aciertos]
+        );
+    }
+    if (!rows.length && sorteoNNN) {
+        if (year) {
+            rows = await conn.query(
+                `SELECT categoria, premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='gordo' AND sorteo LIKE ? AND aciertos=? AND YEAR(fecha)=?
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [`%/${sorteoNNN}`, aciertos, year]
+            );
+        }
+        if (!rows.length) {
+            rows = await conn.query(
+                `SELECT categoria, premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='gordo' AND sorteo=? AND aciertos=?
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [sorteoNNN, aciertos]
+            );
+        }
+    }
     if (!rows.length)
         return {
             aciertos,
@@ -195,10 +288,36 @@ export async function buscarPremioGordo(conn, sorteoNNN, cmp) {
     let premioReintegroText = null;
     let incluyeReintegro = false;
     if (cmp.aciertoClave === 1 && aciertos !== "R") {
-        const reintegroRows = await conn.query(
-            `SELECT premio, premio_text FROM premios_sorteos WHERE tipoApuesta='gordo' AND sorteo=? AND aciertos='R' LIMIT 1`,
-            [sorteoNNN]
-        );
+        let reintegroRows = [];
+        if (sorteoKey) {
+            reintegroRows = await conn.query(
+                `SELECT premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='gordo' AND sorteo=? AND aciertos='R'
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [sorteoKey]
+            );
+        }
+        if (!reintegroRows.length && sorteoNNN) {
+            if (year) {
+                reintegroRows = await conn.query(
+                    `SELECT premio, premio_text FROM premios_sorteos
+                     WHERE tipoApuesta='gordo' AND sorteo LIKE ? AND aciertos='R' AND YEAR(fecha)=?
+                     ORDER BY fecha DESC
+                     LIMIT 1`,
+                    [`%/${sorteoNNN}`, year]
+                );
+            }
+            if (!reintegroRows.length) {
+                reintegroRows = await conn.query(
+                    `SELECT premio, premio_text FROM premios_sorteos
+                     WHERE tipoApuesta='gordo' AND sorteo=? AND aciertos='R'
+                     ORDER BY fecha DESC
+                     LIMIT 1`,
+                    [sorteoNNN]
+                );
+            }
+        }
         if (reintegroRows.length) {
             const reintegro = parseNumberOrNull(reintegroRows[0].premio);
             if (Number.isFinite(premio) && Number.isFinite(reintegro)) {

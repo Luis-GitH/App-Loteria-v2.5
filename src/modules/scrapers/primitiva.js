@@ -406,13 +406,15 @@ export async function scrapePremiosPrimitivaByFecha(fechaISO) {
       if (ms) sorteoNNN = ms[1].padStart(3,'0');
     }
     if (!sorteoNNN) return premios;
+    const year = (fechaISO || "").slice(0, 4);
+    const sorteoKey = year ? `${year}/${sorteoNNN}` : sorteoNNN;
 
     for (const p of premios) {
       await conn.query(
         `INSERT INTO premios_sorteos (tipoApuesta, sorteo, fecha, categoria, aciertos, premio, premio_text)
          VALUES ('primitiva', ?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE fecha=VALUES(fecha), categoria=VALUES(categoria), aciertos=VALUES(aciertos), premio=VALUES(premio), premio_text=VALUES(premio_text)`,
-        [sorteoNNN, fechaISO, p.categoria, p.aciertos, Number(p.premio||0), p.premio_text||'']
+        [sorteoKey, fechaISO, p.categoria, p.aciertos, Number(p.premio||0), p.premio_text||'']
       );
     }
   } finally {

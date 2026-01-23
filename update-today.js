@@ -27,7 +27,7 @@ import mariadb from "mariadb";
 import path from "path";
 import fs from "fs";
 import { fechaISO, weekday } from "./src/helpers/fechas.js";
-import { sorteoNumeroNNN } from "./src/helpers/funciones.js";
+import { sorteoNumeroNNN, sorteoKeyFromFecha, yearFromFecha } from "./src/helpers/funciones.js";
 import {
     cmpEuromillones,
     cmpPrimitiva,
@@ -140,15 +140,12 @@ async function existePremios(conn, tipoApuesta, fechaISO) {
     if (!rows.length) return false;
 
     const sorteo = rows[0].sorteo?.toString() || "";
-    // premios_sorteos.sorteo está normalizado a NNN para eurom/gordo y a NNN (parte derecha) para primitiva
-    const nnn = (sorteo.includes("/") ? sorteo.split("/")[1] : sorteo).padStart(
-        3,
-        "0"
-    );
+    const nnn = sorteoNumeroNNN(sorteo);
+    const sorteoKey = sorteoKeyFromFecha(nnn, fechaISO) || nnn;
 
     const p = await conn.query(
         `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta = ? AND sorteo = ? AND fecha = ?`,
-        [tipoApuesta, nnn, fechaISO]
+        [tipoApuesta, sorteoKey, fechaISO]
     );
     return (p[0]?.n || 0) > 0;
 }
@@ -186,11 +183,17 @@ function esPremioConImporte(premio) {
         premio.premio > 0
     );
 }
-async function sorteoTieneCategorias(conn, tipo, sorteoNNN) {
-    const r = await conn.query(
-        `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND (sorteo=? OR sorteo LIKE ?)`,
-        [tipo, sorteoNNN, `%/${sorteoNNN}`]
-    );
+async function sorteoTieneCategorias(conn, tipo, sorteoNNN, fechaISO) {
+    const sorteoKey = sorteoKeyFromFecha(sorteoNNN, fechaISO);
+    const year = yearFromFecha(fechaISO);
+    const params = [tipo, sorteoKey || sorteoNNN, `%/${sorteoNNN}`];
+    let sql =
+        `SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND (sorteo=? OR sorteo LIKE ?)`;
+    if (year) {
+        sql += " AND YEAR(fecha)=?";
+        params.push(year);
+    }
+    const r = await conn.query(sql, params);
     return (r[0]?.n || 0) > 0;
 }
 
@@ -228,16 +231,21 @@ async function calcularPremiosPlan(conn, tipo, fechaISO) {
             let premio = null;
             if (tipo === "euromillones") {
                 const cmp = cmpEuromillones(boleto, res);
-                premio = await buscarPremioEurom(conn, sorteoNNN, cmp);
+                premio = await buscarPremioEurom(conn, sorteoNNN, cmp, {
+                    fechaISO: res.fecha,
+                });
             } else if (tipo === "primitiva") {
                 const cmp = cmpPrimitiva(boleto, res);
                 premio = await buscarPremioPrimitiva(conn, sorteoNNN, cmp, {
                     sorteoTieneCategorias: () =>
-                        sorteoTieneCategorias(conn, "primitiva", sorteoNNN),
+                        sorteoTieneCategorias(conn, "primitiva", sorteoNNN, res.fecha),
+                    fechaISO: res.fecha,
                 });
             } else if (tipo === "gordo") {
                 const cmp = cmpGordo(boleto, res);
-                premio = await buscarPremioGordo(conn, sorteoNNN, cmp);
+                premio = await buscarPremioGordo(conn, sorteoNNN, cmp, {
+                    fechaISO: res.fecha,
+                });
             }
 
             if (esPremioValido(premio)) {

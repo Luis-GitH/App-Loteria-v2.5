@@ -141,7 +141,9 @@ export async function scrapePremiosEuromillonesByFecha(fechaISO) {
     };
   });
   const sorteoNNN = normalizarSorteo(entry.numero);
-  if (sorteoNNN && premios.length) {
+  const year = (fechaISO || "").slice(0, 4);
+  const sorteoKey = year && sorteoNNN ? `${year}/${sorteoNNN}` : sorteoNNN;
+  if (sorteoKey && premios.length) {
     const mariadb = await import("mariadb");
     const pool = mariadb.default.createPool({
       host: process.env.DB_HOST,
@@ -157,7 +159,7 @@ export async function scrapePremiosEuromillonesByFecha(fechaISO) {
           `INSERT INTO premios_sorteos (tipoApuesta, sorteo, fecha, categoria, aciertos, premio, premio_text)
            VALUES ('euromillones', ?, ?, ?, ?, ?, ?)
            ON DUPLICATE KEY UPDATE premio=VALUES(premio), premio_text=VALUES(premio_text), categoria=VALUES(categoria)`,
-          [sorteoNNN, fechaISO, p.categoria, p.aciertos, Number(p.premio || 0), p.premio_text || ""]
+          [sorteoKey, fechaISO, p.categoria, p.aciertos, Number(p.premio || 0), p.premio_text || ""]
         );
       }
     } finally {

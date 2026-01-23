@@ -2,8 +2,8 @@
 
 import "dotenv/config"
 import mariadb from "mariadb";
-import { getWeek } from "date-fns";
-import { parseISODateLocal } from "../helpers/fechas.js";
+import { addDays } from "../helpers/fechas.js";
+import { sorteoNumeroNNN, sorteoKeyFromFecha } from "../helpers/funciones.js";
 
 const pool = mariadb.createPool({
     host: process.env.DB_HOST,
@@ -17,9 +17,8 @@ const pool = mariadb.createPool({
  * Normaliza sorteo string → número (ej: "2025/128" → 128)
  */
 function normalizeSorteo(valor) {
-    if (!valor) return null;
-    const m = valor.toString().match(/\d{1,3}$/);
-    return m ? parseInt(m[0], 10) : null;
+    if (!valor) return "";
+    return sorteoNumeroNNN(valor);
 }
 
 /**
@@ -27,7 +26,7 @@ function normalizeSorteo(valor) {
  */
 export async function detectarDatosFaltantes(fechaLunes) {
     const conn = await pool.getConnection();
-    const semana = getWeek(parseISODateLocal(fechaLunes));
+    const fechaFin = addDays(fechaLunes, 6);
 
     const tipos = [
         { tabla: "r_euromillones", nombre: "euromillones" },
@@ -41,16 +40,19 @@ export async function detectarDatosFaltantes(fechaLunes) {
         for (const { tabla, nombre } of tipos) {
             // 1️⃣ Sorteos que existen en tablas r_ pero no tienen premios_sorteos
             const rows = await conn.query(
-                `SELECT sorteo FROM ${tabla} WHERE semana = ? ORDER BY sorteo`,
-                [semana]
+                `SELECT sorteo, fecha FROM ${tabla} WHERE fecha BETWEEN ? AND ? ORDER BY fecha, sorteo`,
+                [fechaLunes, fechaFin]
             );
-            const sorteosSemana = rows.map(r => normalizeSorteo(r.sorteo));
+            const sorteosSemana = rows.map(r => {
+                const nnn = normalizeSorteo(r.sorteo);
+                return sorteoKeyFromFecha(nnn, r.fecha) || nnn;
+            });
 
             const premiosRows = await conn.query(
-                `SELECT DISTINCT sorteo FROM premios_sorteos WHERE tipoApuesta = ?`,
-                [nombre]
+                `SELECT DISTINCT sorteo FROM premios_sorteos WHERE tipoApuesta = ? AND fecha BETWEEN ? AND ?`,
+                [nombre, fechaLunes, fechaFin]
             );
-            const sorteosConPremios = premiosRows.map(r => normalizeSorteo(r.sorteo));
+            const sorteosConPremios = premiosRows.map(r => r.sorteo?.toString().trim() || "");
 
             const missingPremios = sorteosSemana.filter(
                 s => !sorteosConPremios.includes(s)
