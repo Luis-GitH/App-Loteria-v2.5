@@ -9,7 +9,7 @@ function resolveEnvPaths() {
   if (explicit) candidates.push(explicit);
   if (existsSync(".env_cre")) candidates.push(".env_cre");
   if (existsSync(".env_family")) candidates.push(".env_family");
-  if (existsSync(".env")) candidates.push(".env");
+  // if (existsSync(".env")) candidates.push(".env");
   return Array.from(new Set(candidates));
 }
 

@@ -14,6 +14,14 @@ function fmtRow(row) {
   };
 }
 
+function fmtResumen(row) {
+  return {
+    tipoApuesta: row.tipoApuesta,
+    tieneDuplicados: row.tieneDuplicados ? "SI" : "NO",
+    sorteosDuplicados: Number(row.sorteos_duplicados || 0),
+  };
+}
+
 function resolveEnvPaths() {
   const candidates = [];
   const explicit = process.env.ENV_FILE || process.env.DOTENV_CONFIG_PATH;
@@ -48,12 +56,39 @@ async function runForEnv(envPath) {
        HAVING COUNT(DISTINCT DATE(fecha)) > 1
        ORDER BY tipoApuesta, sorteo`
     );
+    const resumenRows = await conn.query(
+      `SELECT t.tipoApuesta,
+              CASE WHEN d.total > 0 THEN 1 ELSE 0 END AS tieneDuplicados,
+              COALESCE(d.total, 0) AS sorteos_duplicados
+       FROM (SELECT DISTINCT tipoApuesta FROM premios_sorteos) t
+       LEFT JOIN (
+         SELECT tipoApuesta, COUNT(*) AS total
+         FROM (
+           SELECT tipoApuesta, sorteo
+           FROM premios_sorteos
+           GROUP BY tipoApuesta, sorteo
+           HAVING COUNT(DISTINCT DATE(fecha)) > 1
+         ) dup
+         GROUP BY tipoApuesta
+       ) d ON d.tipoApuesta = t.tipoApuesta
+       ORDER BY t.tipoApuesta`
+    );
     console.log(`\n== ${envPath} ==`);
     if (!rows.length) {
       console.log("No hay sorteos duplicados en premios_sorteos.");
     } else {
       console.log("Sorteos duplicados en premios_sorteos (mismo sorteo en varias fechas):");
       console.table(rows.map(fmtRow));
+    }
+    if (resumenRows.length) {
+      console.log("Resumen por apuesta (3 apuestas):");
+      console.table(resumenRows.map(fmtResumen));
+      const conDuplicados = resumenRows.filter((row) => row.tieneDuplicados).length;
+      if (conDuplicados > 0) {
+        console.log(`Hay sorteos duplicados en ${conDuplicados} apuesta(s).`);
+      } else {
+        console.log("No hay sorteos duplicados en ninguna apuesta.");
+      }
     }
   } finally {
     try {
