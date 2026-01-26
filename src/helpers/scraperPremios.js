@@ -366,12 +366,18 @@ async function scrapePremiosPrimitiva(fechaISO) {
         const premioNum = parseFloat(
             premRaw.replace(/[€.]/g, "").replace(",", ".")
         );
+        const aciertosParen = (catRaw.match(/\(([^)]+)\)/)?.[1] || "").replace(
+            /\s+/g,
+            ""
+        );
+        const aciertosFallback =
+            !aciertosParen &&
+            catRaw.toLowerCase().includes("reintegro")
+                ? "R"
+                : aciertosParen;
         res.push({
             categoria,
-            aciertos: (catRaw.match(/\(([^)]+)\)/)?.[1] || "").replace(
-                /\s+/g,
-                ""
-            ),
+            aciertos: aciertosFallback,
             premio_num: isNaN(premioNum) ? 0 : premioNum,
             premio_txt: premRaw,
         });

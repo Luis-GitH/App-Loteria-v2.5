@@ -293,10 +293,14 @@ export async function scrapeResultadosPrimitivaByFecha(input) {
 // --- helpers locales (deja los tuyos si ya existen) ---
 // "Especial (6 Aciertos + Reintegro)" -> "6+R", "2Âª (5 Aciertos+C)" -> "5+C", "Reintegro" -> "R"
 function aciertosFromCategoriaPrimitiva(cat) {
-  const lower = cat.toLowerCase();
+  const lower = (cat || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
   if (lower.includes("reintegro") && !lower.includes("acierto")) return "R";
   const m = cat.match(/\(([^)]+)\)/);
-  if (!m) return "";
+  if (!m) return lower.includes("reintegro") ? "R" : "";
   let x = m[1]
     .replace(/Aciertos?/gi, "")
     .replace(/\s+/g, "")

@@ -160,6 +160,8 @@ export async function buscarPremioPrimitiva(
     const sorteoKey = sorteoKeyFromFecha(sorteoNNN, fechaISO);
     const year = yearFromFecha(fechaISO);
     let rows = [];
+    const categoriaReintegroSql =
+        "(LOWER(categoria) LIKE '%reintegro%' AND LOWER(categoria) NOT LIKE '%acierto%') OR UPPER(categoria)='R' OR categoria LIKE '%(R)%'";
     if (sorteoKey) {
         rows = await conn.query(
             `SELECT categoria, premio, premio_text FROM premios_sorteos
@@ -168,6 +170,15 @@ export async function buscarPremioPrimitiva(
              LIMIT 1`,
             [sorteoKey, aciertos]
         );
+        if (!rows.length && aciertos === "R") {
+            rows = await conn.query(
+                `SELECT categoria, premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='primitiva' AND sorteo=? AND (${categoriaReintegroSql})
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [sorteoKey]
+            );
+        }
     }
     if (!rows.length && sorteoNNN) {
         if (year) {
@@ -178,6 +189,15 @@ export async function buscarPremioPrimitiva(
                  LIMIT 1`,
                 [`%/${sorteoNNN}`, aciertos, year]
             );
+            if (!rows.length && aciertos === "R") {
+                rows = await conn.query(
+                    `SELECT categoria, premio, premio_text FROM premios_sorteos
+                     WHERE tipoApuesta='primitiva' AND sorteo LIKE ? AND YEAR(fecha)=? AND (${categoriaReintegroSql})
+                     ORDER BY fecha DESC
+                     LIMIT 1`,
+                    [`%/${sorteoNNN}`, year]
+                );
+            }
         }
         if (!rows.length) {
             // Compatibilidad con registros antiguos almacenados como "YYYY/NNN"
@@ -188,6 +208,15 @@ export async function buscarPremioPrimitiva(
                  LIMIT 1`,
                 [`%/${sorteoNNN}`, aciertos]
             );
+            if (!rows.length && aciertos === "R") {
+                rows = await conn.query(
+                    `SELECT categoria, premio, premio_text FROM premios_sorteos
+                     WHERE tipoApuesta='primitiva' AND sorteo LIKE ? AND (${categoriaReintegroSql})
+                     ORDER BY fecha DESC
+                     LIMIT 1`,
+                    [`%/${sorteoNNN}`]
+                );
+            }
         }
         if (!rows.length) {
             rows = await conn.query(
@@ -197,6 +226,15 @@ export async function buscarPremioPrimitiva(
                  LIMIT 1`,
                 [sorteoNNN, aciertos]
             );
+            if (!rows.length && aciertos === "R") {
+                rows = await conn.query(
+                    `SELECT categoria, premio, premio_text FROM premios_sorteos
+                     WHERE tipoApuesta='primitiva' AND sorteo=? AND (${categoriaReintegroSql})
+                     ORDER BY fecha DESC
+                     LIMIT 1`,
+                    [sorteoNNN]
+                );
+            }
         }
     }
 
