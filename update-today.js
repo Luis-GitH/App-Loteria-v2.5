@@ -51,6 +51,16 @@ import {
     scrapePremiosGordoByFecha,
 } from "./src/modules/scrapers/gordo.js";
 
+const WEEKDAY_ES = [
+    "domingo",
+    "lunes",
+    "martes",
+    "miércoles",
+    "jueves",
+    "viernes",
+    "sábado",
+];
+
 const ROOT = path.resolve();
 const LOG_FILE = path.join(ROOT, "logs", "Update-today.log");
 try {
@@ -262,8 +272,8 @@ async function calcularPremiosPlan(conn, tipo, fechaISO) {
 
 // =============== main ===============
 async function runUpdateForVariant(variant) {
-    const env = buildEnvForVariant(variant);
-    Object.assign(process.env, env); // asegura que scrapers compartan el mismo env
+        const env = buildEnvForVariant(variant);
+        Object.assign(process.env, env); // asegura que scrapers compartan el mismo env
     const pool = mariadb.createPool({
         host: env.DB_HOST,
         user: env.DB_USER,
@@ -276,8 +286,9 @@ async function runUpdateForVariant(variant) {
     try {
         const hoy = env.UPDATE_DATE || fechaISO(new Date());
         const dow = weekday(hoy); // 0..6
+        const dowTexto = WEEKDAY_ES[dow] || "desconocido";
         console.log(
-            `Arrancamos Update-today [${label}] => ${hoy} día de la semana:(0 y 7 domingo) (dow=${dow})`
+            `Arrancamos Update-today [${label}] => ${hoy} (${dowTexto}, dow=${dow})`
         );
 
         // Determinar qué juegos tocan hoy (y el lunes incluir el gordo de ayer)
