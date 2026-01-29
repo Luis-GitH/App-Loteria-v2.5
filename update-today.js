@@ -285,7 +285,7 @@ async function runUpdateForVariant(variant) {
     const label = variant || "default";
     try {
         const hoy = env.UPDATE_DATE || fechaISO(new Date());
-        const dow = weekday(hoy); // 0..6
+        const dow = weekday(hoy); // 0..6, siendo 0 = domingo 
         const dowTexto = WEEKDAY_ES[dow] || "desconocido";
         console.log(
             `Arrancamos Update-today [${label}] => ${hoy} (${dowTexto}, dow=${dow})`
