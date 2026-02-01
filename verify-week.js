@@ -1259,10 +1259,10 @@ export async function runVerifyWeek(rawArgsInput = null) {
                 });
             }
         };
-
+ 
         for (const variant of cli.variants) {
             try {
-                summaryLogger(`\n***************************************** \n Ejecutando verify-week para variante: ${variant}\n ***************************************** `);
+                summaryLogger(`\n***************************************** \n Ejecutando verify-week para variante: ${variant} en Fecha ${fechaISO(new Date())}\n ***************************************** `);
                 if (pool && typeof pool.end === 'function') {
                     try {
                         await pool.end();

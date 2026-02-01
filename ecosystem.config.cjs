@@ -53,7 +53,7 @@ module.exports = {
       args: "--all",
       cwd: './',
       error_file: "./logs/update-today-errores.log",
-      cron_restart: "40 22 * * *", // todos los disa  a las 22:30
+      cron_restart: "50 22 * * *", // todos los disa  a las 22:30
       autorestart: false,
 
     },
@@ -64,7 +64,7 @@ module.exports = {
       error_file: "./logs/verify-week-errores.log",
       out_file: "./logs/verify-week-out.log",
       time: true,
-      cron_restart: "45 22 * * *", // todos los dias a las 22:45
+      cron_restart: "55 22 * * *", // todos los dias a las 22:45
                                    // los domingos se envia el correo a todos
       autorestart: false
     },
