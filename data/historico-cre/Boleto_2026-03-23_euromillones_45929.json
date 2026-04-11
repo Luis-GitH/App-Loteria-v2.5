@@ -1,0 +1,29 @@
+{
+  "identificador": "1305007021378361108066302917245929",
+  "tipo": "euromillones",
+  "sorteoCodigo": "02424MAR26:2",
+  "sorteos": [
+    {
+      "sorteo": 24,
+      "fecha": "2026-03-24",
+      "dia": "martes",
+      "lunesSemana": "2026-03-23"
+    },
+    {
+      "sorteo": 25,
+      "fecha": "2026-03-27",
+      "dia": "viernes",
+      "lunesSemana": "2026-03-23"
+    }
+  ],
+  "fechaLunes": "2026-03-23",
+  "combinacion": "0915171822",
+  "estrellas": "0112",
+  "reintegro": "",
+  "clave": "",
+  "millon": "ZVF79420",
+  "semanas": 1,
+  "terminal": "96790-0",
+  "joker": "",
+  "imagen": "Boleto_2026-03-23_euromillones_45929.jpg"
+}

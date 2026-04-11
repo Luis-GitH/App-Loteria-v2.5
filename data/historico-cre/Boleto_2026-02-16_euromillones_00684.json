@@ -1,0 +1,29 @@
+{
+  "identificador": "1301507021472329801663262825800684",
+  "tipo": "euromillones",
+  "sorteoCodigo": "01417FEB26:2",
+  "sorteos": [
+    {
+      "sorteo": 14,
+      "fecha": "2026-02-17",
+      "dia": "martes",
+      "lunesSemana": "2026-02-16"
+    },
+    {
+      "sorteo": 15,
+      "fecha": "2026-02-20",
+      "dia": "viernes",
+      "lunesSemana": "2026-02-16"
+    }
+  ],
+  "fechaLunes": "2026-02-16",
+  "combinacion": "0821263447",
+  "estrellas": "1011",
+  "reintegro": "",
+  "clave": "",
+  "millon": "XVP99305",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-02-16_euromillones_00684.jpg"
+}

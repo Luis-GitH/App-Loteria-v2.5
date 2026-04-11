@@ -1,0 +1,29 @@
+{
+  "identificador": "1306407021357212161194683439149300",
+  "tipo": "euromillones",
+  "sorteoCodigo": "02807ABR26:2",
+  "sorteos": [
+    {
+      "sorteo": 28,
+      "fecha": "2026-04-07",
+      "dia": "martes",
+      "lunesSemana": "2026-04-06"
+    },
+    {
+      "sorteo": 29,
+      "fecha": "2026-04-10",
+      "dia": "viernes",
+      "lunesSemana": "2026-04-06"
+    }
+  ],
+  "fechaLunes": "2026-04-06",
+  "combinacion": "0405101836",
+  "estrellas": "0912",
+  "reintegro": "",
+  "clave": "",
+  "millon": "BDJ56497",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-04-06_euromillones_49300.jpg"
+}

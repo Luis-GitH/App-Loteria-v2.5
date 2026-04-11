@@ -1,0 +1,29 @@
+{
+  "identificador": "1302207020167444217125615145130091",
+  "tipo": "euromillones",
+  "sorteoCodigo": "01624FEB26:2",
+  "sorteos": [
+    {
+      "sorteo": 16,
+      "fecha": "2026-02-24",
+      "dia": "martes",
+      "lunesSemana": "2026-02-23"
+    },
+    {
+      "sorteo": 17,
+      "fecha": "2026-02-27",
+      "dia": "viernes",
+      "lunesSemana": "2026-02-23"
+    }
+  ],
+  "fechaLunes": "2026-02-23",
+  "combinacion": "1415172147",
+  "estrellas": "0708",
+  "reintegro": "",
+  "clave": "",
+  "millon": "ZBS19831",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-02-23_euromillones_30091.jpg"
+}

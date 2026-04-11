@@ -42,6 +42,27 @@
     </div>
     <div class="col-6 col-sm-6 col-md-3 col-lg-2">
       <div class="card h-80 p-4">
+        <h3>Borrar boleto</h3>
+        <form method="POST" action="/admin/boletos/delete/confirm">
+          <label class="form-label small mb-1" for="delete-ticket-id">ID del boleto</label>
+          <input id="delete-ticket-id" name="identificador" class="form-control mb-2" required>
+          <label class="form-label small mb-1" for="delete-ticket-type">Tipo (opcional)</label>
+          <select id="delete-ticket-type" name="tipo" class="form-select mb-2">
+            <option value="">Auto-detectar</option>
+            <option value="primitiva">Primitiva</option>
+            <option value="euromillones">Euromillones</option>
+            <option value="gordo">El Gordo</option>
+          </select>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="delete-ticket-image" name="deleteImage" checked>
+            <label class="form-check-label small" for="delete-ticket-image">Eliminar imagen asociada</label>
+          </div>
+          <button type="submit" class="btn btn-warning">Verificar</button>
+        </form>
+      </div>
+    </div>
+    <div class="col-6 col-sm-6 col-md-3 col-lg-2">
+      <div class="card h-80 p-4">
         <h3>Registrar premios</h3>
         <!-- <p class="text-muted mb-2">Calcula y registra los gastos y premios de la semana.</p> -->
         <form method="POST" action="/admin/premios-semana" onsubmit="return confirm('Registrar el total de premios de esa semana en movimientos?');">

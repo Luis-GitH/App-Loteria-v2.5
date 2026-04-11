@@ -1,0 +1,35 @@
+{
+  "identificador": "1301501021405561896838230661050102",
+  "tipo": "primitiva",
+  "sorteoCodigo": "02116FEB26:3",
+  "sorteos": [
+    {
+      "sorteo": 21,
+      "fecha": "2026-02-16",
+      "dia": "lunes",
+      "lunesSemana": "2026-02-16"
+    },
+    {
+      "sorteo": 22,
+      "fecha": "2026-02-19",
+      "dia": "jueves",
+      "lunesSemana": "2026-02-16"
+    },
+    {
+      "sorteo": 23,
+      "fecha": "2026-02-21",
+      "dia": "sábado",
+      "lunesSemana": "2026-02-16"
+    }
+  ],
+  "fechaLunes": "2026-02-16",
+  "combinacion": "030718314041",
+  "estrellas": "",
+  "reintegro": "9",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-02-16_primitiva_50102.jpg"
+}

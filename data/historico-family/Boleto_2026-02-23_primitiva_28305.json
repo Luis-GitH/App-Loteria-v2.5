@@ -1,0 +1,35 @@
+{
+  "identificador": "1302201021610056243616346652328305",
+  "tipo": "primitiva",
+  "sorteoCodigo": "02423FEB26:3",
+  "sorteos": [
+    {
+      "sorteo": 24,
+      "fecha": "2026-02-23",
+      "dia": "lunes",
+      "lunesSemana": "2026-02-23"
+    },
+    {
+      "sorteo": 25,
+      "fecha": "2026-02-26",
+      "dia": "jueves",
+      "lunesSemana": "2026-02-23"
+    },
+    {
+      "sorteo": 26,
+      "fecha": "2026-02-28",
+      "dia": "sábado",
+      "lunesSemana": "2026-02-23"
+    }
+  ],
+  "fechaLunes": "2026-02-23",
+  "combinacion": "032033384548",
+  "estrellas": "",
+  "reintegro": "8",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-02-23_primitiva_28305.jpg"
+}

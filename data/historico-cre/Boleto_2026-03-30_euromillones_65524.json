@@ -1,0 +1,29 @@
+{
+  "identificador": "1305707021551026097175711114065524",
+  "tipo": "euromillones",
+  "sorteoCodigo": "02631MAR26:2",
+  "sorteos": [
+    {
+      "sorteo": 26,
+      "fecha": "2026-03-31",
+      "dia": "martes",
+      "lunesSemana": "2026-03-30"
+    },
+    {
+      "sorteo": 27,
+      "fecha": "2026-04-03",
+      "dia": "viernes",
+      "lunesSemana": "2026-03-30"
+    }
+  ],
+  "fechaLunes": "2026-03-30",
+  "combinacion": "0724334244",
+  "estrellas": "0710",
+  "reintegro": "",
+  "clave": "",
+  "millon": "ZZK98175",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-03-30_euromillones_65524.jpg"
+}

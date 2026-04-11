@@ -1,0 +1,35 @@
+{
+  "identificador": "1305701021679227229640692502620030",
+  "tipo": "primitiva",
+  "sorteoCodigo": "03930MAR26:3",
+  "sorteos": [
+    {
+      "sorteo": 39,
+      "fecha": "2026-03-30",
+      "dia": "lunes",
+      "lunesSemana": "2026-03-30"
+    },
+    {
+      "sorteo": 40,
+      "fecha": "2026-04-02",
+      "dia": "jueves",
+      "lunesSemana": "2026-03-30"
+    },
+    {
+      "sorteo": 41,
+      "fecha": "2026-04-04",
+      "dia": "sábado",
+      "lunesSemana": "2026-03-30"
+    }
+  ],
+  "fechaLunes": "2026-03-30",
+  "combinacion": "062529353741",
+  "estrellas": "",
+  "reintegro": "5",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-03-30_primitiva_20030.jpg"
+}

@@ -1,0 +1,29 @@
+{
+  "identificador": "1302907021513216062470719938811102",
+  "tipo": "euromillones",
+  "sorteoCodigo": "01803MAR26:2",
+  "sorteos": [
+    {
+      "sorteo": 18,
+      "fecha": "2026-03-03",
+      "dia": "martes",
+      "lunesSemana": "2026-03-02"
+    },
+    {
+      "sorteo": 19,
+      "fecha": "2026-03-06",
+      "dia": "viernes",
+      "lunesSemana": "2026-03-02"
+    }
+  ],
+  "fechaLunes": "2026-03-02",
+  "combinacion": "0511202447",
+  "estrellas": "0203",
+  "reintegro": "",
+  "clave": "",
+  "millon": "ZHD27803",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-03-02_euromillones_11102.jpg"
+}

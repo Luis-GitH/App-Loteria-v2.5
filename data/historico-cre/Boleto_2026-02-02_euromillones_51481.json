@@ -1,0 +1,29 @@
+{
+  "identificador": "1300107021433742557489772664051481",
+  "tipo": "euromillones",
+  "sorteoCodigo": "01003FEB26:2",
+  "sorteos": [
+    {
+      "sorteo": 10,
+      "fecha": "2026-02-03",
+      "dia": "martes",
+      "lunesSemana": "2026-02-02"
+    },
+    {
+      "sorteo": 11,
+      "fecha": "2026-02-06",
+      "dia": "viernes",
+      "lunesSemana": "2026-02-02"
+    }
+  ],
+  "fechaLunes": "2026-02-02",
+  "combinacion": "1015202236",
+  "estrellas": "0811",
+  "reintegro": "",
+  "clave": "",
+  "millon": "XNV91481",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-02-02_euromillones_51481.jpg"
+}

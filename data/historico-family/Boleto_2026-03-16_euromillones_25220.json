@@ -1,0 +1,29 @@
+{
+  "identificador": "1304307020686672844444465985225220",
+  "tipo": "euromillones",
+  "sorteoCodigo": "02217MAR26:2",
+  "sorteos": [
+    {
+      "sorteo": 22,
+      "fecha": "2026-03-17",
+      "dia": "martes",
+      "lunesSemana": "2026-03-16"
+    },
+    {
+      "sorteo": 23,
+      "fecha": "2026-03-20",
+      "dia": "viernes",
+      "lunesSemana": "2026-03-16"
+    }
+  ],
+  "fechaLunes": "2026-03-16",
+  "combinacion": "0811333850",
+  "estrellas": "0511",
+  "reintegro": "",
+  "clave": "",
+  "millon": "ZRC34365",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-03-16_euromillones_25220.jpg"
+}

@@ -1,0 +1,23 @@
+{
+  "identificador": "1302204021519288091682293768113380",
+  "tipo": "gordo",
+  "sorteoCodigo": "00901MAR26:1",
+  "sorteos": [
+    {
+      "sorteo": 9,
+      "fecha": "2026-03-01",
+      "dia": "domingo",
+      "lunesSemana": "2026-02-23"
+    }
+  ],
+  "fechaLunes": "2026-02-23",
+  "combinacion": "2033474952",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "02",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-02-23_gordo_13380.jpg"
+}

@@ -267,8 +267,17 @@ async function obtenerResultadoPorTipo(conn, tipo, sorteoNNN, fechaISO) {
   const meta = RESULT_META[tipo];
   if (!meta) return null;
   let rows = [];
-  if (sorteoNNN) {
-    rows = await conn.query(`SELECT * FROM ${meta.table} WHERE sorteo=? LIMIT 1`, [Number(sorteoNNN)]);
+  if (sorteoNNN && fechaISO) {
+    rows = await conn.query(
+      `SELECT * FROM ${meta.table} WHERE sorteo=? AND fecha=? LIMIT 1`,
+      [Number(sorteoNNN), fechaISO]
+    );
+  }
+  if ((!rows || !rows.length) && sorteoNNN && !fechaISO) {
+    rows = await conn.query(
+      `SELECT * FROM ${meta.table} WHERE sorteo=? LIMIT 1`,
+      [Number(sorteoNNN)]
+    );
   }
   if ((!rows || !rows.length) && fechaISO) {
     rows = await conn.query(`SELECT * FROM ${meta.table} WHERE fecha=? LIMIT 1`, [fechaISO]);
@@ -902,10 +911,15 @@ app.get('/tickets', requireAuth, async (req, res) => {
       const cleaned = value.toString().replace(/\D+/g, '');
       return cleaned ? cleaned.padStart(2, '0') : '';
     };
+    const resultKey = (r) => {
+      const sorteoKey = normalizeSorteo(r.sorteo || r.id || r.fecha);
+      const fechaKey = fechaISO(r.fecha) || r.fecha || '';
+      return `${sorteoKey}|${fechaKey}`;
+    };
     const resultMaps = {
-      euromillones: new Map(r_eu.map((r) => [normalizeSorteo(r.sorteo || r.id || r.fecha), r])),
-      primitiva: new Map(r_pr.map((r) => [normalizeSorteo(r.sorteo || r.id || r.fecha), r])),
-      gordo: new Map(r_go.map((r) => [normalizeSorteo(r.sorteo || r.id || r.fecha), r])),
+      euromillones: new Map(r_eu.map((r) => [resultKey(r), r])),
+      primitiva: new Map(r_pr.map((r) => [resultKey(r), r])),
+      gordo: new Map(r_go.map((r) => [resultKey(r), r])),
     };
     const computeHitEu = (boleto, resultado) => {
       const numerosB = splitCombination(boleto.combinacion);
@@ -983,7 +997,8 @@ app.get('/tickets', requireAuth, async (req, res) => {
       const compute = hitComputers[tipo];
       if (!resultMap || !compute) continue;
       const sorteoKey = normalizeSorteo(row.sorteo);
-      const resultado = resultMap.get(sorteoKey);
+      const fechaKey = fechaISO(row.fecha) || row.fecha || '';
+      const resultado = resultMap.get(`${sorteoKey}|${fechaKey}`);
       if (!resultado) continue;
       const hit = compute(row, resultado);
       if (!hit) continue;
@@ -1322,7 +1337,11 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
       const lineas = [];
       for (const s of r_eu) {
         const sNNN = sorteoNumeroNNN(s.sorteo);
-        const boletos = await conn.query(`SELECT * FROM sorteos WHERE tipoApuesta='euromillones' AND sorteo=?`, [Number(sNNN)]);
+        const fechaSorteo = fechaISO(s.fecha) || s.fecha;
+        const boletos = await conn.query(
+          `SELECT * FROM sorteos WHERE tipoApuesta='euromillones' AND sorteo=? AND fecha=?`,
+          [Number(sNNN), fechaSorteo]
+        );
         for (const b of boletos) {
           const [boleto] = await conn.query(`SELECT * FROM euromillones WHERE identificador=?`, [b.identificadorBoleto]);
           if (!boleto) continue;
@@ -1366,7 +1385,11 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
       const lineas = [];
       for (const s of r_pr) {
         const sNNN = sorteoNumeroNNN(s.sorteo);
-        const boletos = await conn.query(`SELECT * FROM sorteos WHERE tipoApuesta='primitiva' AND sorteo=?`, [Number(sNNN)]);
+        const fechaSorteo = fechaISO(s.fecha) || s.fecha;
+        const boletos = await conn.query(
+          `SELECT * FROM sorteos WHERE tipoApuesta='primitiva' AND sorteo=? AND fecha=?`,
+          [Number(sNNN), fechaSorteo]
+        );
         for (const b of boletos) {
           const [boleto] = await conn.query(`SELECT * FROM primitiva WHERE identificador=?`, [b.identificadorBoleto]);
           if (!boleto) continue;
@@ -1412,7 +1435,11 @@ app.get('/tickets/email', requireAuth, async (req, res) => {
       const lineas = [];
       for (const s of r_go) {
         const sNNN = sorteoNumeroNNN(s.sorteo);
-        const boletos = await conn.query(`SELECT * FROM sorteos WHERE tipoApuesta='gordo' AND sorteo=?`, [Number(sNNN)]);
+        const fechaSorteo = fechaISO(s.fecha) || s.fecha;
+        const boletos = await conn.query(
+          `SELECT * FROM sorteos WHERE tipoApuesta='gordo' AND sorteo=? AND fecha=?`,
+          [Number(sNNN), fechaSorteo]
+        );
         for (const b of boletos) {
           const [boleto] = await conn.query(`SELECT * FROM gordo WHERE identificador=?`, [b.identificadorBoleto]);
           if (!boleto) continue;
@@ -1888,6 +1915,131 @@ app.get('/admin', requireAuth, requireRole('admin'), async (req, res) => {
   } finally {
     conn.release();
   }
+});
+
+app.post('/admin/boletos/delete/confirm', requireAuth, requireRole('admin'), async (req, res) => {
+  const rawId = (req.body.identificador || '').toString().trim();
+  const requestedTipo = (req.body.tipo || '').toString().trim().toLowerCase();
+  const deleteImage = !!req.body.deleteImage;
+  if (!rawId) {
+    req.session.flash = { type: 'error', msg: 'Debes indicar el ID del boleto.' };
+    return res.redirect('/admin');
+  }
+
+  const allowedTipos = ['primitiva', 'euromillones', 'gordo'];
+  const conn = await pool.getConnection();
+  try {
+    let resolvedTipo = null;
+    let boleto = null;
+    if (allowedTipos.includes(requestedTipo)) {
+      const rows = await conn.query(`SELECT * FROM ${requestedTipo} WHERE identificador=? LIMIT 1`, [rawId]);
+      if (!rows.length) {
+        req.session.flash = { type: 'warning', msg: `No se encontró el boleto en ${requestedTipo}.` };
+        return res.redirect('/admin');
+      }
+      resolvedTipo = requestedTipo;
+      boleto = rows[0];
+    } else {
+      for (const tipo of allowedTipos) {
+        const rows = await conn.query(`SELECT * FROM ${tipo} WHERE identificador=? LIMIT 1`, [rawId]);
+        if (rows.length) {
+          resolvedTipo = tipo;
+          boleto = rows[0];
+          break;
+        }
+      }
+      if (!resolvedTipo) {
+        req.session.flash = { type: 'warning', msg: 'No se encontró un boleto con ese ID.' };
+        return res.redirect('/admin');
+      }
+    }
+
+    const [{ total: sorteosCount = 0 } = {}] = await conn.query(
+      `SELECT COUNT(*) AS total FROM sorteos WHERE identificadorBoleto=? AND tipoApuesta=?`,
+      [rawId, resolvedTipo]
+    );
+    const imagenUrl = toWebHistorico(boleto?.imagen);
+    res.render('admin_boleto_delete_confirm', {
+      layout: 'layout',
+      boleto: {
+        ...boleto,
+        identificador: rawId,
+      },
+      tipo: resolvedTipo,
+      sorteosCount: Number(sorteosCount || 0),
+      imagenUrl,
+      deleteImage,
+    });
+  } finally { conn.release(); }
+});
+
+app.post('/admin/boletos/delete', requireAuth, requireRole('admin'), async (req, res) => {
+  const rawId = (req.body.identificador || '').toString().trim();
+  const requestedTipo = (req.body.tipo || '').toString().trim().toLowerCase();
+  const deleteImage = !!req.body.deleteImage;
+  if (!rawId) {
+    req.session.flash = { type: 'error', msg: 'Debes indicar el ID del boleto.' };
+    return res.redirect('/admin');
+  }
+
+  const allowedTipos = ['primitiva', 'euromillones', 'gordo'];
+  const conn = await pool.getConnection();
+  let resolvedTipo = null;
+  let imagen = null;
+  try {
+    if (allowedTipos.includes(requestedTipo)) {
+      const rows = await conn.query(`SELECT imagen FROM ${requestedTipo} WHERE identificador=? LIMIT 1`, [rawId]);
+      if (!rows.length) {
+        req.session.flash = { type: 'warning', msg: `No se encontró el boleto en ${requestedTipo}.` };
+        return res.redirect('/admin');
+      }
+      resolvedTipo = requestedTipo;
+      imagen = rows[0]?.imagen || null;
+    } else {
+      for (const tipo of allowedTipos) {
+        const rows = await conn.query(`SELECT imagen FROM ${tipo} WHERE identificador=? LIMIT 1`, [rawId]);
+        if (rows.length) {
+          resolvedTipo = tipo;
+          imagen = rows[0]?.imagen || null;
+          break;
+        }
+      }
+      if (!resolvedTipo) {
+        req.session.flash = { type: 'warning', msg: 'No se encontró un boleto con ese ID.' };
+        return res.redirect('/admin');
+      }
+    }
+
+    await conn.query(`DELETE FROM sorteos WHERE identificadorBoleto=?`, [rawId]);
+    await conn.query(`DELETE FROM ${resolvedTipo} WHERE identificador=?`, [rawId]);
+
+    let imagenMsg = '';
+    if (deleteImage && imagen) {
+      const [{ total = 0 } = {}] = await conn.query(
+        `SELECT (
+            (SELECT COUNT(*) FROM primitiva WHERE imagen=?)
+            + (SELECT COUNT(*) FROM euromillones WHERE imagen=?)
+            + (SELECT COUNT(*) FROM gordo WHERE imagen=?)
+          ) AS total`,
+        [imagen, imagen, imagen]
+      );
+      if ((Number(total) || 0) === 0) {
+        const imgPath = resolveHistoricoPath(imagen);
+        if (imgPath && existsSync(imgPath)) {
+          await fs.unlink(imgPath);
+          imagenMsg = ' Se eliminó la imagen asociada.';
+        }
+      } else {
+        imagenMsg = ' La imagen no se borró porque está asociada a otro boleto.';
+      }
+    }
+
+    req.session.flash = { type: 'info', msg: `Boleto eliminado (${resolvedTipo}).${imagenMsg}` };
+  } catch (err) {
+    console.error('Error borrando boleto:', err);
+    req.session.flash = { type: 'error', msg: 'No se pudo borrar el boleto.' };
+  } finally { conn.release(); }
+  res.redirect('/admin');
 });
 
 // EnvÃ­o de boletos de la semana actual por correo (admins)

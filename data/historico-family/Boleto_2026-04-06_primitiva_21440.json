@@ -1,0 +1,35 @@
+{
+  "identificador": "1306401020887346865770125693621440",
+  "tipo": "primitiva",
+  "sorteoCodigo": "04206ABR26:3",
+  "sorteos": [
+    {
+      "sorteo": 42,
+      "fecha": "2026-04-06",
+      "dia": "lunes",
+      "lunesSemana": "2026-04-06"
+    },
+    {
+      "sorteo": 43,
+      "fecha": "2026-04-09",
+      "dia": "jueves",
+      "lunesSemana": "2026-04-06"
+    },
+    {
+      "sorteo": 44,
+      "fecha": "2026-04-11",
+      "dia": "sábado",
+      "lunesSemana": "2026-04-06"
+    }
+  ],
+  "fechaLunes": "2026-04-06",
+  "combinacion": "040517192446",
+  "estrellas": "",
+  "reintegro": "2",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-04-06_primitiva_21440.jpg"
+}

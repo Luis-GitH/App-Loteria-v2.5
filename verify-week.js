@@ -584,9 +584,10 @@ async function procesarEurom(conn, fechaLunes, fechaDomingo) {
 
     for (const s of resultados) {
         const sNNN = sorteoNumeroNNN(s.sorteo);
+        const fechaSorteo = fechaISO(s.fecha) || s.fecha;
         const boletos = await conn.query(
-            `SELECT * FROM sorteos WHERE tipoApuesta='euromillones' AND sorteo=?`,
-            [Number(sNNN)]
+            `SELECT * FROM sorteos WHERE tipoApuesta='euromillones' AND sorteo=? AND fecha=?`,
+            [Number(sNNN), fechaSorteo]
         );
         if (!boletos.length) continue;
 
@@ -674,9 +675,10 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
 
     for (const s of publicados) {
         const sNNN = sorteoNumeroNNN(s.sorteo);
+        const fechaSorteo = fechaISO(s.fecha) || s.fecha;
         const boletos = await conn.query(
-            `SELECT * FROM sorteos WHERE tipoApuesta='primitiva' AND sorteo=?`,
-            [Number(sNNN)]
+            `SELECT * FROM sorteos WHERE tipoApuesta='primitiva' AND sorteo=? AND fecha=?`,
+            [Number(sNNN), fechaSorteo]
         );
         if (!boletos.length) continue;
 
@@ -771,9 +773,10 @@ async function procesarGordo(conn, fechaLunes, fechaDomingo) {
 
     for (const s of resultados) {
         const sNNN = sorteoNumeroNNN(s.sorteo);
+        const fechaSorteo = fechaISO(s.fecha) || s.fecha;
         const boletos = await conn.query(
-            `SELECT * FROM sorteos WHERE tipoApuesta='gordo' AND sorteo=?`,
-            [Number(sNNN)]
+            `SELECT * FROM sorteos WHERE tipoApuesta='gordo' AND sorteo=? AND fecha=?`,
+            [Number(sNNN), fechaSorteo]
         );
         if (!boletos.length) continue;
 

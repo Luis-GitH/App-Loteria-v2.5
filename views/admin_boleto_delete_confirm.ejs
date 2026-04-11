@@ -1,0 +1,40 @@
+<section class="admin-delete-confirm card p-4">
+  <h2>Confirmar borrado de boleto</h2>
+  <p class="text-muted">Revisa la informaci&oacute;n antes de eliminar. Esta acci&oacute;n no se puede deshacer.</p>
+
+  <div class="mb-3">
+    <a class="btn btn-secondary" href="/admin">&larr; Volver al mantenimiento</a>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-md-5">
+      <% if (imagenUrl) { %>
+        <img src="<%= imagenUrl %>" alt="Boleto <%= boleto.identificador %>" class="viewer-image" />
+      <% } else { %>
+        <p class="text-muted">No hay imagen asociada a este boleto.</p>
+      <% } %>
+    </div>
+    <div class="col-12 col-md-7">
+      <h3 class="h5">Detalle del boleto</h3>
+      <p><strong>ID:</strong> <%= boleto.identificador %></p>
+      <p><strong>Tipo:</strong> <%= ({ euromillones: 'Euromillones', primitiva: 'Primitiva', gordo: 'El Gordo' }[tipo] || tipo) %></p>
+      <p><strong>Sorteos:</strong> <%= sorteosCount || 1 %></p>
+      <% if (boleto.combinacion) { %><p><strong>Combinaci&oacute;n:</strong> <%= boleto.combinacion %></p><% } %>
+      <% if (boleto.estrellas) { %><p><strong>Estrellas:</strong> <%= boleto.estrellas %></p><% } %>
+      <% if (boleto.reintegro) { %><p><strong>Reintegro:</strong> <%= boleto.reintegro %></p><% } %>
+      <% if (boleto.clave) { %><p><strong>Clave:</strong> <%= boleto.clave %></p><% } %>
+      <% if (boleto.millon) { %><p><strong>C&oacute;digo El Mill&oacute;n:</strong> <%= boleto.millon %></p><% } %>
+      <% if (boleto.fechaLunes) { %><p><strong>Semana (lunes):</strong> <%= boleto.fechaLunes %></p><% } %>
+    </div>
+  </div>
+
+  <form method="POST" action="/admin/boletos/delete" class="mt-3" onsubmit="return confirm('¿Confirmas el borrado definitivo del boleto?');">
+    <input type="hidden" name="identificador" value="<%= boleto.identificador %>">
+    <input type="hidden" name="tipo" value="<%= tipo %>">
+    <% if (deleteImage) { %><input type="hidden" name="deleteImage" value="1"><% } %>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-secondary" href="/admin">Cancelar</a>
+      <button type="submit" class="btn btn-danger">Borrar definitivamente</button>
+    </div>
+  </form>
+</section>

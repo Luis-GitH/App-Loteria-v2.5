@@ -1,0 +1,35 @@
+{
+  "identificador": "1302901020230693721727031742223118",
+  "tipo": "primitiva",
+  "sorteoCodigo": "02702MAR26:3",
+  "sorteos": [
+    {
+      "sorteo": 27,
+      "fecha": "2026-03-02",
+      "dia": "lunes",
+      "lunesSemana": "2026-03-02"
+    },
+    {
+      "sorteo": 28,
+      "fecha": "2026-03-05",
+      "dia": "jueves",
+      "lunesSemana": "2026-03-02"
+    },
+    {
+      "sorteo": 29,
+      "fecha": "2026-03-07",
+      "dia": "sábado",
+      "lunesSemana": "2026-03-02"
+    }
+  ],
+  "fechaLunes": "2026-03-02",
+  "combinacion": "072331324549",
+  "estrellas": "",
+  "reintegro": "0",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-03-02_primitiva_23118.jpg"
+}
