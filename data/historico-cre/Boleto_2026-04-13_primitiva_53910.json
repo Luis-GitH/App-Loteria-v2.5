@@ -1,0 +1,35 @@
+{
+  "identificador": "1307101020919101334203906317753910",
+  "tipo": "primitiva",
+  "sorteoCodigo": "04513ABR26:3",
+  "sorteos": [
+    {
+      "sorteo": 45,
+      "fecha": "2026-04-13",
+      "dia": "lunes",
+      "lunesSemana": "2026-04-13"
+    },
+    {
+      "sorteo": 46,
+      "fecha": "2026-04-16",
+      "dia": "jueves",
+      "lunesSemana": "2026-04-13"
+    },
+    {
+      "sorteo": 47,
+      "fecha": "2026-04-18",
+      "dia": "sábado",
+      "lunesSemana": "2026-04-13"
+    }
+  ],
+  "fechaLunes": "2026-04-13",
+  "combinacion": "030407223638",
+  "estrellas": "",
+  "reintegro": "4",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-04-13_primitiva_53910.jpg"
+}

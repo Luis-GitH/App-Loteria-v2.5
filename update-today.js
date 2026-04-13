@@ -24,6 +24,7 @@
 
 import dotenv from "dotenv";
 import mariadb from "mariadb";
+import nodemailer from "nodemailer";
 import path from "path";
 import fs from "fs";
 import { fechaISO, weekday } from "./src/helpers/fechas.js";
@@ -193,6 +194,65 @@ function esPremioConImporte(premio) {
         premio.premio > 0
     );
 }
+function buildMailConfig(env) {
+    const variantLabel = (
+        env.APP_VARIANT ||
+        env.PM2_APP_NAME ||
+        "default"
+    ).toString();
+    const subjectPrefix = `[update-today|${variantLabel}]`;
+    return {
+        from: env.EMAIL_FROM,
+        to: env.EMAIL_TO,
+        subject: `${subjectPrefix} Resultados del día`,
+        smtp: {
+            host: env.EMAIL_HOST,
+            port: Number(env.EMAIL_PORT || 465),
+            secure: Number(env.EMAIL_PORT || 465) === 465,
+            auth: {
+                user: env.EMAIL_USER,
+                pass: env.EMAIL_PASSWORD,
+            },
+        },
+    };
+}
+function mailConfigOk(cfg) {
+    return Boolean(
+        cfg &&
+            cfg.from &&
+            cfg.smtp?.host &&
+            cfg.smtp?.auth?.user &&
+            cfg.smtp?.auth?.pass
+    );
+}
+async function getAdminRecipients(conn) {
+    const rows = await conn.query(
+        `SELECT email FROM users WHERE email IS NOT NULL AND email <> '' AND tipo IN ('admin')`
+    );
+    const set = new Set();
+    for (const r of rows) {
+        const e = (r.email || "").toString().trim();
+        if (!e) continue;
+        set.add(e);
+    }
+    return Array.from(set.values());
+}
+async function enviarCorreoResumen({ mailConfig, html, to }) {
+    const transporter = nodemailer.createTransport(mailConfig.smtp);
+    const toList = Array.isArray(to) ? to : to ? [to] : [];
+    await transporter.sendMail({
+        from: mailConfig.from,
+        to: toList.length ? toList.join(",") : mailConfig.to,
+        subject: mailConfig.subject,
+        html,
+    });
+    const count = toList.length ? toList.length : mailConfig.to ? 1 : 0;
+    console.log(
+        "📧 Correo enviado a",
+        count,
+        "destinatario(s)."
+    );
+}
 async function sorteoTieneCategorias(conn, tipo, sorteoNNN, fechaISO) {
     const sorteoKey = sorteoKeyFromFecha(sorteoNNN, fechaISO);
     const year = yearFromFecha(fechaISO);
@@ -284,6 +344,7 @@ async function runUpdateForVariant(variant) {
     const conn = await pool.getConnection();
     const label = variant || "default";
     try {
+        const mailConfig = buildMailConfig(env);
         const hoy = env.UPDATE_DATE || fechaISO(new Date());
         const dow = weekday(hoy); // 0..6, siendo 0 = domingo 
         const dowTexto = WEEKDAY_ES[dow] || "desconocido";
@@ -430,6 +491,52 @@ async function runUpdateForVariant(variant) {
                 totalPremios
             )}`
         );
+
+        // Enviar correo a admins con el resumen del día
+        try {
+            if (!mailConfigOk(mailConfig)) {
+                console.log(
+                    "ℹ️ Correo no enviado: configuración EMAIL_* incompleta."
+                );
+            } else {
+                let recipients = await getAdminRecipients(conn);
+                const modoDev = Boolean(env.MODE_DEV);
+                if (modoDev && recipients.length === 0) {
+                    const devTo = (env.EMAIL_DEV_TO || "").trim();
+                    recipients = devTo ? [devTo] : [mailConfig.from];
+                    console.log(
+                        "MODO_DEV=true: enviando SOLO a",
+                        recipients.join(",")
+                    );
+                }
+                if (!recipients.length && !mailConfig.to) {
+                    console.log(
+                        "ℹ️ Correo no enviado: no hay destinatarios admins ni EMAIL_TO."
+                    );
+                } else {
+                    const lineas = premiosAnalizados.map((p) => {
+                        return `• ${p.tipo.toUpperCase()} (${p.fecha}): ${formatEuro(
+                            p.totalImporte
+                        )} [${p.premiados} boleto(s) con premio]`;
+                    });
+                    const html =
+                        `<h2>Resumen de resultados del día</h2>` +
+                        `<p>A fecha: ${new Date().toLocaleString("es-ES")}</p>` +
+                        `<pre style="font-family: monospace; white-space: pre-wrap;">` +
+                        (lineas.length
+                            ? lineas.join("\n")
+                            : "ℹ️ No hay sorteos con resultados para hoy.") +
+                        `\n\n💰 TOTAL: ${formatEuro(totalPremios)}</pre>`;
+                    await enviarCorreoResumen({
+                        mailConfig,
+                        html,
+                        to: recipients,
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("❌ Error enviando correo:", e.message);
+        }
 
         console.log("\n✅ Actualización diaria finalizada.");
     } finally {
