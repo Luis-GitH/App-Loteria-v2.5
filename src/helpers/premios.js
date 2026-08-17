@@ -43,7 +43,44 @@ export function cmpPrimitiva(boleto, resultado) {
     const reinB = to2d(boleto.reintegro);
     const reinS = to2d(resultado.reintegro);
     const aciertoReintegro = reinB && reinS && reinB === reinS ? 1 : 0;
-    return { aciertosNumeros, aciertoComplementario, aciertoReintegro };
+    const jokerB = (boleto.joker || "").toString().trim().replace(/\D+/g, "");
+    const jokerS = (resultado.joker || "").toString().trim().replace(/\D+/g, "");
+    const categoriaJoker = calcularCategoriaJoker(jokerB, jokerS);
+    const aciertoJoker = categoriaJoker ? 1 : 0;
+    return { aciertosNumeros, aciertoComplementario, aciertoReintegro, aciertoJoker, categoriaJoker };
+}
+
+// El Joker premia el número completo o las primeras/últimas cifras, desde
+// seis cifras (2ª categoría) hasta una cifra (7ª categoría).
+export function calcularCategoriaJoker(jokerBoleto, jokerResultado) {
+    const boleto = (jokerBoleto ?? "").toString().replace(/\D+/g, "");
+    const resultado = (jokerResultado ?? "").toString().replace(/\D+/g, "");
+    if (boleto.length !== 7 || resultado.length !== 7) return null;
+    if (boleto === resultado) return 1;
+    for (let cifras = 6; cifras >= 1; cifras -= 1) {
+        if (
+            boleto.slice(0, cifras) === resultado.slice(0, cifras) ||
+            boleto.slice(-cifras) === resultado.slice(-cifras)
+        ) {
+            return 8 - cifras;
+        }
+    }
+    return null;
+}
+
+const PREMIOS_JOKER = [1000000, 10000, 1000, 300, 50, 5, 1];
+
+export function premioJokerPorCategoria(categoria) {
+    const numero = Number(categoria);
+    if (!Number.isInteger(numero) || numero < 1 || numero > 7) return null;
+    const premio = PREMIOS_JOKER[numero - 1];
+    return {
+        aciertos: "J",
+        categoria: `Joker ${numero}ª`,
+        premio,
+        premio_text: formatEuroText(premio),
+        pendiente: false,
+    };
 }
 
 export function cmpGordo(boleto, resultado) {
@@ -145,6 +182,56 @@ export async function buscarPremioPrimitiva(
     cmp,
     { sorteoTieneCategorias, fechaISO } = {}
 ) {
+    // Soporte Joker: seleccionar la categoría concreta que ha acertado.
+    if (cmp && cmp.aciertoJoker === 1) {
+        const aciertosJ = "J";
+        const categoriaJoker = Number(cmp.categoriaJoker);
+        if (!Number.isInteger(categoriaJoker) || categoriaJoker < 1 || categoriaJoker > 7)
+            return null;
+        const categoriaLike = `Joker ${categoriaJoker}ª%`;
+        const sorteoKey = sorteoKeyFromFecha(sorteoNNN, fechaISO);
+        const year = yearFromFecha(fechaISO);
+        let rows = [];
+        if (sorteoKey) {
+            rows = await conn.query(
+                `SELECT categoria, premio, premio_text FROM premios_sorteos
+                 WHERE tipoApuesta='primitiva' AND sorteo=? AND aciertos=? AND categoria LIKE ?
+                 ORDER BY fecha DESC
+                 LIMIT 1`,
+                [sorteoKey, aciertosJ, categoriaLike]
+            );
+        }
+        if (!rows.length && sorteoNNN) {
+            if (year) {
+                rows = await conn.query(
+                    `SELECT categoria, premio, premio_text FROM premios_sorteos
+                     WHERE tipoApuesta='primitiva' AND sorteo LIKE ? AND aciertos=? AND categoria LIKE ? AND YEAR(fecha)=?
+                     ORDER BY fecha DESC
+                     LIMIT 1`,
+                    [`%/${sorteoNNN}`, aciertosJ, categoriaLike, year]
+                );
+            }
+            if (!rows.length) {
+                rows = await conn.query(
+                    `SELECT categoria, premio, premio_text FROM premios_sorteos
+                     WHERE tipoApuesta='primitiva' AND sorteo=? AND aciertos=? AND categoria LIKE ?
+                     ORDER BY fecha DESC
+                     LIMIT 1`,
+                    [sorteoNNN, aciertosJ, categoriaLike]
+                );
+            }
+        }
+        if (!rows.length) return premioJokerPorCategoria(categoriaJoker);
+        const r = rows[0];
+        return {
+            aciertos: aciertosJ,
+            categoria: r.categoria,
+            premio: parseNumberOrNull(r.premio),
+            premio_text: r.premio_text,
+            pendiente: false,
+        };
+    }
+
     let aciertos = "";
     if (cmp.aciertosNumeros === 6 && cmp.aciertoReintegro === 1)
         aciertos = "6+R";

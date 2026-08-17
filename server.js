@@ -47,7 +47,7 @@ import nodemailer from 'nodemailer';
 import { procesarSemana as vwProcesarSemana } from './verify-week.js';
 import { ensureAppTimezone, todayISO, fechaISO, parseISODateLocal, mondayOf, addDays } from './src/helpers/fechas.js';
 import { parseNumberOrNull, formatEuroText, sorteoNumeroNNN, sorteoKeyFromFecha } from './src/helpers/funciones.js';
-import { cmpEuromillones, cmpPrimitiva, cmpGordo, buscarPremioPrimitiva, buscarPremioEurom, buscarPremioGordo } from './src/helpers/premios.js';
+import { cmpEuromillones, cmpPrimitiva, cmpGordo, calcularCategoriaJoker, premioJokerPorCategoria, buscarPremioPrimitiva, buscarPremioEurom, buscarPremioGordo } from './src/helpers/premios.js';
 import { parseTicketQR } from './src/modules/parse_ticket_qr.js';
 import { getBotesActuales } from './src/modules/botes.js';
 import { format as formatDate } from 'date-fns';
@@ -827,16 +827,16 @@ app.get('/tickets', requireAuth, async (req, res) => {
   try {
     // Traer boletos registrados en la semana
     const boletos = await conn.query(
-      `SELECT s.*, b.imagen, b.combinacion, b.estrellas, b.reintegro, b.clave
+      `SELECT s.*, b.imagen, b.combinacion, b.estrellas, b.reintegro, b.clave, b.joker
        FROM sorteos s
        JOIN (
-         SELECT identificador AS identificadorBoleto, imagen, combinacion, NULL AS estrellas, reintegro, NULL AS clave
+         SELECT identificador AS identificadorBoleto, imagen, combinacion, NULL AS estrellas, reintegro, NULL AS clave, joker
          FROM primitiva
          UNION ALL
-         SELECT identificador, imagen, combinacion, estrellas, NULL AS reintegro, NULL AS clave
+         SELECT identificador, imagen, combinacion, estrellas, NULL AS reintegro, NULL AS clave, NULL AS joker
          FROM euromillones
          UNION ALL
-         SELECT identificador, imagen, combinacion, NULL AS estrellas, NULL AS reintegro, clave
+         SELECT identificador, imagen, combinacion, NULL AS estrellas, NULL AS reintegro, clave, NULL AS joker
          FROM gordo
        ) b ON b.identificadorBoleto = s.identificadorBoleto
        WHERE s.fecha BETWEEN ? AND ?
@@ -870,6 +870,7 @@ app.get('/tickets', requireAuth, async (req, res) => {
           estrellas: row.estrellas || null,
           reintegro: row.reintegro || null,
           clave: row.clave || null,
+          joker: row.joker || null,
         });
       } else {
         const it = map.get(key);
@@ -1002,14 +1003,40 @@ app.get('/tickets', requireAuth, async (req, res) => {
       if (!resultado) continue;
       const hit = compute(row, resultado);
       if (!hit) continue;
-      hits[tipo].push({
-        identificador: row.identificadorBoleto,
-        sorteo: sorteoKey,
-        fecha: resultado.fecha || row.fecha,
-        detalle: hit.detalle,
-        resumen: hit.resumen,
-        aciertosClave: hit.aciertosClave || null,
-      });
+        try { console.log(`DEBUG /tickets before push initial hit tipo=${tipo} identificador=${row.identificadorBoleto} hitsCount=${(hits[tipo]||[]).length}`); } catch(e) {}
+        hits[tipo].push({
+          identificador: row.identificadorBoleto,
+          sorteo: sorteoKey,
+          fecha: resultado.fecha || row.fecha,
+          detalle: hit.detalle,
+          resumen: hit.resumen,
+          aciertosClave: hit.aciertosClave || null,
+        });
+        try { console.log(`DEBUG /tickets after push initial hit tipo=${tipo} identificador=${row.identificadorBoleto} hitsCount=${(hits[tipo]||[]).length}`); } catch(e) {}
+
+      // Si es primitiva y el boleto incluye Joker, añadir hit separado para Joker si coincide
+      if (tipo === 'primitiva') {
+        try {
+          const jokerB = (row.joker || '').toString().replace(/\D+/g, '');
+          const jokerR = (resultado.joker || '').toString().replace(/\D+/g, '');
+          console.log(`DEBUG /tickets joker compare for ${row.identificadorBoleto}: row.joker='${row.joker}' -> '${jokerB}', resultado.joker='${resultado.joker}' -> '${jokerR}'`);
+          const categoriaJoker = calcularCategoriaJoker(jokerB, jokerR);
+          if (categoriaJoker) {
+            console.log(`DEBUG /tickets joker MATCH for ${row.identificadorBoleto} (sorteo ${sorteoKey}) pushing Joker hit`);
+            hits.primitiva.push({
+              identificador: row.identificadorBoleto,
+              sorteo: sorteoKey,
+              fecha: resultado.fecha || row.fecha,
+              detalle: 'Joker',
+              resumen: `Joker ${categoriaJoker}ª`,
+              aciertosClave: `J${categoriaJoker}`,
+            });
+            try { console.log('DEBUG /tickets hits.primitiva immediately after push:', JSON.stringify(hits.primitiva).slice(0,2000)); } catch(e) {}
+          } else {
+            console.log(`DEBUG /tickets joker NO MATCH for ${row.identificadorBoleto}`);
+          }
+        } catch (e) {}
+      }
     }
 
     const premioCache = new Map();
@@ -1018,26 +1045,53 @@ app.get('/tickets', requireAuth, async (req, res) => {
       const sorteoKeyWithYear = sorteoKeyFromFecha(sorteoKey, fechaISO) || sorteoKey;
       const cacheKey = `${tipo}|${sorteoKeyWithYear}|${aciertosClave}`;
       if (premioCache.has(cacheKey)) return premioCache.get(cacheKey);
-      let rows = await conn.query(
-        `SELECT categoria, premio, premio_text FROM premios_sorteos
-         WHERE tipoApuesta=? AND sorteo=? AND aciertos=?
-         ORDER BY fecha DESC
-         LIMIT 1`,
-        [tipo, sorteoKeyWithYear, aciertosClave]
-      );
+      let rows;
+      try { console.log(`DEBUG /tickets fetchPremio lookup tipo=${tipo} sorteoKey=${sorteoKey} sorteoKeyWithYear=${sorteoKeyWithYear} aciertos=${aciertosClave} fechaISO=${fechaISO}`); } catch(e) {}
+      const jokerMatch = tipo === 'primitiva' && /^J([1-7])$/.exec(aciertosClave);
+      if (jokerMatch) {
+        rows = await conn.query(
+          `SELECT categoria, premio, premio_text FROM premios_sorteos
+           WHERE tipoApuesta=? AND sorteo=? AND aciertos='J' AND categoria LIKE ?
+           ORDER BY fecha DESC
+           LIMIT 1`,
+          [tipo, sorteoKeyWithYear, `Joker ${jokerMatch[1]}ª%`]
+        );
+        try { console.log(`DEBUG /tickets fetchPremio rowsFound=${rows.length} (exact)`); } catch(e) {}
+      } else {
+        rows = await conn.query(
+          `SELECT categoria, premio, premio_text FROM premios_sorteos
+           WHERE tipoApuesta=? AND sorteo=? AND aciertos=?
+           ORDER BY fecha DESC
+           LIMIT 1`,
+          [tipo, sorteoKeyWithYear, aciertosClave]
+        );
+        try { console.log(`DEBUG /tickets fetchPremio rowsFound=${rows.length} (exact)`); } catch(e) {}
+      }
       // Algunos scrapes antiguos de Primitiva guardaron sorteo como "YYYY/NNN".
       // Si no encontramos coincidencia exacta, probamos con la cola "/NNN" para no perder premios.
       if (!rows.length && tipo === 'primitiva' && sorteoKey) {
         const likeKey = `%/${sorteoKey}`;
-        rows = await conn.query(
-          `SELECT categoria, premio, premio_text FROM premios_sorteos
-           WHERE tipoApuesta=? AND sorteo LIKE ? AND aciertos=?
-           ORDER BY fecha DESC
-           LIMIT 1`,
-          [tipo, likeKey, aciertosClave]
-        );
+        if (jokerMatch) {
+          rows = await conn.query(
+            `SELECT categoria, premio, premio_text FROM premios_sorteos
+             WHERE tipoApuesta=? AND sorteo LIKE ? AND aciertos='J' AND categoria LIKE ?
+             ORDER BY fecha DESC
+             LIMIT 1`,
+            [tipo, likeKey, `Joker ${jokerMatch[1]}ª%`]
+          );
+        } else {
+          rows = await conn.query(
+            `SELECT categoria, premio, premio_text FROM premios_sorteos
+             WHERE tipoApuesta=? AND sorteo LIKE ? AND aciertos=?
+             ORDER BY fecha DESC
+             LIMIT 1`,
+            [tipo, likeKey, aciertosClave]
+          );
+        }
+        try { console.log(`DEBUG /tickets fetchPremio rowsFound=${rows.length} (like ${likeKey})`); } catch(e) {}
       }
       let info = rows.length ? { ...rows[0] } : null;
+      if (!info && jokerMatch) info = premioJokerPorCategoria(Number(jokerMatch[1]));
       if (info) {
         const premioBase = parseNumberOrNull(info.premio);
         info.premio = premioBase;
