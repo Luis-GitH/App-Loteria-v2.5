@@ -1,0 +1,29 @@
+{
+  "identificador": "1307807021768183776460372323003207",
+  "tipo": "euromillones",
+  "sorteoCodigo": "03221ABR26:2",
+  "sorteos": [
+    {
+      "sorteo": 32,
+      "fecha": "2026-04-21",
+      "dia": "martes",
+      "lunesSemana": "2026-04-20"
+    },
+    {
+      "sorteo": 33,
+      "fecha": "2026-04-24",
+      "dia": "viernes",
+      "lunesSemana": "2026-04-20"
+    }
+  ],
+  "fechaLunes": "2026-04-20",
+  "combinacion": "0205384849",
+  "estrellas": "0608",
+  "reintegro": "",
+  "clave": "",
+  "millon": "BNJ37986",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-04-20_euromillones_03207.jpg"
+}

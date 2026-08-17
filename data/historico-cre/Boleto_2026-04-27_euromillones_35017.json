@@ -1,0 +1,29 @@
+{
+  "identificador": "1308507020097619050579844574535017",
+  "tipo": "euromillones",
+  "sorteoCodigo": "03428ABR26:2",
+  "sorteos": [
+    {
+      "sorteo": 34,
+      "fecha": "2026-04-28",
+      "dia": "martes",
+      "lunesSemana": "2026-04-27"
+    },
+    {
+      "sorteo": 35,
+      "fecha": "2026-05-01",
+      "dia": "viernes",
+      "lunesSemana": "2026-04-27"
+    }
+  ],
+  "fechaLunes": "2026-04-27",
+  "combinacion": "1521304648",
+  "estrellas": "0607",
+  "reintegro": "",
+  "clave": "",
+  "millon": "BRQ87302",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-04-27_euromillones_35017.jpg"
+}

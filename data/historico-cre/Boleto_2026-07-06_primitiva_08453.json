@@ -1,0 +1,29 @@
+{
+  "identificador": "1315601020010238993708036346108453",
+  "tipo": "primitiva",
+  "sorteoCodigo": "08209JUL26:2",
+  "sorteos": [
+    {
+      "sorteo": 82,
+      "fecha": "2026-07-09",
+      "dia": "jueves",
+      "lunesSemana": "2026-07-06"
+    },
+    {
+      "sorteo": 83,
+      "fecha": "2026-07-11",
+      "dia": "sábado",
+      "lunesSemana": "2026-07-06"
+    }
+  ],
+  "fechaLunes": "2026-07-06",
+  "combinacion": "020510153639",
+  "estrellas": "",
+  "reintegro": "1",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98565-0",
+  "joker": "NO",
+  "imagen": "/historico/Boleto_2026-07-06_primitiva_08453.jpg"
+}

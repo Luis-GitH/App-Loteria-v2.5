@@ -1,0 +1,29 @@
+{
+  "identificador": "1319707021367634693169883320609733",
+  "tipo": "euromillones",
+  "sorteoCodigo": "06618AGO26:2",
+  "sorteos": [
+    {
+      "sorteo": 66,
+      "fecha": "2026-08-18",
+      "dia": "martes",
+      "lunesSemana": "2026-08-17"
+    },
+    {
+      "sorteo": 67,
+      "fecha": "2026-08-21",
+      "dia": "viernes",
+      "lunesSemana": "2026-08-17"
+    }
+  ],
+  "fechaLunes": "2026-08-17",
+  "combinacion": "0714173648",
+  "estrellas": "0104",
+  "reintegro": "",
+  "clave": "",
+  "millon": "FJN46277",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-08-17_euromillones_09733.jpg"
+}

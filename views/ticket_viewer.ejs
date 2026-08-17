@@ -37,9 +37,44 @@
     <p><strong>ID:</strong> <%= boleto.identificadorBoleto %></p>
     <p><strong>Tipo:</strong> <%= ({ euromillones: 'Euromillones', primitiva: 'Primitiva', gordo: 'El Gordo' }[boleto.tipo] || boleto.tipo) %></p>
     <p><strong>Sorteos:</strong> <%= boleto.sorteosCount || 1 %></p>
-    <% if (boleto.combinacion) { %><p><strong>Combinación:</strong> <%= boleto.combinacion %></p><% } %>
+    <% if (boleto.combinacion) { const nums = typeof comboParts==='function' ? comboParts(boleto.combinacion) : String(boleto.combinacion||'').trim().split(/\s+/).filter(Boolean); %>
+      <p><strong>Combinación:</strong> <%= nums.join(' ') %></p>
+    <% } %>
     <% if (boleto.estrellas) { %><p><strong>Estrellas:</strong> <%= boleto.estrellas %></p><% } %>
     <% if (boleto.reintegro) { %><p><strong>Reintegro:</strong> <%= boleto.reintegro %></p><% } %>
+    <% if (boleto.joker) { %>
+      <p><strong>Joker:</strong>
+        <span class="combo-ball combo-ball-pr combo-ball-joker" style="vertical-align:middle; margin-left:0.5rem;"><%= boleto.joker %></span>
+      </p>
+    <% } %>
     <% if (boleto.clave) { %><p><strong>Clave:</strong> <%= boleto.clave %></p><% } %>
   </div>
+  <% if (evaluaciones && evaluaciones.length) { %>
+    <div class="viewer-evals card p-4 mt-3">
+      <h4>Aciertos y Premios</h4>
+      <% evaluaciones.forEach(function(ev){ %>
+        <div class="eval-row mb-2">
+          <div><strong>Sorteo:</strong> <%= ev.sorteo?.sorteo || ev.resultado?.sorteo || '' %> · <%= ev.sorteo?.fecha || ev.resultado?.fecha || '' %></div>
+          <div><strong>Aciertos:</strong> <% if (ev.comparativa) { %>
+            <% if (typeof ev.comparativa.aciertosNumeros !== 'undefined') { %>
+              <%= ev.comparativa.aciertosNumeros %> número<%= ev.comparativa.aciertosNumeros===1 ? '' : 's' %>
+              <% if (ev.comparativa.aciertoComplementario) { %> + complementario<% } %>
+              <% if (ev.comparativa.aciertoReintegro) { %> + reintegro<% } %>
+            <% } else { %>
+              -
+            <% } %>
+          <% } else { %> - <% } %></div>
+          <div><strong>Premio:</strong>
+            <% if (ev.premio) { %>
+              <% if (ev.premio.pendiente) { %>Premio pendiente<% } else { %>
+                <%= ev.premio.categoria || '?' %> · <%= ev.premio.premio_text || (typeof fmtEUR==='function' ? fmtEUR(ev.premio.premio) : ev.premio.premio) %>
+              <% } %>
+            <% } else { %>
+              Sin premio registrado.
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
 </section>

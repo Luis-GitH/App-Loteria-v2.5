@@ -1,0 +1,35 @@
+{
+  "identificador": "1312701020020825271554919660017716",
+  "tipo": "primitiva",
+  "sorteoCodigo": "06908JUN26:3",
+  "sorteos": [
+    {
+      "sorteo": 69,
+      "fecha": "2026-06-08",
+      "dia": "lunes",
+      "lunesSemana": "2026-06-08"
+    },
+    {
+      "sorteo": 70,
+      "fecha": "2026-06-11",
+      "dia": "jueves",
+      "lunesSemana": "2026-06-08"
+    },
+    {
+      "sorteo": 71,
+      "fecha": "2026-06-13",
+      "dia": "sábado",
+      "lunesSemana": "2026-06-08"
+    }
+  ],
+  "fechaLunes": "2026-06-08",
+  "combinacion": "091922283136",
+  "estrellas": "",
+  "reintegro": "6",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98565-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-06-08_primitiva_17716.jpg"
+}

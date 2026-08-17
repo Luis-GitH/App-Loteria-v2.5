@@ -1,0 +1,35 @@
+{
+  "identificador": "1316901020426986992262323871132423",
+  "tipo": "primitiva",
+  "sorteoCodigo": "08720JUL26:3",
+  "sorteos": [
+    {
+      "sorteo": 87,
+      "fecha": "2026-07-20",
+      "dia": "lunes",
+      "lunesSemana": "2026-07-20"
+    },
+    {
+      "sorteo": 88,
+      "fecha": "2026-07-23",
+      "dia": "jueves",
+      "lunesSemana": "2026-07-20"
+    },
+    {
+      "sorteo": 89,
+      "fecha": "2026-07-25",
+      "dia": "sábado",
+      "lunesSemana": "2026-07-20"
+    }
+  ],
+  "fechaLunes": "2026-07-20",
+  "combinacion": "102324353845",
+  "estrellas": "",
+  "reintegro": "8",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "/historico/Boleto_2026-07-20_primitiva_32423.jpg"
+}

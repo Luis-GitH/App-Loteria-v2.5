@@ -1,0 +1,35 @@
+{
+  "identificador": "1313401020981769802701930480439578",
+  "tipo": "primitiva",
+  "sorteoCodigo": "07215JUN26:3",
+  "sorteos": [
+    {
+      "sorteo": 72,
+      "fecha": "2026-06-15",
+      "dia": "lunes",
+      "lunesSemana": "2026-06-15"
+    },
+    {
+      "sorteo": 73,
+      "fecha": "2026-06-18",
+      "dia": "jueves",
+      "lunesSemana": "2026-06-15"
+    },
+    {
+      "sorteo": 74,
+      "fecha": "2026-06-20",
+      "dia": "sábado",
+      "lunesSemana": "2026-06-15"
+    }
+  ],
+  "fechaLunes": "2026-06-15",
+  "combinacion": "072528384243",
+  "estrellas": "",
+  "reintegro": "6",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-06-15_primitiva_39578.jpg"
+}

@@ -1,0 +1,35 @@
+{
+  "identificador": "1311301021092114903525103748740387",
+  "tipo": "primitiva",
+  "sorteoCodigo": "06325MAY26:3",
+  "sorteos": [
+    {
+      "sorteo": 63,
+      "fecha": "2026-05-25",
+      "dia": "lunes",
+      "lunesSemana": "2026-05-25"
+    },
+    {
+      "sorteo": 64,
+      "fecha": "2026-05-28",
+      "dia": "jueves",
+      "lunesSemana": "2026-05-25"
+    },
+    {
+      "sorteo": 65,
+      "fecha": "2026-05-30",
+      "dia": "sábado",
+      "lunesSemana": "2026-05-25"
+    }
+  ],
+  "fechaLunes": "2026-05-25",
+  "combinacion": "010607283038",
+  "estrellas": "",
+  "reintegro": "6",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "03445-1",
+  "joker": "NO",
+  "imagen": "Boleto_2026-05-25_primitiva_40387.jpg"
+}

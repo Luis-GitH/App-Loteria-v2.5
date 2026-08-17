@@ -1,0 +1,35 @@
+{
+  "identificador": "1308501020613240565782153984222529",
+  "tipo": "primitiva",
+  "sorteoCodigo": "05127ABR26:3",
+  "sorteos": [
+    {
+      "sorteo": 51,
+      "fecha": "2026-04-27",
+      "dia": "lunes",
+      "lunesSemana": "2026-04-27"
+    },
+    {
+      "sorteo": 52,
+      "fecha": "2026-04-30",
+      "dia": "jueves",
+      "lunesSemana": "2026-04-27"
+    },
+    {
+      "sorteo": 53,
+      "fecha": "2026-04-04",
+      "dia": "sábado",
+      "lunesSemana": "2026-03-30"
+    }
+  ],
+  "fechaLunes": "2026-04-27",
+  "combinacion": "052324253843",
+  "estrellas": "",
+  "reintegro": "8",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-04-27_primitiva_22529.jpg"
+}

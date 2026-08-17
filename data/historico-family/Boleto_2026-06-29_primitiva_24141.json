@@ -1,0 +1,35 @@
+{
+  "identificador": "1314801021542654592983881849624141",
+  "tipo": "primitiva",
+  "sorteoCodigo": "07829JUN26:3",
+  "sorteos": [
+    {
+      "sorteo": 78,
+      "fecha": "2026-06-29",
+      "dia": "lunes",
+      "lunesSemana": "2026-06-29"
+    },
+    {
+      "sorteo": 79,
+      "fecha": "2026-07-02",
+      "dia": "jueves",
+      "lunesSemana": "2026-06-29"
+    },
+    {
+      "sorteo": 80,
+      "fecha": "2026-07-04",
+      "dia": "sábado",
+      "lunesSemana": "2026-06-29"
+    }
+  ],
+  "fechaLunes": "2026-06-29",
+  "combinacion": "101213163339",
+  "estrellas": "",
+  "reintegro": "8",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "8204765",
+  "imagen": "/historico/Boleto_2026-06-29_primitiva_24141.jpg"
+}

@@ -7,6 +7,9 @@
       <% if (user && user.tipo === 'admin') { %>
         <a class="btn" href="/movimientos/new">Nuevo movimiento</a>
         <a class="btn" href="/movimientos/import" style="background:#666">Importar desde Excel</a>
+        <form method="post" action="/movimientos/email" style="display:inline" onsubmit="return confirm('¿Enviar el Excel del estado de cuentas por correo a los usuarios?')">
+          <button class="btn" type="submit" style="background:#2878b5">Enviar Excel por correo</button>
+        </form>
       <% } %>
       <a class="btn" href="/movimientos/export" style="background:#2c7">Exportar a Excel</a>
     </p>

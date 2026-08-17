@@ -1,0 +1,29 @@
+{
+  "identificador": "1312007020150461787512046283447178",
+  "tipo": "euromillones",
+  "sorteoCodigo": "04402JUN26:2",
+  "sorteos": [
+    {
+      "sorteo": 44,
+      "fecha": "2026-06-02",
+      "dia": "martes",
+      "lunesSemana": "2026-06-01"
+    },
+    {
+      "sorteo": 45,
+      "fecha": "2026-06-05",
+      "dia": "viernes",
+      "lunesSemana": "2026-06-01"
+    }
+  ],
+  "fechaLunes": "2026-06-01",
+  "combinacion": "0412152233",
+  "estrellas": "0810",
+  "reintegro": "",
+  "clave": "",
+  "millon": "CPK63511",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-06-01_euromillones_47178.jpg"
+}

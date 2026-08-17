@@ -29,3 +29,10 @@ Script para detectar cambios de IP pública y registrar el nuevo valor en múlti
 npm run dns:update
 ```
 Guarda la IP previa en `data/public-ip.json` y solo envía actualizaciones si detecta cambios.
+
+Para aplicar un cambio de dominio después de editar `.env_dns`, ejecutar:
+```bash
+npm run dns-change
+```
+Este comando fuerza la actualización de todos los valores de `DYN_HOSTS` para
+el nuevo `DYN_DOMAIN` y verifica su resolución DNS.

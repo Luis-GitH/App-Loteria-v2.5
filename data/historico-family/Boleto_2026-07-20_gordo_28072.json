@@ -1,0 +1,23 @@
+{
+  "identificador": "1316904021011475002841177752928072",
+  "tipo": "gordo",
+  "sorteoCodigo": "03026JUL26:1",
+  "sorteos": [
+    {
+      "sorteo": 30,
+      "fecha": "2026-07-26",
+      "dia": "domingo",
+      "lunesSemana": "2026-07-20"
+    }
+  ],
+  "fechaLunes": "2026-07-20",
+  "combinacion": "0304054143",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "06",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "/historico/Boleto_2026-07-20_gordo_28072.jpg"
+}

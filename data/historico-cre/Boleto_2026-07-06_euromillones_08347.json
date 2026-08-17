@@ -1,0 +1,29 @@
+{
+  "identificador": "1315607020115522436627157981508347",
+  "tipo": "euromillones",
+  "sorteoCodigo": "05407JUL26:2",
+  "sorteos": [
+    {
+      "sorteo": 54,
+      "fecha": "2026-07-07",
+      "dia": "martes",
+      "lunesSemana": "2026-07-06"
+    },
+    {
+      "sorteo": 55,
+      "fecha": "2026-07-10",
+      "dia": "viernes",
+      "lunesSemana": "2026-07-06"
+    }
+  ],
+  "fechaLunes": "2026-07-06",
+  "combinacion": "0204263038",
+  "estrellas": "0209",
+  "reintegro": "",
+  "clave": "",
+  "millon": "DMF36724",
+  "semanas": 1,
+  "terminal": "98565-0",
+  "joker": "",
+  "imagen": "/historico/Boleto_2026-07-06_euromillones_08347.jpg"
+}

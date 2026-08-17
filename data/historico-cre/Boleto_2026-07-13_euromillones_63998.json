@@ -1,0 +1,29 @@
+{
+  "identificador": "1316207021289215926429354641963998",
+  "tipo": "euromillones",
+  "sorteoCodigo": "05614JUL26:2",
+  "sorteos": [
+    {
+      "sorteo": 56,
+      "fecha": "2026-07-14",
+      "dia": "martes",
+      "lunesSemana": "2026-07-13"
+    },
+    {
+      "sorteo": 57,
+      "fecha": "2026-07-17",
+      "dia": "viernes",
+      "lunesSemana": "2026-07-13"
+    }
+  ],
+  "fechaLunes": "2026-07-13",
+  "combinacion": "0914253244",
+  "estrellas": "0304",
+  "reintegro": "",
+  "clave": "",
+  "millon": "DPP97622",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "/historico/Boleto_2026-07-13_euromillones_63998.jpg"
+}

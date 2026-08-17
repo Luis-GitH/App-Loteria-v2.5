@@ -1,0 +1,29 @@
+{
+  "identificador": "1312707020433438044519466499454562",
+  "tipo": "euromillones",
+  "sorteoCodigo": "04609JUN26:2",
+  "sorteos": [
+    {
+      "sorteo": 46,
+      "fecha": "2026-06-09",
+      "dia": "martes",
+      "lunesSemana": "2026-06-08"
+    },
+    {
+      "sorteo": 47,
+      "fecha": "2026-06-12",
+      "dia": "viernes",
+      "lunesSemana": "2026-06-08"
+    }
+  ],
+  "fechaLunes": "2026-06-08",
+  "combinacion": "0506112733",
+  "estrellas": "0508",
+  "reintegro": "",
+  "clave": "",
+  "millon": "CTR21489",
+  "semanas": 1,
+  "terminal": "98565-0",
+  "joker": "",
+  "imagen": "Boleto_2026-06-08_euromillones_54562.jpg"
+}

@@ -1,0 +1,35 @@
+{
+  "identificador": "1319701020329171733290908841644863",
+  "tipo": "primitiva",
+  "sorteoCodigo": "09917AGO26:3",
+  "sorteos": [
+    {
+      "sorteo": 99,
+      "fecha": "2026-08-17",
+      "dia": "lunes",
+      "lunesSemana": "2026-08-17"
+    },
+    {
+      "sorteo": 100,
+      "fecha": "2026-08-20",
+      "dia": "jueves",
+      "lunesSemana": "2026-08-17"
+    },
+    {
+      "sorteo": 101,
+      "fecha": "2026-08-22",
+      "dia": "sábado",
+      "lunesSemana": "2026-08-17"
+    }
+  ],
+  "fechaLunes": "2026-08-17",
+  "combinacion": "040716242533",
+  "estrellas": "",
+  "reintegro": "7",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-08-17_primitiva_44863.jpg"
+}

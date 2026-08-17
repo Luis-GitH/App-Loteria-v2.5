@@ -1,0 +1,29 @@
+{
+  "identificador": "1319007021638976188170979479439528",
+  "tipo": "euromillones",
+  "sorteoCodigo": "06411AGO26:2",
+  "sorteos": [
+    {
+      "sorteo": 64,
+      "fecha": "2026-08-11",
+      "dia": "martes",
+      "lunesSemana": "2026-08-10"
+    },
+    {
+      "sorteo": 65,
+      "fecha": "2026-08-14",
+      "dia": "viernes",
+      "lunesSemana": "2026-08-10"
+    }
+  ],
+  "fechaLunes": "2026-08-10",
+  "combinacion": "0812202340",
+  "estrellas": "0110",
+  "reintegro": "",
+  "clave": "",
+  "millon": "FGG46180",
+  "semanas": 1,
+  "terminal": "98590-0",
+  "joker": "",
+  "imagen": "Boleto_2026-08-10_euromillones_39528.jpg"
+}

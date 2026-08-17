@@ -1,0 +1,29 @@
+{
+  "identificador": "1313407021141502898376729584860356",
+  "tipo": "euromillones",
+  "sorteoCodigo": "04816JUN26:2",
+  "sorteos": [
+    {
+      "sorteo": 48,
+      "fecha": "2026-06-16",
+      "dia": "martes",
+      "lunesSemana": "2026-06-15"
+    },
+    {
+      "sorteo": 49,
+      "fecha": "2026-06-19",
+      "dia": "viernes",
+      "lunesSemana": "2026-06-15"
+    }
+  ],
+  "fechaLunes": "2026-06-15",
+  "combinacion": "0312144849",
+  "estrellas": "0306",
+  "reintegro": "",
+  "clave": "",
+  "millon": "CZH58861",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-06-15_euromillones_60356.jpg"
+}

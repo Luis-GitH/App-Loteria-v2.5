@@ -1,0 +1,35 @@
+{
+  "identificador": "1319001021250778573146489726736488",
+  "tipo": "primitiva",
+  "sorteoCodigo": "09610AGO26:3",
+  "sorteos": [
+    {
+      "sorteo": 96,
+      "fecha": "2026-08-10",
+      "dia": "lunes",
+      "lunesSemana": "2026-08-10"
+    },
+    {
+      "sorteo": 97,
+      "fecha": "2026-08-13",
+      "dia": "jueves",
+      "lunesSemana": "2026-08-10"
+    },
+    {
+      "sorteo": 98,
+      "fecha": "2026-08-15",
+      "dia": "sábado",
+      "lunesSemana": "2026-08-10"
+    }
+  ],
+  "fechaLunes": "2026-08-10",
+  "combinacion": "052738404348",
+  "estrellas": "",
+  "reintegro": "1",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98590-0",
+  "joker": "6309765",
+  "imagen": "Boleto_2026-08-10_primitiva_36488.jpg"
+}

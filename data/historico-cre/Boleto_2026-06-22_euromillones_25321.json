@@ -1,0 +1,29 @@
+{
+  "identificador": "1314107021186457779299835658025321",
+  "tipo": "euromillones",
+  "sorteoCodigo": "05023JUN26:2",
+  "sorteos": [
+    {
+      "sorteo": 50,
+      "fecha": "2026-06-23",
+      "dia": "martes",
+      "lunesSemana": "2026-06-22"
+    },
+    {
+      "sorteo": 51,
+      "fecha": "2026-06-26",
+      "dia": "viernes",
+      "lunesSemana": "2026-06-22"
+    }
+  ],
+  "fechaLunes": "2026-06-22",
+  "combinacion": "2224374548",
+  "estrellas": "0109",
+  "reintegro": "",
+  "clave": "",
+  "millon": "DDK38562",
+  "semanas": 1,
+  "terminal": "96790-0",
+  "joker": "",
+  "imagen": "/historico/Boleto_2026-06-22_euromillones_25321.jpg"
+}

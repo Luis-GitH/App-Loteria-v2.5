@@ -1,0 +1,29 @@
+{
+  "identificador": "1311307020499840451820730549600545",
+  "tipo": "euromillones",
+  "sorteoCodigo": "04226MAY26:2",
+  "sorteos": [
+    {
+      "sorteo": 42,
+      "fecha": "2026-05-26",
+      "dia": "martes",
+      "lunesSemana": "2026-05-25"
+    },
+    {
+      "sorteo": 43,
+      "fecha": "2026-05-29",
+      "dia": "viernes",
+      "lunesSemana": "2026-05-25"
+    }
+  ],
+  "fechaLunes": "2026-05-25",
+  "combinacion": "0320323537",
+  "estrellas": "1012",
+  "reintegro": "",
+  "clave": "",
+  "millon": "CJW12759",
+  "semanas": 1,
+  "terminal": "03445-1",
+  "joker": "",
+  "imagen": "Boleto_2026-05-25_euromillones_00545.jpg"
+}

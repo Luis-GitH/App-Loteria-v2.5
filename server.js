@@ -49,9 +49,11 @@ import { ensureAppTimezone, todayISO, fechaISO, parseISODateLocal, mondayOf, add
 import { parseNumberOrNull, formatEuroText, sorteoNumeroNNN, sorteoKeyFromFecha } from './src/helpers/funciones.js';
 import { cmpEuromillones, cmpPrimitiva, cmpGordo, calcularCategoriaJoker, premioJokerPorCategoria, buscarPremioPrimitiva, buscarPremioEurom, buscarPremioGordo } from './src/helpers/premios.js';
 import { parseTicketQR } from './src/modules/parse_ticket_qr.js';
+import { decodeQRFromImage } from './src/modules/read_qr_from_scans.js';
 import { getBotesActuales } from './src/modules/botes.js';
 import { format as formatDate } from 'date-fns';
 import { CLIENT_RENEG_LIMIT } from 'tls';
+import { limpiarRegistrosAnteriores } from './src/modules/clean_annual_records.js';
 ensureAppTimezone();
 const __root = path.resolve();
 const app = express();
@@ -258,7 +260,7 @@ const RESULT_META = {
 };
 
 const APUESTA_META = {
-  primitiva: { table: 'primitiva', coste: 1 },
+  primitiva: { table: 'primitiva', coste: 1, costeJoker: 1 },
   euromillones: { table: 'euromillones', coste: 2.5 },
   gordo: { table: 'gordo', coste: 1.5 },
 };
@@ -860,7 +862,7 @@ app.get('/tickets', requireAuth, async (req, res) => {
       const map = groupMaps.get(tipo);
       const key = row.identificadorBoleto;
       const imagenUrl = toWebImagen(row.imagen);
-      if (!map.has(key)) {
+        if (!map.has(key)) {
         map.set(key, {
           identificadorBoleto: key,
           tipoApuesta: tipo,
@@ -1127,6 +1129,9 @@ app.get('/tickets', requireAuth, async (req, res) => {
     }
     for (const tipo of ['euromillones', 'primitiva', 'gordo']) {
       for (const hit of hits[tipo]) {
+        try {
+          console.log(`DEBUG /tickets fetching premio for tipo=${tipo} identificador=${hit.identificador} aciertosClave=${hit.aciertosClave} sorteo=${hit.sorteo} fecha=${hit.fecha}`);
+        } catch (e) {}
         const info = await fetchPremio(tipo, hit.sorteo, hit.aciertosClave, hit.fecha);
         if (info) {
           hit.categoria = info.categoria || null;
@@ -1141,13 +1146,19 @@ app.get('/tickets', requireAuth, async (req, res) => {
             hit.reintegro_text = info.reintegro_text || null;
           }
         }
+        }
       }
+    // Filtrar hits sin categoría (no mostrar aciertos que no tienen premio)
+    for (const tipo of ['euromillones','primitiva','gordo']) {
+      hits[tipo] = (hits[tipo] || []).filter(h => !!h.categoria);
     }
 
     const weekISO = isoWeekFromMonday(lunes);
     const weekISOPrev = isoWeekFromMonday(addDaysISO(lunes, -7));
     const weekISONext = isoWeekFromMonday(addDaysISO(lunes, 7));
     const weekISONow = isoWeekFromMonday(mondayFromParam(undefined));
+    console.log('DEBUG /tickets raw hits.primitiva before fetch:', JSON.stringify(hits.primitiva || []).slice(0,2000));
+    console.log('DEBUG /tickets hits.primitiva after fetch:', JSON.stringify(hits.primitiva || []).slice(0,2000));
     res.render('tickets', {
       layout: 'layout',
       lunes,
@@ -1187,13 +1198,17 @@ app.post('/boletos/nuevo', requireAuth, requireRole('admin'), upload.single('fot
     if (!mimeOk) {
       throw new Error('El archivo debe ser una imagen');
     }
-    const qrRaw = (req.body?.qrData || '').toString().trim();
+    let qrRaw = (req.body?.qrData || '').toString().trim();
     if (!qrRaw) {
-      throw new Error('Debes escanear el QR del boleto antes de guardar');
+      qrRaw = (await decodeQRFromImage(tempPath)) || '';
     }
-    const parsed = parseTicketQR(qrRaw);
+    let parsed = parseTicketQR(qrRaw);
+    if ((!parsed || !parsed.tipo || !parsed.identificador) && req.body?.qrData) {
+      qrRaw = (await decodeQRFromImage(tempPath)) || '';
+      parsed = parseTicketQR(qrRaw);
+    }
     if (!parsed || !parsed.tipo || !parsed.identificador) {
-      throw new Error('El QR proporcionado no es vÃ¡lido para un boleto soportado');
+      throw new Error('No se pudo leer un QR válido en la foto. Acerca la cámara, evita reflejos y vuelve a intentarlo');
     }
     const baseMonday =
       parsed.fechaLunes ||
@@ -1258,16 +1273,16 @@ app.get('/tickets/boletos/:tipo/:id', requireAuth, async (req, res) => {
   const conn = await pool.getConnection();
   try {
     const rows = await conn.query(
-      `SELECT s.identificadorBoleto, s.tipoApuesta, s.fecha, s.sorteo, b.imagen, b.combinacion, b.estrellas, b.reintegro, b.clave
+      `SELECT s.identificadorBoleto, s.tipoApuesta, s.fecha, s.sorteo, b.imagen, b.combinacion, b.estrellas, b.reintegro, b.clave, b.joker
        FROM sorteos s
        JOIN (
-         SELECT identificador AS identificadorBoleto, imagen, combinacion, NULL AS estrellas, reintegro, NULL AS clave
+         SELECT identificador AS identificadorBoleto, imagen, combinacion, NULL AS estrellas, reintegro, NULL AS clave, joker
          FROM primitiva
          UNION ALL
-         SELECT identificador, imagen, combinacion, estrellas, NULL AS reintegro, NULL AS clave
+         SELECT identificador, imagen, combinacion, estrellas, NULL AS reintegro, NULL AS clave, NULL AS joker
          FROM euromillones
          UNION ALL
-         SELECT identificador, imagen, combinacion, NULL AS estrellas, NULL AS reintegro, clave
+         SELECT identificador, imagen, combinacion, NULL AS estrellas, NULL AS reintegro, clave, NULL AS joker
          FROM gordo
        ) b ON b.identificadorBoleto = s.identificadorBoleto
        WHERE s.fecha BETWEEN ? AND ? AND LOWER(s.tipoApuesta)=?
@@ -1280,7 +1295,7 @@ app.get('/tickets/boletos/:tipo/:id', requireAuth, async (req, res) => {
       const key = row.identificadorBoleto;
       if (!key) continue;
       const imagenUrl = toWebImagen(row.imagen);
-      if (!map.has(key)) {
+        if (!map.has(key)) {
         map.set(key, {
           identificadorBoleto: key,
           tipo: tipo,
@@ -1289,6 +1304,7 @@ app.get('/tickets/boletos/:tipo/:id', requireAuth, async (req, res) => {
           estrellas: row.estrellas || null,
           reintegro: row.reintegro || null,
           clave: row.clave || null,
+          joker: row.joker || null,
           sorteosCount: 1,
         });
       } else {
@@ -1314,6 +1330,24 @@ app.get('/tickets/boletos/:tipo/:id', requireAuth, async (req, res) => {
     const current = lista[idx];
     const prev = idx > 0 ? lista[idx - 1] : null;
     const next = idx < lista.length - 1 ? lista[idx + 1] : null;
+    // Obtener sorteos asociados para evaluación y buscar premios
+    const sorteosRows = await conn.query(
+      `SELECT sorteo, fecha, dia, lunesSemana FROM sorteos WHERE identificadorBoleto=? AND LOWER(tipoApuesta)=? AND fecha BETWEEN ? AND ? ORDER BY fecha, sorteo`,
+      [current.identificadorBoleto, tipo, lunes, domingo]
+    );
+    const boletoForEval = {
+      identificador: current.identificadorBoleto,
+      tipo,
+      combinacion: current.combinacion,
+      estrellas: current.estrellas,
+      reintegro: current.reintegro,
+      clave: current.clave,
+      millon: current.millon,
+      semanas: current.semanos || current.semanas || 1,
+      sorteos: sorteosRows.map(s => ({ sorteo: s.sorteo, fecha: s.fecha, dia: s.dia, lunesSemana: s.lunesSemana }))
+    };
+    const evaluaciones = await evaluarBoletoContraResultados(conn, boletoForEval);
+
     res.render('ticket_viewer', {
       layout: 'layout',
       boleto: current,
@@ -1321,6 +1355,7 @@ app.get('/tickets/boletos/:tipo/:id', requireAuth, async (req, res) => {
       next,
       tipo,
       weekISO,
+      evaluaciones,
     });
   } catch (e) {
     console.error('Ticket viewer error:', e.message);
@@ -1591,33 +1626,38 @@ app.get('/movimientos', requireAuth, async (req, res) => {
   }
 });
 
+function crearExcelMovimientos(movimientos) {
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Movimientos');
+  sheet.columns = [
+    { header: 'Fecha', key: 'fecha', width: 12 },
+    { header: 'Concepto', key: 'concepto', width: 30 },
+    { header: 'Importe', key: 'importe', width: 12 },
+    { header: 'Tipo', key: 'tipo', width: 12 },
+    { header: 'Comentarios', key: 'comentarios', width: 30 },
+    { header: 'Saldo', key: 'saldo', width: 12 },
+  ];
+  sheet.getRow(1).font = { bold: true };
+  movimientos.forEach((m) => {
+    sheet.addRow({
+      fecha: m.fecha || '',
+      concepto: m.concepto || m.descripcion || '',
+      importe: Number(m.importe || 0),
+      tipo: m.tipo || '',
+      comentarios: m.comentarios || '',
+      saldo: Number(m.saldo || 0),
+    });
+  });
+  sheet.getColumn('importe').numFmt = '#,##0.00';
+  sheet.getColumn('saldo').numFmt = '#,##0.00';
+  return workbook;
+}
+
 app.get('/movimientos/export', requireAuth, async (req, res) => {
   const conn = await pool.getConnection();
   try {
     const movimientos = await loadMovimientos(conn, { descending: false });
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Movimientos');
-    sheet.columns = [
-      { header: 'Fecha', key: 'fecha', width: 12 },
-      { header: 'Concepto', key: 'concepto', width: 30 },
-      { header: 'Importe', key: 'importe', width: 12 },
-      { header: 'Tipo', key: 'tipo', width: 12 },
-      { header: 'Comentarios', key: 'comentarios', width: 30 },
-      { header: 'Saldo', key: 'saldo', width: 12 },
-    ];
-    sheet.getRow(1).font = { bold: true };
-    movimientos.forEach((m) => {
-      sheet.addRow({
-        fecha: m.fecha || '',
-        concepto: m.concepto || m.descripcion || '',
-        importe: Number(m.importe || 0),
-        tipo: m.tipo || '',
-        comentarios: m.comentarios || '',
-        saldo: Number(m.saldo || 0),
-      });
-    });
-    sheet.getColumn('importe').numFmt = '#,##0.00';
-    sheet.getColumn('saldo').numFmt = '#,##0.00';
+    const workbook = crearExcelMovimientos(movimientos);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename="movimientos.xlsx"');
     await workbook.xlsx.write(res);
@@ -1629,6 +1669,66 @@ app.get('/movimientos/export', requireAuth, async (req, res) => {
   } finally {
     conn.release();
   }
+});
+
+app.post('/movimientos/email', requireAuth, requireRole('admin'), async (req, res) => {
+  const conn = await pool.getConnection();
+  try {
+    const movimientos = await loadMovimientos(conn, { descending: false });
+    const usuarios = await conn.query(
+      `SELECT email FROM users
+       WHERE email IS NOT NULL AND TRIM(email) <> '' AND tipo = 'user'`
+    );
+    const destinatarios = [...new Set(
+      usuarios.map((usuario) => String(usuario.email || '').trim()).filter(Boolean)
+    )];
+    if (!destinatarios.length && process.env.EMAIL_DEV_TO) {
+      destinatarios.push(process.env.EMAIL_DEV_TO.trim());
+    }
+    if (!destinatarios.length) {
+      req.session.flash = { type: 'warning', msg: 'No hay usuarios con correo configurado.' };
+      return res.redirect('/movimientos');
+    }
+
+    const workbook = crearExcelMovimientos(movimientos);
+    const contenido = Buffer.from(await workbook.xlsx.writeBuffer());
+    const port = Number(process.env.EMAIL_PORT || 465);
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port,
+      secure: port === 465,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: process.env.EMAIL_FROM,
+      bcc: destinatarios.join(','),
+      subject: `Estado de cuentas - ${todayISO()}`,
+      html: `
+        <h2>Estado de cuentas</h2>
+        <p>Se adjunta la exportación completa del estado de cuentas.</p>
+        <p>Generado: ${new Date().toLocaleString('es-ES')}</p>
+      `,
+      attachments: [{
+        filename: 'movimientos.xlsx',
+        content: contenido,
+        contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      }],
+    });
+    req.session.flash = {
+      type: 'info',
+      msg: `Estado de cuentas enviado a ${destinatarios.length} destinatario${destinatarios.length === 1 ? '' : 's'}.`,
+    };
+  } catch (e) {
+    console.error('Email movimientos error:', e);
+    req.session.flash = { type: 'error', msg: 'No se pudo enviar el estado de cuentas: ' + e.message };
+  } finally {
+    conn.release();
+  }
+  return res.redirect('/movimientos');
 });
 
 // =============== Importar movimientos desde Excel (admin) ===============
@@ -1803,21 +1903,28 @@ function normalizePositiveInt(value, fallback = 1) {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
+function tieneJoker(joker) {
+  const valor = String(joker ?? '').trim().toUpperCase();
+  return valor !== '' && valor !== 'NO';
+}
+
 async function calcularCosteBoletosSemana(lunes) {
   const conn = await pool.getConnection();
   try {
     let total = 0;
     for (const [tipo, meta] of Object.entries(APUESTA_META)) {
       const rows = await conn.query(
-        `SELECT sorteoCodigo, semanas FROM ${meta.table} WHERE fechaLunes = ?`,
+        `SELECT sorteoCodigo, semanas${meta.costeJoker ? ', joker' : ''} FROM ${meta.table} WHERE fechaLunes = ?`,
         [lunes]
       );
-      let sorteos = 0;
       for (const r of rows) {
         const numSorteos = extractNumSorteos(r.sorteoCodigo) ?? normalizePositiveInt(r.semanas, 1);
-        sorteos += numSorteos;
+        total += numSorteos * meta.coste;
+        if (meta.costeJoker && tieneJoker(r.joker)) {
+          // El Joker participa en los mismos sorteos que la apuesta de Primitiva.
+          total += numSorteos * meta.costeJoker;
+        }
       }
-      total += sorteos * meta.coste;
     }
     return total;
   } finally {
@@ -2027,6 +2134,40 @@ app.post('/admin/boletos/delete/confirm', requireAuth, requireRole('admin'), asy
   } finally { conn.release(); }
 });
 
+app.post('/admin/limpieza-anual', requireAuth, requireRole('admin'), async (req, res) => {
+  const year = Number(req.body.year || 2025);
+  if (!Number.isInteger(year) || year < 2000) {
+    req.session.flash = { type: 'error', msg: 'El año debe ser un entero válido.' };
+    return res.redirect('/admin');
+  }
+
+  try {
+    const results = await limpiarRegistrosAnteriores({
+      year,
+      variants: [APP_VARIANT],
+      rootDir: __root,
+      dryRun: false,
+    });
+
+    const summary = results.map((item) => {
+      const affected = Object.entries(item.affectedByTable || {})
+        .map(([table, count]) => `${table}:${count}`)
+        .join(', ');
+      return `${item.variant} -> ${affected}; archivos: ${item.filesRemoved.length}`;
+    }).join(' | ');
+
+    req.session.flash = {
+      type: 'info',
+      msg: `Limpieza ejecutada para ${year} en la variante ${APP_VARIANT} (${process.env.DB_DATABASE}). ${summary}`,
+    };
+  } catch (err) {
+    console.error('Error ejecutando limpieza anual:', err);
+    req.session.flash = { type: 'danger', msg: 'No se pudo ejecutar la limpieza anual: ' + (err.message || err) };
+  }
+
+  return res.redirect('/admin');
+});
+
 app.post('/admin/boletos/delete', requireAuth, requireRole('admin'), async (req, res) => {
   const rawId = (req.body.identificador || '').toString().trim();
   const requestedTipo = (req.body.tipo || '').toString().trim().toLowerCase();
@@ -2099,6 +2240,8 @@ app.post('/admin/boletos/delete', requireAuth, requireRole('admin'), async (req,
 // EnvÃ­o de boletos de la semana actual por correo (admins)
 app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (req, res) => {
   const lunes = mondayOf(new Date());
+  const adjuntarExcel = req.body?.adjuntarExcel === '1';
+  let attachments = [];
   // Resuelve rutas de imagen a paths FS (acepta /historico/, absolute paths o basename en data/historico)
 
   try {
@@ -2116,7 +2259,6 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
     }
 
     const seen = new Set();
-    const attachments = [];
     for (const r of rows) {
       const img = r.imagen || r.imagen_path || r.image || null;
       const fsPath = resolveHistoricoPath(img);
@@ -2165,15 +2307,28 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
 
     // Saldo actual del club
     let saldoActual = 0;
+    let excelAdjuntado = false;
+    const imagenesCount = attachments.length;
     try {
       const connSaldo = await pool.getConnection();
       try {
         const [rowSaldo] = await connSaldo.query(`SELECT COALESCE(SUM(importe),0) AS saldo FROM movimientos`);
         saldoActual = Number(rowSaldo?.saldo || 0);
+        if (adjuntarExcel) {
+          const movimientos = await loadMovimientos(connSaldo, { descending: false });
+          const workbook = crearExcelMovimientos(movimientos);
+          attachments.push({
+            filename: 'movimientos.xlsx',
+            content: Buffer.from(await workbook.xlsx.writeBuffer()),
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          });
+          excelAdjuntado = true;
+        }
       } finally {
         connSaldo.release();
       }
     } catch (e) {
+      if (adjuntarExcel && !excelAdjuntado) throw e;
       console.error('No se pudo calcular el saldo actual:', e.message);
     }
     const saldoFmt = `${saldoActual.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
@@ -2192,7 +2347,7 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
     const html = `
       <h2>Imágenes de los boletos que jugamos de esta semana ${lunes}</h2>
       <p>Enviado: ${new Date().toLocaleString('es-ES')}</p>
-      <p>Adjuntas ${attachments.length} imagen(es).</p>
+      <p>Se adjuntan ${imagenesCount} imagen(es)${excelAdjuntado ? ' y el Excel del estado de cuentas' : ''}.</p>
       <p><strong>Información del saldo actual del club:</strong> <strong style="${saldoStyle}">${saldoFmt}</strong></p>
       <ul>${attachments.map(a => `<li>${a.filename}</li>`).join('')}</ul>
     `;
@@ -2222,7 +2377,10 @@ app.post('/admin/send-week-tickets', requireAuth, requireRole('admin'), async (r
       console.error('No se pudo registrar envío en BD:', e.message);
     }
 
-    req.session.flash = { type: 'info', msg: `Correo enviado a ${recipients.length} destinatario(s) con ${attachments.length} imagen(es).` };
+    req.session.flash = {
+      type: 'info',
+      msg: `Correo enviado a ${recipients.length} destinatario(s) con ${imagenesCount} imagen(es)${excelAdjuntado ? ' y el Excel del estado de cuentas' : ', sin Excel'}.`,
+    };
     return res.redirect('/admin');
   } catch (err) {
     console.error('Error enviando imÃ¡genes de boletos semana:', err);

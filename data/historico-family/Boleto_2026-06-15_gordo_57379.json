@@ -1,0 +1,23 @@
+{
+  "identificador": "1313404021612073217120270129857379",
+  "tipo": "gordo",
+  "sorteoCodigo": "02521JUN26:1",
+  "sorteos": [
+    {
+      "sorteo": 25,
+      "fecha": "2026-06-21",
+      "dia": "domingo",
+      "lunesSemana": "2026-06-15"
+    }
+  ],
+  "fechaLunes": "2026-06-15",
+  "combinacion": "0210374750",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "02",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-06-15_gordo_57379.jpg"
+}

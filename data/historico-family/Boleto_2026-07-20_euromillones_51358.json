@@ -1,0 +1,29 @@
+{
+  "identificador": "1316907020536332133293876834251358",
+  "tipo": "euromillones",
+  "sorteoCodigo": "05821JUL26:2",
+  "sorteos": [
+    {
+      "sorteo": 58,
+      "fecha": "2026-07-21",
+      "dia": "martes",
+      "lunesSemana": "2026-07-20"
+    },
+    {
+      "sorteo": 59,
+      "fecha": "2026-07-24",
+      "dia": "viernes",
+      "lunesSemana": "2026-07-20"
+    }
+  ],
+  "fechaLunes": "2026-07-20",
+  "combinacion": "1922284247",
+  "estrellas": "0812",
+  "reintegro": "",
+  "clave": "",
+  "millon": "DRZ90378",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "/historico/Boleto_2026-07-20_euromillones_51358.jpg"
+}

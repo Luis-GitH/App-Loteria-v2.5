@@ -1,0 +1,29 @@
+{
+  "identificador": "1317607021663169953184906868239525",
+  "tipo": "euromillones",
+  "sorteoCodigo": "06028JUL26:2",
+  "sorteos": [
+    {
+      "sorteo": 60,
+      "fecha": "2026-07-28",
+      "dia": "martes",
+      "lunesSemana": "2026-07-27"
+    },
+    {
+      "sorteo": 61,
+      "fecha": "2026-07-31",
+      "dia": "viernes",
+      "lunesSemana": "2026-07-27"
+    }
+  ],
+  "fechaLunes": "2026-07-27",
+  "combinacion": "1218334349",
+  "estrellas": "0912",
+  "reintegro": "",
+  "clave": "",
+  "millon": "DWN03410",
+  "semanas": 1,
+  "terminal": "97900-0",
+  "joker": "",
+  "imagen": "Boleto_2026-07-27_euromillones_39525.jpg"
+}

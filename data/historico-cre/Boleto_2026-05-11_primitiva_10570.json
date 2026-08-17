@@ -1,0 +1,35 @@
+{
+  "identificador": "1309901020265654909951138528810570",
+  "tipo": "primitiva",
+  "sorteoCodigo": "05711MAY26:3",
+  "sorteos": [
+    {
+      "sorteo": 57,
+      "fecha": "2026-05-11",
+      "dia": "lunes",
+      "lunesSemana": "2026-05-11"
+    },
+    {
+      "sorteo": 58,
+      "fecha": "2026-05-14",
+      "dia": "jueves",
+      "lunesSemana": "2026-05-11"
+    },
+    {
+      "sorteo": 59,
+      "fecha": "2026-05-16",
+      "dia": "sábado",
+      "lunesSemana": "2026-05-11"
+    }
+  ],
+  "fechaLunes": "2026-05-11",
+  "combinacion": "121423242833",
+  "estrellas": "",
+  "reintegro": "5",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-05-11_primitiva_10570.jpg"
+}

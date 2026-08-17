@@ -325,10 +325,25 @@ function parseTablaPremiosHTML(html, juego) {
 
 // PRIMITIVA
 async function scrapePremiosPrimitiva(fechaISO) {
-    const url = urlPremiosPrimitiva(fechaISO); // ya la tienes creada
-    const { data: html } = await axios.get(url, {
-        headers: { "User-Agent": "Mozilla/5.0" },
-    });
+    let url = urlPremiosPrimitiva(fechaISO); // ya la tienes creada
+    let html;
+    try {
+        const resp = await axios.get(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+        html = resp.data;
+    } catch (err) {
+        // fallback: intentar sin el sufijo del día (algunas páginas usan el formato sin día)
+        try {
+            const { dd, mm, yyyy } = toDDMMYYYY(fechaISO);
+            const alt = `https://www.laprimitiva.info/loteriaprimitiva/Sorteo-${dd}-${mm}-${yyyy}.html`;
+            console.log('scrapePremiosPrimitiva: fallo al cargar', url, '-> intentando fallback', alt);
+            const resp2 = await axios.get(alt, { headers: { "User-Agent": "Mozilla/5.0" } });
+            html = resp2.data;
+            url = alt;
+        } catch (err2) {
+            // rethrow el error original para que el llamador lo gestione
+            throw err;
+        }
+    }
     const $ = cheerio.load(html);
     const res = [];
 
@@ -512,6 +527,52 @@ async function insertarPremiosEnDB(conn, tipo, sorteo, fechaISO, items) {
     }
 }
 
+// 🆕 Formatea número a texto euro ES (ej: 1000000 -> "1.000.000 €")
+function formatMoneyES(n) {
+    if (n === null || n === undefined) return '';
+    const s = Number(n).toFixed(0);
+    return s.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €';
+}
+
+// 🆕 Inserta las 7 categorías del Joker para un sorteo si no existen
+async function ensureJokerPremios(conn, tipo, sorteo, fechaISO) {
+    if (tipo !== 'primitiva') return;
+    // comprobar si ya existen premios Joker (aciertos='J')
+    const rows = await conn.query("SELECT COUNT(*) AS n FROM premios_sorteos WHERE tipoApuesta=? AND sorteo=? AND aciertos='J'", [tipo, sorteo]);
+    const n = rows && rows[0] && (rows[0].n || rows[0].N || rows[0].count || rows[0]['n']) ? (rows[0].n || rows[0].N || rows[0].count || rows[0]['n']) : 0;
+    if (n > 0) return; // ya existen
+
+    // intentar leer número Joker desde r_primitiva por fecha
+    const rrows = await conn.query("SELECT joker FROM r_primitiva WHERE fecha=? LIMIT 1", [fechaISO_Local(parseISODateLocal(fechaISO))]);
+    const jokerVal = rrows && rrows[0] ? (rrows[0].joker || rrows[0].JOKER) : null;
+    if (!jokerVal) return; // no hay número Joker disponible
+
+    const premiosJoker = [
+        { categoria: 'Joker 1ª', aciertos: 'J', premio_num: 1000000 },
+        { categoria: 'Joker 2ª', aciertos: 'J', premio_num: 10000 },
+        { categoria: 'Joker 3ª', aciertos: 'J', premio_num: 1000 },
+        { categoria: 'Joker 4ª', aciertos: 'J', premio_num: 300 },
+        { categoria: 'Joker 5ª', aciertos: 'J', premio_num: 50 },
+        { categoria: 'Joker 6ª', aciertos: 'J', premio_num: 5 },
+        { categoria: 'Joker 7ª', aciertos: 'J', premio_num: 1 },
+    ];
+
+    for (const it of premiosJoker) {
+        const txt = formatMoneyES(it.premio_num);
+        await conn.query(`INSERT INTO premios_sorteos (tipoApuesta, sorteo, fecha, categoria, aciertos, premio, premio_text)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE premio=VALUES(premio), premio_text=VALUES(premio_text)`, [
+            tipo,
+            sorteo,
+            fechaISO_Local(parseISODateLocal(fechaISO)),
+            it.categoria,
+            it.aciertos,
+            it.premio_num,
+            txt,
+        ]);
+    }
+}
+
 // Extrae un número de sorteo "limpio" (81, 121, 44) desde cualquier formato
 function sorteoNumeroLimpio(valor) {
     if (!valor) return "";
@@ -559,8 +620,12 @@ export async function getPremios(tipo, s, conn) {
 
     if (items.length > 0) {
         await insertarPremiosEnDB(conn, tipo, sorteoKey, s.fecha, items);
+        // Asegurar también las categorías del Joker con importes fijos si procede
+        try { await ensureJokerPremios(conn, tipo, sorteoKey, s.fecha); } catch (e) { /* no bloquear */ }
         map = await leerPremiosDeDB(conn, tipo, sorteoKey);
     } else {
+        // si no hay items, aun así podemos crear premios Joker automáticos
+        try { await ensureJokerPremios(conn, tipo, sorteoKey, s.fecha); } catch (e) { /* ignore */ }
         map = new Map();
     }
     premiosCache.set(key, map);

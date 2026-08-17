@@ -1,0 +1,35 @@
+{
+  "identificador": "1314101021380735309977727509701113",
+  "tipo": "primitiva",
+  "sorteoCodigo": "07522JUN26:3",
+  "sorteos": [
+    {
+      "sorteo": 75,
+      "fecha": "2026-06-22",
+      "dia": "lunes",
+      "lunesSemana": "2026-06-22"
+    },
+    {
+      "sorteo": 76,
+      "fecha": "2026-06-25",
+      "dia": "jueves",
+      "lunesSemana": "2026-06-22"
+    },
+    {
+      "sorteo": 77,
+      "fecha": "2026-06-27",
+      "dia": "sábado",
+      "lunesSemana": "2026-06-22"
+    }
+  ],
+  "fechaLunes": "2026-06-22",
+  "combinacion": "040611173949",
+  "estrellas": "",
+  "reintegro": "3",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "96790-0",
+  "joker": "NO",
+  "imagen": "/historico/Boleto_2026-06-22_primitiva_01113.jpg"
+}

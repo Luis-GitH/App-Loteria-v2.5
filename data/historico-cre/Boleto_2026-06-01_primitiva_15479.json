@@ -1,0 +1,35 @@
+{
+  "identificador": "1312001020158385611964116343615479",
+  "tipo": "primitiva",
+  "sorteoCodigo": "06601JUN26:3",
+  "sorteos": [
+    {
+      "sorteo": 66,
+      "fecha": "2026-06-01",
+      "dia": "lunes",
+      "lunesSemana": "2026-06-01"
+    },
+    {
+      "sorteo": 67,
+      "fecha": "2026-06-04",
+      "dia": "jueves",
+      "lunesSemana": "2026-06-01"
+    },
+    {
+      "sorteo": 68,
+      "fecha": "2026-06-06",
+      "dia": "sábado",
+      "lunesSemana": "2026-06-01"
+    }
+  ],
+  "fechaLunes": "2026-06-01",
+  "combinacion": "132833343849",
+  "estrellas": "",
+  "reintegro": "9",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-06-01_primitiva_15479.jpg"
+}

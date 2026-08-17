@@ -124,7 +124,7 @@ export default async function inicializaDB() {
         `);
         // --- Tabla R_primitiva ---
         await conn.query(`
-          CREATE TABLE IF NOT EXISTS R_gordo (
+          CREATE TABLE IF NOT EXISTS  (
             id int(11) NOT NULL AUTO_INCREMENT,
             semana varchar(10) DEFAULT NULL,
             sorteo varchar(10) DEFAULT NULL,

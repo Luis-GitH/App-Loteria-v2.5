@@ -1,0 +1,23 @@
+{
+  "identificador": "1314104020262005684953083497857770",
+  "tipo": "gordo",
+  "sorteoCodigo": "02628JUN26:1",
+  "sorteos": [
+    {
+      "sorteo": 26,
+      "fecha": "2026-06-28",
+      "dia": "domingo",
+      "lunesSemana": "2026-06-22"
+    }
+  ],
+  "fechaLunes": "2026-06-22",
+  "combinacion": "0509123353",
+  "estrellas": "",
+  "reintegro": "",
+  "clave": "01",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "96790-0",
+  "joker": "",
+  "imagen": "/historico/Boleto_2026-06-22_gordo_57770.jpg"
+}

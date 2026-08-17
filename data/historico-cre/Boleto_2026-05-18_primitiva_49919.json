@@ -1,0 +1,35 @@
+{
+  "identificador": "1310601020888935641387894256349919",
+  "tipo": "primitiva",
+  "sorteoCodigo": "06018MAY26:3",
+  "sorteos": [
+    {
+      "sorteo": 60,
+      "fecha": "2026-05-18",
+      "dia": "lunes",
+      "lunesSemana": "2026-05-18"
+    },
+    {
+      "sorteo": 61,
+      "fecha": "2026-05-21",
+      "dia": "jueves",
+      "lunesSemana": "2026-05-18"
+    },
+    {
+      "sorteo": 62,
+      "fecha": "2026-05-23",
+      "dia": "sábado",
+      "lunesSemana": "2026-05-18"
+    }
+  ],
+  "fechaLunes": "2026-05-18",
+  "combinacion": "050709131823",
+  "estrellas": "",
+  "reintegro": "6",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "03445-1",
+  "joker": "NO",
+  "imagen": "Boleto_2026-05-18_primitiva_49919.jpg"
+}

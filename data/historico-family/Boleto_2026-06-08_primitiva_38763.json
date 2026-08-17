@@ -1,0 +1,23 @@
+{
+  "identificador": "1313001021148767815107276128338763",
+  "tipo": "primitiva",
+  "sorteoCodigo": "07011JUN26:1",
+  "sorteos": [
+    {
+      "sorteo": 70,
+      "fecha": "2026-06-11",
+      "dia": "jueves",
+      "lunesSemana": "2026-06-08"
+    }
+  ],
+  "fechaLunes": "2026-06-08",
+  "combinacion": "040918243536",
+  "estrellas": "",
+  "reintegro": "9",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "97900-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-06-08_primitiva_38763.jpg"
+}

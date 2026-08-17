@@ -66,13 +66,13 @@ const DEFAULT_VARIANT =
     KNOWN_VARIANTS.includes("cre") && KNOWN_VARIANTS.length
         ? "cre"
         : KNOWN_VARIANTS[0] || "default";
-function normalizeVariantName(name) {
-    return (name || "").toString().trim().toLowerCase();
+function pickVariant(v) {
+    if (!v) return null;
+    const s = v.toString().toLowerCase();
+    return KNOWN_VARIANTS.includes(s) ? s : null;
 }
-function pickVariant(candidate) {
-    const normalized = normalizeVariantName(candidate);
-    return KNOWN_VARIANTS.includes(normalized) ? normalized : null;
-}
+
+
 function resolvePm2Variant() {
     if (
         process.env.PM2_APP_NAME &&
@@ -293,9 +293,11 @@ function cabeceraPrimi(s) {
         .join(" ");
     const comp = (s.complementario || "").toString();
     const rein = (s.reintegro || "").toString();
+    const joker = (s.joker || "").toString().trim();
     const sorteo = sorteoNumeroNNN(s.sorteo);
     const fecha = (s.fecha || "").toString().slice(0, 10);
-    return `Sorteo ${sorteo} (${fecha}): ${nums} · C:${comp} · R:${rein}`;
+    const base = `Sorteo ${sorteo} (${fecha}): ${nums} · C:${comp} · R:${rein}`;
+    return joker ? `${base} · Joker: ${joker}` : base;
 }
 
 function cabeceraGordo(s) {
@@ -690,52 +692,69 @@ async function procesarPrimitiva(conn, fechaLunes, fechaDomingo) {
             if (!boleto) continue;
 
             const cmp = cmpPrimitiva(boleto, s);
-            const premio = await buscarPremioPrimitiva(conn, sNNN, cmp, {
+
+            // Calculamos separadamente premio por números y premio Joker (si procede)
+            const cmpNumbers = { ...cmp, aciertoJoker: 0 };
+            const premioNums = await buscarPremioPrimitiva(conn, sNNN, cmpNumbers, {
                 sorteoTieneCategorias: () =>
                     sorteoTieneCategorias(conn, "primitiva", sNNN, s.fecha),
                 fechaISO: s.fecha,
             });
-            if (!premio) continue;
+            const premioJoker = cmp.aciertoJoker === 1
+                ? await buscarPremioPrimitiva(conn, sNNN, { ...cmp }, { fechaISO: s.fecha })
+                : null;
+
+            // DEBUG: log premios detectados por boleto
+            try {
+                console.log('DEBUG premio lookup for boleto', b.identificadorBoleto, { premioNums, premioJoker });
+            } catch (e) {}
 
             const boletoId = b.identificadorBoleto.slice(-5);
             const header = `🎯 Boleto ${boletoId}`;
 
-            let detalle = "";
-            if (premio.aciertos === "R") detalle = `Reintegro acertado`;
-            else if (premio.aciertos === "5+C")
-                detalle = `5 números + complementario`;
-            else if (premio.aciertos === "6+R")
-                detalle = `6 números + reintegro`;
-            else if (/^\d$/.test(premio.aciertos))
-                detalle = `${premio.aciertos} números`;
-            else detalle = `Aciertos ${premio.aciertos}`;
-            if (premio.categoria) detalle += ` → Categoría ${premio.categoria}`;
-            detalle += ` → ${fmtEu(premio.premio)}`;
-
+            // Añadimos línea principal
             lineas.push({ boletoId, texto: header });
-            lineas.push({ boletoId, texto: "   " + detalle });
-
-            const premioValido = esPremio(premio);
-            const tieneImporte = esPremioConImporte(premio);
-            if (premioValido) {
-                premiados += 1;
-                if (tieneImporte) totalImporte += premio.premio;
-            }
 
             const imgPath = (boleto.imagen || "").toString();
             const fsPath = toFsImagePath(imgPath);
-            if (
-                premioValido &&
-                fsPath &&
-                fs.existsSync(fsPath) &&
-                !adjPaths.has(fsPath)
-            ) {
-                adjPaths.add(fsPath);
-                adjuntos.push({
-                    filename: path.basename(fsPath),
-                    path: fsPath,
-                });
-            }
+
+            // Función local para renderizar y acumular un premio
+            const procesarPremio = (premio) => {
+                if (!premio) return;
+                let detalle = "";
+                if (premio.aciertos === "R") detalle = `Reintegro acertado`;
+                else if (premio.aciertos === "J") detalle = `Joker acertado`;
+                else if (premio.aciertos === "5+C") detalle = `5 números + complementario`;
+                else if (premio.aciertos === "6+R") detalle = `6 números + reintegro`;
+                else if (/^\d$/.test(premio.aciertos)) detalle = `${premio.aciertos} números`;
+                else detalle = `Aciertos ${premio.aciertos}`;
+                if (premio.categoria) detalle += ` → Categoría ${premio.categoria}`;
+                detalle += ` → ${fmtEu(premio.premio)}`;
+
+                lineas.push({ boletoId, texto: "   " + detalle });
+
+                const premioValido = esPremio(premio);
+                const tieneImporte = esPremioConImporte(premio);
+                if (premioValido) {
+                    premiados += 1;
+                    if (tieneImporte) totalImporte += premio.premio;
+                }
+
+                if (
+                    premioValido &&
+                    fsPath &&
+                    fs.existsSync(fsPath) &&
+                    !adjPaths.has(fsPath)
+                ) {
+                    adjPaths.add(fsPath);
+                    adjuntos.push({ filename: path.basename(fsPath), path: fsPath });
+                }
+            };
+
+            // Procesar primero premio por números (si existe)
+            procesarPremio(premioNums);
+            // Luego procesar premio Joker (si existe y distinto)
+            if (premioJoker) procesarPremio(premioJoker);
         }
     }
 
@@ -986,7 +1005,9 @@ export async function procesarSemana(
 
     return { fechaLunes, resumenFinal, adjuntosFinal, totalImporte };
 }
-
+function normalizeVariantName(variant){
+    return variant
+} 
 function parseVariantsArg(rawArgs) {
     const runAll = rawArgs.some((a) => a === "--all" || a === "--both");
     const flagFamily = rawArgs.includes("--family");

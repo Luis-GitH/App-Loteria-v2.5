@@ -13,7 +13,13 @@
   <% } else { %>
     <ul>
       <% adjuntos.forEach(f => { %>
-        <li><a href="/historico/<%= encodeURIComponent(f) %>" target="_blank" rel="noopener noreferrer"><%= f %></a></li>
+        <li>
+          <% if (/\.xlsx$/i.test(f)) { %>
+            <%= f %> (incluido en el correo)
+          <% } else { %>
+            <a href="/historico/<%= encodeURIComponent(f) %>" target="_blank" rel="noopener noreferrer"><%= f %></a>
+          <% } %>
+        </li>
       <% }) %>
     </ul>
   <% } %>

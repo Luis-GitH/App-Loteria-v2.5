@@ -1,0 +1,35 @@
+{
+  "identificador": "1309201020515061449047652543245323",
+  "tipo": "primitiva",
+  "sorteoCodigo": "05404MAY26:3",
+  "sorteos": [
+    {
+      "sorteo": 54,
+      "fecha": "2026-05-04",
+      "dia": "lunes",
+      "lunesSemana": "2026-05-04"
+    },
+    {
+      "sorteo": 55,
+      "fecha": "2026-05-07",
+      "dia": "jueves",
+      "lunesSemana": "2026-05-04"
+    },
+    {
+      "sorteo": 56,
+      "fecha": "2026-05-09",
+      "dia": "sábado",
+      "lunesSemana": "2026-05-04"
+    }
+  ],
+  "fechaLunes": "2026-05-04",
+  "combinacion": "103738404249",
+  "estrellas": "",
+  "reintegro": "3",
+  "clave": "",
+  "millon": "",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "NO",
+  "imagen": "Boleto_2026-05-04_primitiva_45323.jpg"
+}

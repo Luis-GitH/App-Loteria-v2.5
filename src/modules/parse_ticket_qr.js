@@ -70,8 +70,23 @@ if (tipo == "gordo") {
   const resultados = [];
   let sorteo = sorteoBase;
 
+  // Elegir el índice inicial en la agenda que produce la fecha más cercana
+  // a la fechaBase (incluyendo la misma fecha). De esta forma un S= con
+  // la fecha real del sorteo se mapeará al día correcto (lun/jue/sab para Primitiva).
+  let bestIndex = 0;
+  let bestDiff = Infinity;
+  for (let j = 0; j < agenda.length; j++) {
+    const cand = siguienteFechaDesde(fechaBase, agenda[j]);
+    const diff = cand.getTime() - fechaBase.getTime();
+    if (diff >= 0 && diff < bestDiff) {
+      bestDiff = diff;
+      bestIndex = j;
+    }
+  }
+
+  // Generar los sorteos a partir del índice elegido
   for (let i = 0; i < numSorteos; i++) {
-    const diaTexto = agenda[i % agenda.length];
+    const diaTexto = agenda[(bestIndex + i) % agenda.length];
     const candidata = siguienteFechaDesde(fechaBase, diaTexto);
     const lunes = lunesDeSemana(candidata);
 
@@ -85,9 +100,11 @@ if (tipo == "gordo") {
       lunesSemana: lunesSem,
     });
 
-    // avanzar sorteo y fecha base
-    candidata.setDate(candidata.getDate() + 1);
-    fechaBase.setDate(fechaBase.getDate() + 1);
+    // avanzar fechaBase al día siguiente de la candidata para evitar
+    // volver a seleccionar la misma fecha en la siguiente iteración
+    fechaBase.setDate(candidata.getDate() + 1);
+    fechaBase.setMonth(candidata.getMonth());
+    fechaBase.setFullYear(candidata.getFullYear());
     sorteo++;
   }
 

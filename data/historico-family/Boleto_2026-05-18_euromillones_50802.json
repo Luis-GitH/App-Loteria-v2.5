@@ -1,0 +1,29 @@
+{
+  "identificador": "1310607021689672936880412305550802",
+  "tipo": "euromillones",
+  "sorteoCodigo": "04019MAY26:2",
+  "sorteos": [
+    {
+      "sorteo": 40,
+      "fecha": "2026-05-19",
+      "dia": "martes",
+      "lunesSemana": "2026-05-18"
+    },
+    {
+      "sorteo": 41,
+      "fecha": "2026-05-22",
+      "dia": "viernes",
+      "lunesSemana": "2026-05-18"
+    }
+  ],
+  "fechaLunes": "2026-05-18",
+  "combinacion": "0528293341",
+  "estrellas": "0708",
+  "reintegro": "",
+  "clave": "",
+  "millon": "CFP52777",
+  "semanas": 1,
+  "terminal": "03445-1",
+  "joker": "",
+  "imagen": "Boleto_2026-05-18_euromillones_50802.jpg"
+}

@@ -1,0 +1,29 @@
+{
+  "identificador": "1318407021093580961053629024546915",
+  "tipo": "euromillones",
+  "sorteoCodigo": "06204AGO26:2",
+  "sorteos": [
+    {
+      "sorteo": 62,
+      "fecha": "2026-08-04",
+      "dia": "martes",
+      "lunesSemana": "2026-08-03"
+    },
+    {
+      "sorteo": 63,
+      "fecha": "2026-08-07",
+      "dia": "viernes",
+      "lunesSemana": "2026-08-03"
+    }
+  ],
+  "fechaLunes": "2026-08-03",
+  "combinacion": "1617262831",
+  "estrellas": "0406",
+  "reintegro": "",
+  "clave": "",
+  "millon": "FCN06773",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-08-03_euromillones_46915.jpg"
+}

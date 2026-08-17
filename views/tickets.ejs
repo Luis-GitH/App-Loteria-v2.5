@@ -200,6 +200,12 @@
                                 <% }) %>
                             </div>
                             <% } %>
+                          <% if (b.joker) { %>
+                            <div class="combo-extras">
+                              <span class="combo-label">Joker</span>
+                              <span class="combo-ball combo-ball-pr combo-ball-joker"><%= b.joker %></span>
+                            </div>
+                          <% } %>
                     </div>
                     <% } else { %>
                       <p class="empty-note">Sin combinaci&oacute;n registrada para este boleto.</p>
@@ -241,6 +247,10 @@
                         <%= n %>
                       </span>
                       <% }) %>
+                    <% if (r.joker) { %>
+                      <span class="combo-label">Joker (premiado)</span>
+                      <span class="combo-ball combo-ball-pr combo-ball-joker"><%= r.joker %></span>
+                    <% } %>
               </div>
             </li>
             <% }) %>

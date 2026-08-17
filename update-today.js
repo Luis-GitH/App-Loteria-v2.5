@@ -13,11 +13,11 @@
  *
  *
  * Uso:
- *   node update-today.js [--all|--both|--cre|--family] [--text=YYYY-MM-DD]
+ *   node update-today.js [--all|--both|--cre|--family] [--fecha=YYYY-MM-DD]
  *     --all o --both : actualiza todas las variantes (.env_cre y .env_family)
  *     --cre          : actualiza solo la variante 'cre' (.env_cre)
  *     --family       : actualiza solo la variante 'family' (.env_family)
- *     --text         : usar una fecha concreta (formato YYYY-MM-DD) en lugar del día actual
+ *     --fecha        : usar una fecha concreta (formato YYYY-MM-DD) en lugar del día actual
  *     Si no se especifica nada, se mostrara esta ayuda
  *  
 */
@@ -335,7 +335,8 @@ async function runUpdateForVariant(variant) {
         const env = buildEnvForVariant(variant);
         Object.assign(process.env, env); // asegura que scrapers compartan el mismo env
     const pool = mariadb.createPool({
-        host: env.DB_HOST,
+        host: env.DB_HOST === 'localhost' ? '127.0.0.1' : env.DB_HOST,
+        socketPath: '/run/mysqld/mysqld.sock',
         user: env.DB_USER,
         password: env.DB_PASSWORD,
         database: env.DB_DATABASE,
@@ -408,6 +409,27 @@ async function runUpdateForVariant(variant) {
             );
             if (tieneRes) {
                 console.log("   ✔️ Resultados ya existentes en BD.");
+                if (tipo === "primitiva") {
+                    const jokerRows = await conn.query(
+                        `SELECT joker FROM r_primitiva WHERE fecha = ? LIMIT 1`,
+                        [fecha]
+                    );
+                    const jokerActual = (jokerRows[0]?.joker || "").toString().trim();
+                    if (!jokerActual) {
+                        console.log("   ⤵️ El resultado existe pero falta Joker; reintentando captura...");
+                        await scrapeResultadosPrimitivaByFecha(fecha);
+                        const jokerRows2 = await conn.query(
+                            `SELECT joker FROM r_primitiva WHERE fecha = ? LIMIT 1`,
+                            [fecha]
+                        );
+                        const jokerActual2 = (jokerRows2[0]?.joker || "").toString().trim();
+                        console.log(
+                            jokerActual2
+                                ? `   ✅ Joker actualizado: ${jokerActual2}`
+                                : "   ❌ No se pudo recuperar el Joker."
+                        );
+                    }
+                }
             } else {
                 console.log("   ⤵️ Descargando resultados del día...");
                 if (tipo === "euromillones") {
@@ -435,6 +457,18 @@ async function runUpdateForVariant(variant) {
                 const tienePrem = await existePremios(conn, tipo, fecha);
                 if (tienePrem) {
                     console.log("   ✔️ Premios ya existentes en BD.");
+                    if (tipo === "primitiva") {
+                        console.log("   ⤵️ Verificando/actualizando categorías Joker...");
+                        try {
+                            await scrapePremiosPrimitivaByFecha(fecha);
+                            console.log("   ✅ Joker/verificación de premios actualizada.");
+                        } catch (e) {
+                            console.warn(
+                                "   ⚠️ No se pudieron verificar/actualizar los premios Joker:",
+                                e.message
+                            );
+                        }
+                    }
                 } else {
                     console.log("   ⤵️ Descargando tabla de premios...");
                     if (tipo === "euromillones") {
@@ -537,7 +571,6 @@ async function runUpdateForVariant(variant) {
         } catch (e) {
             console.error("❌ Error enviando correo:", e.message);
         }
-
         console.log("\n✅ Actualización diaria finalizada.");
     } finally {
         try {
@@ -552,13 +585,13 @@ async function runUpdateForVariant(variant) {
         console.log(
             [
                 "Uso:",
-                "  node update-today.js [--all|--both|--cre|--family] [--text=YYYY-MM-DD]",
+                "  node update-today.js [--all|--both|--cre|--family] [--fecha=YYYY-MM-DD]",
                 "",
                 "Opciones:",
                 "  --all | --both  actualizar variantes cre y family",
                 "  --cre           actualizar solo la variante cre",
                 "  --family        actualizar solo la variante family",
-                "  --text=FECHA    usar una fecha concreta (YYYY-MM-DD)",
+                "  --fecha=FECHA   usar una fecha concreta (YYYY-MM-DD)",
                 "  --help          mostrar esta ayuda",
             ].join("\n")
         );
@@ -568,26 +601,47 @@ async function runUpdateForVariant(variant) {
         printHelp();
         process.exit(0);
     }
-    const flagAll = rawArgs.some((a) => a === "--all" || a === "--both");
-    const flagCre = rawArgs.includes("--cre");
-    const flagFamily = rawArgs.includes("--family");
-    const textArg = rawArgs
-        .filter((a) => a.startsWith("--text="))
-        .map((a) => a.split("=")[1])
-        .filter(Boolean)[0];
-    const variantsArg = rawArgs
+
+    const parsedArgs = [];
+    let textArg = "";
+    for (let i = 0; i < rawArgs.length; i++) {
+        const arg = rawArgs[i];
+        if (arg === "--fecha" && i + 1 < rawArgs.length) {
+            textArg = rawArgs[i + 1];
+            i += 1;
+            continue;
+        }
+        if (arg.startsWith("--fecha=")) {
+            textArg = arg.split("=")[1] || "";
+            continue;
+        }
+        parsedArgs.push(arg);
+    }
+
+    const flagAll = parsedArgs.some((a) => a === "--all" || a === "--both");
+    const flagCre = parsedArgs.includes("--cre");
+    const flagFamily = parsedArgs.includes("--family");
+    const variantsArg = parsedArgs
         .filter((a) => a.startsWith("--variant="))
         .map((a) => a.split("=")[1])
         .filter(Boolean);
-    const bareVariants = rawArgs
+    let bareVariants = parsedArgs
         .filter((a) => !a.startsWith("--"))
         .map((a) => a.trim())
         .filter(Boolean);
 
+    if (!textArg) {
+        const dateLike = bareVariants.find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
+        if (dateLike) {
+            textArg = dateLike;
+            bareVariants = bareVariants.filter((a) => a !== dateLike);
+        }
+    }
+
     if (textArg) {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(textArg)) {
             console.log(
-                "❌ Formato de fecha invalido para --text. Usa YYYY-MM-DD."
+                "❌ Formato de fecha invalido para --fecha. Usa YYYY-MM-DD."
             );
             process.exit(1);
         }
@@ -603,6 +657,7 @@ async function runUpdateForVariant(variant) {
             ...(flagFamily ? ["family"] : []),
         ];
     else if (bareVariants.length) variants = bareVariants;
+    else variants = ["cre", "family"];
     variants = [...new Set(variants.map((v) => v.toLowerCase()))];
     if (!variants.length) {
         console.log(

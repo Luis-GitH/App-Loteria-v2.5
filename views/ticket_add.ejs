@@ -1,6 +1,6 @@
 <section class="ticket-add card p-4">
   <h2>Añadir boleto desde el móvil</h2>
-  <p>Sigue los pasos: primero adjunta la foto del boleto y después lee el QR con la cámara. Cuando ambos pasos estén completos podrás guardar el boleto en la base de datos.</p>
+  <p>Adjunta una foto nítida del boleto. Intentaremos leer el QR de la propia foto; si no fuera posible, también puedes enfocarlo con la cámara.</p>
 
   <form id="ticketAddForm" method="post" action="/boletos/nuevo" enctype="multipart/form-data">
     <div class="mb-3">
@@ -43,8 +43,7 @@
 
     function updateSubmitState() {
       const hasPhoto = photoInput && photoInput.files && photoInput.files.length > 0;
-      const hasQR = qrField && qrField.value.trim().length > 0;
-      if (submitBtn) submitBtn.disabled = !(hasPhoto && hasQR);
+      if (submitBtn) submitBtn.disabled = !hasPhoto;
     }
 
     if (photoInput && previewImg) {
@@ -91,7 +90,7 @@
       } catch (err) {
         // fall through to camera
       }
-      qrStatus.textContent = 'No se pudo leer el QR de la foto. Usa la cámara.';
+      qrStatus.textContent = 'El navegador no pudo leerlo. Puedes guardar la foto para que lo intente el servidor o usar la cámara.';
       if (!scannerRunning) startScanner();
       return null;
     }
