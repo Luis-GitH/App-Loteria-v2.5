@@ -1,0 +1,29 @@
+{
+  "identificador": "1320407021761429419523156647129384",
+  "tipo": "euromillones",
+  "sorteoCodigo": "06825AGO26:2",
+  "sorteos": [
+    {
+      "sorteo": 68,
+      "fecha": "2026-08-25",
+      "dia": "martes",
+      "lunesSemana": "2026-08-24"
+    },
+    {
+      "sorteo": 69,
+      "fecha": "2026-08-28",
+      "dia": "viernes",
+      "lunesSemana": "2026-08-24"
+    }
+  ],
+  "fechaLunes": "2026-08-24",
+  "combinacion": "0407354550",
+  "estrellas": "0710",
+  "reintegro": "",
+  "clave": "",
+  "millon": "FMX81681",
+  "semanas": 1,
+  "terminal": "98555-0",
+  "joker": "",
+  "imagen": "Boleto_2026-08-24_euromillones_29384.jpg"
+}

@@ -6,6 +6,8 @@
 import { createCanvas, loadImage } from "canvas";
 import jsQR from "jsqr";
 
+let qrQueue = Promise.resolve();
+
 function decodeCanvas(canvas) {
   const ctx = canvas.getContext("2d");
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -13,6 +15,18 @@ function decodeCanvas(canvas) {
     inversionAttempts: "attemptBoth",
   });
   return qr?.data?.trim() || null;
+}
+
+function decodeRegion(img, region, maxSize, filter = "none") {
+  const canvas = renderRegion(img, region, maxSize, filter);
+  try {
+    return decodeCanvas(canvas);
+  } finally {
+    // node-canvas mantiene memoria nativa fuera del GC de V8. Reducir el
+    // backing store permite liberarla al terminar cada intento.
+    canvas.width = 0;
+    canvas.height = 0;
+  }
 }
 
 function renderRegion(img, region, maxSize, filter = "none") {
@@ -29,7 +43,7 @@ function renderRegion(img, region, maxSize, filter = "none") {
   return canvas;
 }
 
-export async function decodeQRFromImage(filePath) {
+async function decodeQRFromImageNow(filePath) {
   try {
     const img = await loadImage(filePath);
     const w = img.width;
@@ -52,8 +66,7 @@ export async function decodeQRFromImage(filePath) {
 
     for (const region of regions) {
       for (const attempt of attempts) {
-        const canvas = renderRegion(img, region, attempt.maxSize, attempt.filter);
-        const data = decodeCanvas(canvas);
+        const data = decodeRegion(img, region, attempt.maxSize, attempt.filter);
         if (data) {
           console.log(`✅ QR detectado en ${filePath}`);
           return data;
@@ -64,8 +77,7 @@ export async function decodeQRFromImage(filePath) {
     {
       // Último intento a resolución original solo para imágenes pequeñas.
       if (Math.max(w, h) <= 1800) {
-        const canvas = renderRegion(img, { x: 0, y: 0, width: w, height: h }, 1800);
-        const data = decodeCanvas(canvas);
+        const data = decodeRegion(img, { x: 0, y: 0, width: w, height: h }, 1800);
         if (data) {
           console.log(`✅ QR detectado en ${filePath}`);
           return data;
@@ -79,4 +91,12 @@ export async function decodeQRFromImage(filePath) {
     console.error(`⚠️ Error leyendo QR en ${filePath}:`, err.message);
     return null;
   }
+}
+
+export function decodeQRFromImage(filePath) {
+  // Procesar una foto cada vez evita multiplicar el pico de memoria cuando
+  // varios usuarios suben imágenes grandes simultáneamente.
+  const task = qrQueue.then(() => decodeQRFromImageNow(filePath));
+  qrQueue = task.catch(() => null);
+  return task;
 }
